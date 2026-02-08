@@ -488,11 +488,10 @@ app.post('/api/game/:code/start', auth.requireAuth, (req, res) => {
 });
 
 // Story 3.2: Submit card selections - player selects cards for sentence blanks
-app.post('/api/game/:code/submit-selection', auth.requireAuth, (req, res) => {
+app.post('/api/game/:code/submit-selection', (req, res) => {
   try {
     const { code } = req.params;
     const { playerId, selections } = req.body;
-    const userId = req.user.id;
 
     // Validate required fields
     if (!playerId || !selections || typeof selections !== 'object') {

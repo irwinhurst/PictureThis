@@ -162,8 +162,8 @@
 
     .card-hand-container {
       flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      display: flex;
+      flex-direction: column;
       gap: 10px;
       overflow-y: auto;
       padding: 4px;
@@ -182,10 +182,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100px;
+      min-height: auto;
       user-select: none;
       position: relative;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
     }
 
     .card:active {
@@ -219,16 +220,18 @@
     }
 
     .card-emoji {
+      display: none;
       font-size: 28px;
       margin-bottom: 6px;
     }
 
     .card-text {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       color: #333;
-      line-height: 1.3;
+      line-height: 1.4;
       word-break: break-word;
+      white-space: normal;
     }
 
     .card-index {
@@ -393,12 +396,11 @@
       }
 
       .card-hand-container {
-        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
         gap: 8px;
       }
 
       .card {
-        min-height: 90px;
+        min-height: auto;
         padding: 10px;
       }
 
@@ -549,7 +551,6 @@
     }
 
     function fetchGameState() {
-      const token = localStorage.getItem('token');
       const url = `/api/session/${gameState.code}`;
 
       // Don't poll if game content is already showing
@@ -561,11 +562,7 @@
 
       console.log('Fetching game state from:', url);
 
-      fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      fetch(url)
         .then(res => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
@@ -793,7 +790,6 @@
       gameState.isSubmitting = true;
       document.getElementById('submitBtn').disabled = true;
 
-      const token = localStorage.getItem('token');
       const selections = {};
       
       // Convert to format: { blankIndex: cardIndex }
@@ -804,8 +800,7 @@
       fetch(`/api/game/${gameState.code}/submit-selection`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           playerId: gameState.playerId,
