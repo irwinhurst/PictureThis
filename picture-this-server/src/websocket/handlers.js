@@ -370,6 +370,67 @@ function setupWebSocketHandlers(io, { gameManager, sessionManager, logger }) {
       }
     });
     
+    // Handle judge-ready event (Story 3.3 - Judge interface ready)
+    socket.on('judge-ready', (data) => {
+      try {
+        const clientInfo = connectedClients.get(socketId);
+        if (!clientInfo || !clientInfo.code) {
+          throw new Error('Not in a game');
+        }
+        
+        logger.debug('Judge interface ready', { 
+          socketId,
+          code: clientInfo.code,
+          judgeId: data.judgeId
+        });
+        
+        // Broadcast judge is ready to see submissions
+        io.to(`game-${clientInfo.code}`).emit('judge-interface-ready', createMessage('judge_ready', {
+          judgeId: data.judgeId,
+          timestamp: Date.now()
+        }));
+        
+      } catch (error) {
+        logger.error('Error handling judge-ready', { socketId, error: error.message });
+        socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
+          message: error.message,
+          code: 'ERR_JUDGE_READY'
+        }));
+      }
+    });
+    
+    // Handle judge-submission event (Story 3.3 - Judge selections submitted)
+    socket.on('judge-submission', (data) => {
+      try {
+        const clientInfo = connectedClients.get(socketId);
+        if (!clientInfo || !clientInfo.code) {
+          throw new Error('Not in a game');
+        }
+        
+        logger.info('Judge submitted selections', { 
+          socketId,
+          code: clientInfo.code,
+          firstPlace: data.firstPlaceId,
+          secondPlace: data.secondPlaceId
+        });
+        
+        // Broadcast judge selections to all players in game
+        io.to(`game-${clientInfo.code}`).emit('judge-selections-submitted', createMessage('judge_submitted', {
+          code: clientInfo.code,
+          firstPlaceId: data.firstPlaceId,
+          secondPlaceId: data.secondPlaceId,
+          submittedAt: Date.now()
+        }));
+        
+      } catch (error) {
+        logger.error('Error handling judge-submission', { socketId, error: error.message });
+        socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
+          message: error.message,
+          code: 'ERR_JUDGE_SUBMIT'
+        }));
+      }
+    });
+    
     // Handle disconnect (Story 1.2 - Updated)
     socket.on('disconnect', (reason) => {
       logger.info(`Client disconnected: ${socketId}`, { reason });

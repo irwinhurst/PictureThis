@@ -1,28 +1,28 @@
 # Story 3.3: Judge's Judging Interface
 
 **Epic:** Epic 3: Player Mobile UI & Controls  
-**Status:** ready-for-dev  
+**Status:** in-progress  
+**Assigned To:** Developer  
 **Estimated Effort:** 6 hours (half day)  
 
 ---
 
 ## User Story
 
-As the judge, I want to view 4 generated images and select winners, so that I can award points to the winning players.
+As the judge, I want to view the players generated images and select winners, so that I can award points to the winning players.
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] Display 4 images in 2×2 grid (or carousel on mobile)
+- [ ] Display all player images in a carousel
 - [ ] Images labeled with player number only (not name, for impartiality)
 - [ ] Tap/swipe to view carousel if layout requires
 - [ ] Two selection buttons: "Pick 1st Place" and "Pick 2nd Place"
 - [ ] Visual highlight on selected images
-- [ ] Timer for judging phase (30 seconds)
+- [ ] no Timer for judging phase
 - [ ] Cannot interact until all images have loaded
-- [ ] Auto-pick first two images if timeout
-- [ ] Confirmation before submitting (prevents accidental selection)
+
 
 ---
 
@@ -38,10 +38,7 @@ As the judge, I want to view 4 generated images and select winners, so that I ca
 - Two separate selection actions (1st vs 2nd place)
 - Visual state: Unselected, Selected 1st, Selected 2nd
 
-### Timer
-- 30-second countdown
-- Real-time sync with server
-- Auto-complete on timeout (select first two images)
+
 
 ---
 
@@ -49,11 +46,9 @@ As the judge, I want to view 4 generated images and select winners, so that I ca
 
 - [ ] Code committed to PR
 - [ ] All acceptance criteria checked off
-- [ ] Image grid displaying correctly
+- [ ] Images displaying correctly
 - [ ] Selection interaction working
 - [ ] Visual feedback for selected images
-- [ ] Timer countdown working
-- [ ] Auto-timeout handling working
 - [ ] Mobile carousel working (if implemented)
 - [ ] Manual test: Judge flow with images
 - [ ] Code review completed

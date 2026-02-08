@@ -28,6 +28,7 @@ const setupHealthRoutes = require('./src/routes/health');
 const setupSessionRoutes = require('./src/routes/session');
 const setupGameRoutes = require('./src/routes/game');
 const setupAuthRoutes = require('./src/routes/authRoutes');
+const setupJudgeRoutes = require('./src/routes/judge');
 
 // Import WebSocket modules
 const { setupWebSocketHandlers } = require('./src/websocket/handlers');
@@ -138,6 +139,8 @@ const routeDeps = {
 setupHealthRoutes(app, routeDeps);
 setupSessionRoutes(app, routeDeps);
 setupGameRoutes(app, routeDeps);
+setupAuthRoutes(app, routeDeps);
+setupJudgeRoutes(app, routeDeps);
 setupAuthRoutes(app, routeDeps);
 
 // ============================================================================
