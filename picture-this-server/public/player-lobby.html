@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waiting for Game - Picture This</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .game-code {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 10px;
+    }
+
+    .status-text {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .my-info {
+      background: #f0f4ff;
+      border: 2px solid #667eea;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .my-avatar {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .my-details {
+      flex: 1;
+    }
+
+    .my-name {
+      color: #333;
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .my-role {
+      color: #999;
+      font-size: 13px;
+    }
+
+    .players-section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .player-count {
+      background: #667eea;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .player-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: #f8f9ff;
+      border: 2px solid #e0e4ff;
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .player-item:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+      transform: translateY(-2px);
+    }
+
+    .player-avatar {
+      font-size: 40px;
+      line-height: 1;
+    }
+
+    .player-name {
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+      word-break: break-word;
+      width: 100%;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #999;
+      padding: 24px;
+      background: #f8f9ff;
+      border-radius: 12px;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .waiting-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #667eea;
+      font-weight: 600;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #667eea;
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .leave-btn {
+      background: #f44336;
+      color: white;
+    }
+
+    .leave-btn:hover {
+      background: #d32f2f;
+      transform: translateY(-2px);
+    }
+
+    .refresh-btn {
+      background: #667eea;
+      color: white;
+    }
+
+    .refresh-btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .info-box {
+      background: #fff9e6;
+      border-left: 4px solid #ffc107;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .header p {
+        font-size: 14px;
+      }
+
+      .game-code {
+        font-size: 20px;
+        padding: 10px 20px;
+      }
+
+      .players-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .my-info {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .my-details {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="game-code" id="gameCode">------</div>
+      <div class="status-text">Waiting for host to start the game...</div>
+    </div>
+
+    <div class="info-box">
+      💡 Your game is ready! Other players will join using this code. The host will start the game when ready.
+    </div>
+
+    <!-- Your Info -->
+    <div class="my-info">
+      <div class="my-avatar" id="myAvatar">🎮</div>
+      <div class="my-details">
+        <div class="my-name" id="myName">Your Name</div>
+        <div class="my-role">You (Player)</div>
+      </div>
+    </div>
+
+    <!-- Players Section -->
+    <div class="players-section">
+      <div class="section-title">
+        👥 Players in Game
+        <span class="player-count" id="playerCount">1/8</span>
+      </div>
+      <div class="players-grid" id="playersGrid">
+        <!-- Players will be listed here -->
+      </div>
+      <div class="waiting-indicator">
+        <span>Waiting for host</span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="refresh-btn" onclick="refreshPlayerList()">🔄 Refresh</button>
+      <button class="leave-btn" onclick="leaveGame()">Leave Game</button>
+    </div>
+  </div>
+
+  <script>
+    let gameCode = '';
+    let playerId = '';
+    let playerName = '';
+    let playerAvatar = '';
+    let refreshInterval = null;
+
+    async function initializePlayerLobby() {
+      // Get data from localStorage
+      gameCode = localStorage.getItem('currentGameCode');
+      playerId = localStorage.getItem('playerId');
+      playerName = localStorage.getItem('playerName');
+      playerAvatar = localStorage.getItem('playerAvatar');
+
+      if (!gameCode || !playerId) {
+        window.location.href = '/player-join.html';
+        return;
+      }
+
+      // Display player's own info
+      document.getElementById('gameCode').textContent = gameCode.toUpperCase();
+      document.getElementById('myName').textContent = playerName;
+      document.getElementById('myAvatar').textContent = playerAvatar;
+
+      // Load initial players
+      await refreshPlayerList();
+
+      // Refresh player list every 2 seconds
+      refreshInterval = setInterval(refreshPlayerList, 2000);
+    }
+
+    async function refreshPlayerList() {
+      try {
+        const response = await fetch(`/api/session/${gameCode}`);
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            console.error('Game session ended');
+            showError('Game session has ended');
+            return;
+          }
+          return;
+        }
+
+        const gameData = await response.json();
+        updatePlayerDisplay(gameData);
+      } catch (error) {
+        console.error('Error fetching player list:', error);
+      }
+    }
+
+    function updatePlayerDisplay(gameData) {
+      // Update player count
+      document.getElementById('playerCount').textContent = 
+        `${gameData.playerCount}/${gameData.maxPlayers}`;
+
+      // Update players grid
+      const playersGrid = document.getElementById('playersGrid');
+      
+      if (gameData.playerCount === 0) {
+        playersGrid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-icon">⏳</div>
+            <div>No other players yet...</div>
+          </div>
+        `;
+        return;
+      }
+
+      const playersList = gameData.players.filter(p => p.playerId !== playerId);
+      
+      if (playersList.length === 0) {
+        playersGrid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-icon">⏳</div>
+            <div>Waiting for other players...</div>
+          </div>
+        `;
+        return;
+      }
+
+      playersGrid.innerHTML = playersList.map(player => `
+        <div class="player-item">
+          <div class="player-avatar">${player.avatar}</div>
+          <div class="player-name">${player.name}</div>
+        </div>
+      `).join('');
+    }
+
+    function leaveGame() {
+      const confirmed = confirm('Leave this game? You\'ll need to rejoin with the code.');
+      if (!confirmed) return;
+
+      // Clear storage
+      localStorage.removeItem('playerId');
+      localStorage.removeItem('playerName');
+      localStorage.removeItem('playerAvatar');
+      localStorage.removeItem('currentGameCode');
+      localStorage.removeItem('isHost');
+
+      // Clear interval
+      if (refreshInterval) clearInterval(refreshInterval);
+
+      // Redirect to join page
+      window.location.href = '/player-join.html';
+    }
+
+    function showError(message) {
+      // Show error and redirect after 3 seconds
+      alert(message);
+      window.location.href = '/player-join.html';
+    }
+
+    // Initialize on load
+    window.addEventListener('load', initializePlayerLobby);
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (refreshInterval) clearInterval(refreshInterval);
+    });
+  </script>
+</body>
+</html>

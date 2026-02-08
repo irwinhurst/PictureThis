@@ -57,8 +57,8 @@ development_status:
   2-4-database-connection-pooling-configuration: backlog
   epic-2-retrospective: optional
 
-  epic-3: backlog                          # Player Mobile UI & Controls
-  3-1-player-join-avatar-setup: backlog
+  epic-3: in-progress                      # Player Mobile UI & Controls
+  3-1-player-join-avatar-setup: done
   3-2-player-card-hand-display-selection: backlog
   3-3-judges-judging-interface: backlog
   3-4-round-results-leaderboard: backlog
@@ -109,36 +109,37 @@ development_status:
 |--------|-------|
 | **Total Epics** | 8 |
 | **Total Stories** | 32 |
-| **Stories Backlog** | 24 |
+| **Stories Backlog** | 23 |
 | **Stories Ready-for-Dev** | 1 |
 | **Stories In Progress** | 0 |
 | **Stories In Review** | 0 |
-| **Stories Done** | 6 |
-| **Epics In Progress** | 1 |
+| **Stories Done** | 7 |
+| **Epics In Progress** | 2 |
 | **Epics Done** | 0 |
-| **Completion %** | 18.75% |
+| **Completion %** | 21.88% |
 
 ---
 
 ## Next Steps
 
-1. **Epic 1 Retrospective** - Review completed stories 1.1-1.6
-   - Document learnings and patterns discovered
-   - Consider architecture decisions before next stories
-   - Update team about any technical debt or improvements needed
-   - Path: Mark `epic-1-retrospective` as `done` when complete
+1. **Continue Epic 3** - Player UI & Controls (Story 3.2-3.4)
+   - Story 3.2: Player card hand display and selection
+   - Story 3.3: Judge's judging interface
+   - Story 3.4: Round results and leaderboard
+   - Foundation: 3.1 (player join) is complete ✅
 
 2. **Start Epic 2 in Parallel** - Database Design & Schema (Story 2.1)
-   - Needed before persistent storage requirements (Stories 1.x+)
-   - Can progress in parallel with Epic 1 remaining work
+   - Needed before persistent storage requirements
+   - Can progress independently with Stories 3.2+
    - Foundational for scaling beyond memory-only storage
 
-3. **Continue Epic 1** - Additional infrastructure stories (if planned)
-   - Current: 6/6 core stories complete
-   - Next: Depends on epic plan for additional features
-   - Reference `epics.md` for full scope
+3. **Epic 1 Retrospective** - Review completed stories (1.1-1.6)
+   - Document learnings and patterns
+   - Consider architecture decisions before expanding
+   - Path: Mark `epic-1-retrospective` as `done` when complete
 
-4. **Track Progress** - Run `sprint-status` or `SS` to see current progress anytime
-   - Shows epic progress, bottlenecks, and next recommended action
-   - 6 stories complete, 26 remaining
+4. **Track Progress** - Current status: 7/32 stories complete
+   - Epic 1: 6/6 stories done (complete)
+   - Epic 3: 1/4 stories done (in-progress)
+   - Remaining capacity for parallel work on Epic 2
 

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join Game - Picture This</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: #333;
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+      font-family: inherit;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    input[type="text"].error {
+      border-color: #f44336;
+    }
+
+    input[type="text"].success {
+      border-color: #4caf50;
+    }
+
+    .input-hint {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+      display: block;
+    }
+
+    .error-message {
+      color: #f44336;
+      font-size: 13px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    .avatar-section {
+      margin-bottom: 24px;
+    }
+
+    .avatar-label {
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 16px;
+      display: block;
+    }
+
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .avatar-option {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      transition: all 0.2s;
+      padding: 8px;
+    }
+
+    .avatar-option:hover:not(.selected) {
+      border-color: #667eea;
+      background: #f8f9ff;
+      transform: scale(1.05);
+    }
+
+    .avatar-option.selected {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .avatar-hint {
+      font-size: 13px;
+      color: #999;
+      display: block;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    button {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .join-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .join-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .join-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .back-btn {
+      background: #f0f4ff;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .back-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .error-alert {
+      background: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .error-alert.show {
+      display: block;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #667eea;
+      padding: 12px;
+    }
+
+    .spinner {
+      display: inline-block;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .info-box {
+      background: #f8f9ff;
+      border-left: 4px solid #667eea;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .avatar-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎮 Join Game</h1>
+      <p>Enter game code and set up your avatar</p>
+    </div>
+
+    <div class="error-alert" id="errorAlert"></div>
+
+    <div class="info-box">
+      💡 Ask the host for the 6-letter game code. Each player needs a unique name and avatar!
+    </div>
+
+    <form id="joinForm">
+      <!-- Game Code -->
+      <div class="form-group">
+        <label for="gameCode">Game Code</label>
+        <input 
+          type="text" 
+          id="gameCode" 
+          name="gameCode" 
+          placeholder="e.g., AB12CD"
+          maxlength="6"
+          autocomplete="off"
+          style="text-transform: uppercase; font-weight: bold; letter-spacing: 2px; font-family: 'Courier New', monospace;"
+        >
+        <span class="input-hint">Enter the 6-letter code from the host</span>
+        <span class="error-message" id="codeError"></span>
+      </div>
+
+      <!-- Player Name -->
+      <div class="form-group">
+        <label for="playerName">Your Name</label>
+        <input 
+          type="text" 
+          id="playerName" 
+          name="playerName" 
+          placeholder="Enter your name"
+          maxlength="20"
+          autocomplete="off"
+        >
+        <span class="input-hint">Max 20 characters (letters, numbers, spaces)</span>
+        <span class="error-message" id="nameError"></span>
+      </div>
+
+      <!-- Avatar Selection -->
+      <div class="avatar-section">
+        <label class="avatar-label">Choose Your Avatar</label>
+        <div class="avatar-grid" id="avatarGrid">
+          <!-- Avatars will be populated by JavaScript -->
+        </div>
+        <span class="avatar-hint">Select one emoji avatar</span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button type="button" class="back-btn" onclick="window.history.back()">
+          ← Back
+        </button>
+        <button type="submit" class="join-btn" id="joinBtn">
+          Join Game
+        </button>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        Joining game...
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Avatar options
+    const avatarOptions = ['🎮', '⚽', '🎨', '🌟', '🚀', '🎭', '🎪', '🎯'];
+    
+    // Initialize
+    let selectedAvatar = null;
+
+    function initializeAvatars() {
+      const grid = document.getElementById('avatarGrid');
+      grid.innerHTML = '';
+      
+      avatarOptions.forEach((emoji, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'avatar-option';
+        button.textContent = emoji;
+        button.dataset.avatar = emoji;
+        
+        // Select first avatar by default
+        if (index === 0) {
+          button.classList.add('selected');
+          selectedAvatar = emoji;
+        }
+        
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          selectAvatar(emoji, button);
+        });
+        
+        grid.appendChild(button);
+      });
+    }
+
+    function selectAvatar(emoji, element) {
+      // Remove selected class from all
+      document.querySelectorAll('.avatar-option').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // Add selected class to clicked element
+      element.classList.add('selected');
+      selectedAvatar = emoji;
+    }
+
+    // Auto-format game code
+    document.getElementById('gameCode').addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+      const codeError = document.getElementById('codeError');
+      
+      if (e.target.value.length === 6) {
+        codeError.textContent = '';
+        codeError.classList.remove('show');
+      }
+    });
+
+    // Validate player name (alphanumeric + spaces only)
+    document.getElementById('playerName').addEventListener('input', (e) => {
+      const nameError = document.getElementById('nameError');
+      const value = e.target.value;
+      
+      // Allow only alphanumeric and spaces
+      if (!/^[a-zA-Z0-9\s]*$/.test(value)) {
+        e.target.value = value.replace(/[^a-zA-Z0-9\s]/g, '');
+        nameError.textContent = 'Only letters, numbers, and spaces allowed';
+        nameError.classList.add('show');
+      } else {
+        nameError.textContent = '';
+        nameError.classList.remove('show');
+      }
+    });
+
+    // Form submission
+    document.getElementById('joinForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const code = document.getElementById('gameCode').value.trim();
+      const name = document.getElementById('playerName').value.trim();
+      const errorAlert = document.getElementById('errorAlert');
+      const joinBtn = document.getElementById('joinBtn');
+      const loading = document.getElementById('loading');
+      
+      // Validation
+      let hasError = false;
+      const codeError = document.getElementById('codeError');
+      const nameError = document.getElementById('nameError');
+      
+      if (code.length !== 6) {
+        codeError.textContent = 'Game code must be 6 characters';
+        codeError.classList.add('show');
+        hasError = true;
+      } else {
+        codeError.textContent = '';
+        codeError.classList.remove('show');
+      }
+      
+      if (name.length === 0) {
+        nameError.textContent = 'Name is required';
+        nameError.classList.add('show');
+        hasError = true;
+      } else if (name.length < 2) {
+        nameError.textContent = 'Name must be at least 2 characters';
+        nameError.classList.add('show');
+        hasError = true;
+      } else {
+        nameError.textContent = '';
+        nameError.classList.remove('show');
+      }
+      
+      if (!selectedAvatar) {
+        showError('Please select an avatar');
+        return;
+      }
+      
+      if (hasError) {
+        return;
+      }
+      
+      // Show loading
+      joinBtn.disabled = true;
+      loading.style.display = 'block';
+      errorAlert.classList.remove('show');
+      
+      try {
+        // First, verify the game exists
+        const verifyResponse = await fetch(`/api/session/${code}`);
+        
+        if (!verifyResponse.ok) {
+          if (verifyResponse.status === 404) {
+            showError('Game code not found. Check with the host for the correct code.');
+          } else {
+            showError('Failed to verify game code');
+          }
+          joinBtn.disabled = false;
+          loading.style.display = 'none';
+          return;
+        }
+        
+        const gameData = await verifyResponse.json();
+        
+        // Check if game is full
+        if (gameData.playerCount >= gameData.maxPlayers) {
+          showError(`Game is full (${gameData.playerCount}/${gameData.maxPlayers} players)`);
+          joinBtn.disabled = false;
+          loading.style.display = 'none';
+          return;
+        }
+        
+        // Generate player ID
+        const playerId = generatePlayerId();
+        
+        // Join the game
+        const joinResponse = await fetch(`/api/session/${code}/join`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            playerId,
+            name,
+            avatar: selectedAvatar
+          })
+        });
+        
+        const joinData = await joinResponse.json();
+        
+        if (!joinResponse.ok || !joinData.success) {
+          showError(joinData.error || 'Failed to join game');
+          joinBtn.disabled = false;
+          loading.style.display = 'none';
+          return;
+        }
+        
+        // Success! Store info and redirect to player lobby
+        localStorage.setItem('playerId', playerId);
+        localStorage.setItem('playerName', name);
+        localStorage.setItem('playerAvatar', selectedAvatar);
+        localStorage.setItem('currentGameCode', code);
+        localStorage.setItem('isHost', 'false');
+        
+        window.location.href = `/player-lobby.html?code=${code}`;
+      } catch (error) {
+        showError('Network error: ' + error.message);
+        joinBtn.disabled = false;
+        loading.style.display = 'none';
+      }
+    });
+
+    function showError(message) {
+      const errorAlert = document.getElementById('errorAlert');
+      errorAlert.textContent = message;
+      errorAlert.classList.add('show');
+    }
+
+    function generatePlayerId() {
+      // Simple UUID v4-like ID
+      return 'player-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // Initialize on load
+    window.addEventListener('load', () => {
+      initializeAvatars();
+    });
+  </script>
+</body>
+</html>
