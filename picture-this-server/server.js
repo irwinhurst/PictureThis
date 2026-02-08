@@ -424,7 +424,7 @@ app.get('/auth/google/callback',
     
     // Redirect to frontend with token
     // In a real app, this would redirect to the host dashboard
-    res.redirect(`/?token=${token}`);
+    res.redirect(`/login.html?token=${token}`);
   }
 );
 
