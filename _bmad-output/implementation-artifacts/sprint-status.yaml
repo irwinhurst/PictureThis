@@ -58,6 +58,7 @@ development_status:
   epic-2-retrospective: optional
 
   epic-3: in-progress                      # Player Mobile UI & Controls
+  3-0-game-start-round-1-initialization: in-progress
   3-1-player-join-avatar-setup: done
   3-2-player-card-hand-display-selection: backlog
   3-3-judges-judging-interface: backlog

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game - Picture This</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    .loading {
+      text-align: center;
+      color: white;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .game-screen {
+      display: none;
+    }
+
+    .game-screen.active {
+      display: block;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .round-info {
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 10px;
+    }
+
+    /* Timer styling */
+    .timer-section {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 15px 20px;
+      color: white;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .timer-label {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .timer-display {
+      font-size: 36px;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+    }
+
+    .timer-warning {
+      color: #ffeb3b;
+    }
+
+    .timer-critical {
+      color: #ff5252;
+      animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    /* Main content area */
+    .content {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 200px;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Judge info (right side) */
+    .judge-info {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .judge-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .judge-avatar {
+      font-size: 60px;
+      line-height: 1;
+      margin: 10px 0;
+    }
+
+    .judge-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      word-wrap: break-word;
+      margin: 8px 0;
+    }
+
+    /* Sentence template (left side) */
+    .sentence-section {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .sentence-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .sentence-template {
+      font-size: 32px;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.6;
+      text-align: center;
+      word-wrap: break-word;
+    }
+
+    .blank {
+      background: #667eea;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    /* Card hand section */
+    .card-hand-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .card-hand-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-hand-placeholder {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+      font-size: 16px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 12px;
+    }
+
+    /* Error message */
+    .error-message {
+      background: #ff5252;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .leave-btn {
+      background: #f44336;
+      color: white;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .leave-btn:hover {
+      background: #d32f2f;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .content {
+        grid-template-columns: 1fr;
+        margin-bottom: 0;
+      }
+
+      .judge-info {
+        order: -1;
+      }
+
+      .sentence-template {
+        font-size: 24px;
+      }
+
+      .timer-section {
+        position: static;
+        margin-bottom: 20px;
+      }
+
+      .sentence-section {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Loading state -->
+    <div class="loading" id="loadingView">
+      <div class="spinner"></div>
+      <h2 style="margin-bottom: 10px;">Preparing Game...</h2>
+      <p style="opacity: 0.8;">Waiting for game to start</p>
+    </div>
+
+    <!-- Game screen -->
+    <div class="game-screen" id="gameScreen">
+      <div class="timer-section">
+        <div class="timer-label">Time Remaining</div>
+        <div class="timer-display" id="timerDisplay">45</div>
+      </div>
+
+      <div class="error-message" id="errorMessage"></div>
+
+      <div class="content">
+        <div class="sentence-section">
+          <div class="sentence-label">Fill in the blanks</div>
+          <div class="sentence-template" id="sentenceTemplate">
+            Loading sentence...
+          </div>
+        </div>
+
+        <div class="judge-info">
+          <div class="judge-label">Judge</div>
+          <div class="judge-avatar" id="judgeAvatar">🎮</div>
+          <div class="judge-name" id="judgeName">Loading...</div>
+        </div>
+      </div>
+
+      <div class="card-hand-section">
+        <div class="card-hand-label">Your Cards</div>
+        <div class="card-hand-placeholder" id="cardHandPlaceholder">
+          Waiting for more players or game phase...
+        </div>
+        <div class="cards-grid" id="cardHand" style="display: none;"></div>
+      </div>
+
+      <button class="leave-btn" id="leaveBtn">Leave Game</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Get game code from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameCode = urlParams.get('code');
+
+    if (!gameCode) {
+      document.body.innerHTML = '<div style="color: white; padding: 50px; text-align: center;"><h2>Error: No game code provided</h2></div>';
+    }
+
+    let socket = null;
+    let gameStarted = false;
+    let currentTimer = 45;
+    let gameData = null;
+
+    // Connect to WebSocket
+    function connectWebSocket() {
+      socket = io();
+
+      socket.on('connect', () => {
+        console.log('Connected to game server');
+      });
+
+      // Listen for game-started event
+      socket.on('game-started', (payload) => {
+        console.log('Game started:', payload);
+        gameStarted = true;
+        gameData = payload;
+
+        // Update UI
+        document.getElementById('loadingView').style.display = 'none';
+        document.getElementById('gameScreen').classList.add('active');
+
+        // Display sentence template with blanks highlighted
+        const sentence = payload.sentence || 'I SAW A _____ TRYING TO _____';
+        const formattedSentence = sentence.replace(/_____/g, '<span class="blank">BLANK</span>');
+        document.getElementById('sentenceTemplate').innerHTML = formattedSentence;
+
+        // Display judge info
+        document.getElementById('judgeAvatar').textContent = payload.judge.avatar || '🎮';
+        document.getElementById('judgeName').textContent = payload.judge.name || 'Unknown Judge';
+
+        // Start timer
+        currentTimer = payload.time_remaining || 45;
+        updateTimerDisplay();
+      });
+
+      // Listen for timer updates
+      socket.on('timer-update', (payload) => {
+        currentTimer = payload.time_remaining;
+        updateTimerDisplay();
+      });
+
+      // Listen for errors
+      socket.on('error', (error) => {
+        showError('Connection error: ' + error);
+      });
+
+      socket.on('disconnect', () => {
+        // Player disconnected
+      });
+    }
+
+    function updateTimerDisplay() {
+      const timerDisplay = document.getElementById('timerDisplay');
+      timerDisplay.textContent = currentTimer;
+
+      // Change color based on time remaining
+      if (currentTimer <= 5) {
+        timerDisplay.className = 'timer-display timer-critical';
+      } else if (currentTimer <= 15) {
+        timerDisplay.className = 'timer-display timer-warning';
+      } else {
+        timerDisplay.className = 'timer-display';
+      }
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      setTimeout(() => {
+        errorEl.classList.remove('show');
+      }, 5000);
+    }
+
+    // Leave game button
+    document.getElementById('leaveBtn').addEventListener('click', () => {
+      localStorage.removeItem('gameCode');
+      window.location.href = '/player-join.html';
+    });
+
+    // Fetch game state and connect
+    async function initializeGame() {
+      try {
+        // Fetch session info to get current state
+        const response = await fetch(`/api/session/${gameCode}`);
+        if (!response.ok) {
+          throw new Error('Failed to load game');
+        }
+
+        const data = await response.json();
+        console.log('Game session:', data);
+
+        // Connect to WebSocket
+        connectWebSocket();
+
+        // If game is already in progress, show the game screen
+        if (data.phase === 'round_1_selection' || data.phase === 'in_progress') {
+          gameStarted = true;
+          document.getElementById('loadingView').style.display = 'none';
+          document.getElementById('gameScreen').classList.add('active');
+
+          // Display sentence and judge if available
+          if (data.sentence_template) {
+            const formattedSentence = data.sentence_template.replace(/_____/g, '<span class="blank">BLANK</span>');
+            document.getElementById('sentenceTemplate').innerHTML = formattedSentence;
+          }
+
+          if (data.judge_name) {
+            document.getElementById('judgeAvatar').textContent = data.judge_avatar || '🎮';
+            document.getElementById('judgeName').textContent = data.judge_name;
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing game:', error);
+        showError('Failed to load game: ' + error.message);
+        setTimeout(() => {
+          window.location.href = '/player-join.html';
+        }, 3000);
+      }
+    }
+
+    // Initialize on page load
+    window.addEventListener('load', initializeGame);
+  </script>
+</body>
+</html>

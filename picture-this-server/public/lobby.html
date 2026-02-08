@@ -472,14 +472,36 @@
       }
 
       try {
-        // In a real implementation, this would transition the session to 'in_progress'
-        // and notify all players via WebSocket
-        console.log('Game started with', sessionData.players.length, 'players');
+        // Disable button to prevent double-clicks
+        const startBtn = document.getElementById('startBtn');
+        startBtn.disabled = true;
+        startBtn.textContent = 'Starting...';
+
+        // Call the start game endpoint
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`/api/game/${gameCode}/start`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to start game');
+        }
+
+        const data = await response.json();
+        console.log('Game started:', data);
         
-        // Redirect to game screen
+        // Redirect to game display screen
         window.location.href = `/game.html?code=${gameCode}`;
       } catch (error) {
         showError('Failed to start game: ' + error.message);
+        const startBtn = document.getElementById('startBtn');
+        startBtn.disabled = false;
+        startBtn.textContent = 'Start Game';
       }
     }
 

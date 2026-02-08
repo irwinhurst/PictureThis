@@ -461,6 +461,61 @@ class GameSessionManager {
   }
 
   /**
+   * Start the game (transition from lobby to round 1)
+   * @param {string} code - 6-character game code
+   * @param {Array<string>} sentenceTemplates - Array of sentence templates to choose from
+   * @returns {Object} - Updated GameSession with judge and sentence selected
+   * @throws {Error} - If not enough players or session not found
+   */
+  startGame(code, sentenceTemplates = []) {
+    const session = this.getSessionByCode(code);
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    // Validate at least 2 players
+    if (!session.players || session.players.length < 2) {
+      throw new Error('Not enough players to start game');
+    }
+
+    // Cannot start if already started
+    if (session.status !== 'lobby') {
+      throw new Error('Game has already started');
+    }
+
+    // Select a random judge (first player for now, but can rotate)
+    const judgeIndex = Math.floor(Math.random() * session.players.length);
+    const judge = session.players[judgeIndex];
+
+    // Select a random sentence template
+    let sentenceTemplate = null;
+    if (sentenceTemplates && sentenceTemplates.length > 0) {
+      sentenceTemplate = sentenceTemplates[Math.floor(Math.random() * sentenceTemplates.length)];
+    } else {
+      // Fallback sentence if none provided
+      sentenceTemplate = 'I SAW A _____ TRYING TO _____';
+    }
+
+    // Update session
+    session.status = 'in_progress';
+    session.currentPhase = 'round_1_selection';
+    session.currentRound = 1;
+    session.judgeId = judge.playerId;
+    session.judgeIndex = judgeIndex;
+    session.sentenceTemplate = sentenceTemplate;
+    session.lastActivityAt = Date.now();
+    session.gameStartedAt = Date.now();
+
+    // Re-store updated session
+    this.sessionMap.set(code, session);
+
+    // Emit event
+    this.emit('onGameStarted', session.gameId, code, judge, sentenceTemplate);
+
+    return session;
+  }
+
+  /**
    * Shutdown the session manager (cleanup resources)
    */
   shutdown() {
