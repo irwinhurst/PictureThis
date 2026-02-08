@@ -8,6 +8,10 @@ const path = require('path');
 // Import game management modules
 const GameManager = require('./src/game/GameManager');
 const { getPlayerBySocketId } = require('./src/game/GameState');
+const passport = require('passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const auth = require('./auth');
 
 // Configure Winston logger
 const logger = winston.createLogger({
@@ -43,7 +47,27 @@ const io = new Server(server, {
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'default-session-secret-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure Google OAuth
+auth.configureGoogleStrategy();
 
 // Initialize Game Manager (Story 1.2)
 const gameManager = new GameManager(logger, io);
@@ -141,6 +165,89 @@ app.post('/api/keep-alive', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: Date.now()
+  });
+});
+
+// Authentication routes
+
+// Initiate Google OAuth login
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['openid', 'profile', 'email'] })
+);
+
+// Google OAuth callback
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login-failed' }),
+  (req, res) => {
+    // Generate JWT token
+    const token = auth.generateToken(req.user);
+    
+    // Redirect to frontend with token
+    // In a real app, this would redirect to the host dashboard
+    res.redirect(`/?token=${token}`);
+  }
+);
+
+// Logout endpoint
+app.post('/auth/logout', (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      logger.error('Error during logout', { error: err.message });
+      return res.status(500).json({ error: 'Logout failed' });
+    }
+    
+    req.session.destroy((err) => {
+      if (err) {
+        logger.error('Error destroying session', { error: err.message });
+      }
+      res.json({ message: 'Logged out successfully' });
+    });
+  });
+});
+
+// Get current user profile (protected route)
+app.get('/api/profile', auth.requireAuth, (req, res) => {
+  res.json({
+    user: {
+      id: req.user.id,
+      email: req.user.email,
+      name: req.user.name,
+      profile_picture_url: req.user.profile_picture_url
+    }
+  });
+});
+
+// Login failed page
+app.get('/login-failed', (req, res) => {
+  res.status(401).json({
+    error: 'Authentication failed',
+    message: 'Failed to authenticate with Google. Please try again.'
+  });
+});
+
+// Protected game endpoints (placeholders for Story 1.6)
+
+// Create game (requires authentication)
+app.post('/api/games', auth.requireAuth, (req, res) => {
+  logger.info('Create game requested', { userId: req.user.id });
+  
+  // Placeholder response - full implementation in Story 1.6
+  res.status(501).json({
+    message: 'Game creation endpoint - to be fully implemented in Story 1.6',
+    user: req.user.name
+  });
+});
+
+// Start game (requires authentication)
+app.post('/api/games/:id/start', auth.requireAuth, (req, res) => {
+  const gameId = req.params.id;
+  logger.info('Start game requested', { userId: req.user.id, gameId });
+  
+  // Placeholder response - full implementation in Story 1.6
+  res.status(501).json({
+    message: 'Start game endpoint - to be fully implemented in Story 1.6',
+    gameId,
+    host: req.user.name
   });
 });
 
