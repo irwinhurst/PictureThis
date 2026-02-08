@@ -349,6 +349,8 @@
 
       socket.on('connect', () => {
         console.log('Connected to game server');
+        // Join the game room so host/player receives broadcasts
+        socket.emit('watch-game', { code: gameCode });
       });
 
       // Listen for game-started event

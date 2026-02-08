@@ -803,6 +803,35 @@ io.on('connection', (socket) => {
       }));
     }
   });
+
+  // Handle watch-game event for host (just join the room, don't add as player)
+  socket.on('watch-game', (data) => {
+    try {
+      const { code } = data;
+      if (!code) {
+        throw new Error('Game code is required');
+      }
+
+      logger.info('Host/watcher joining game room', { socketId, code });
+      
+      // Just join the code-based room to receive broadcasts
+      socket.join(`game-${code}`);
+      
+      // Store code for future reference
+      const clientInfo = connectedClients.get(socketId);
+      if (clientInfo) {
+        clientInfo.code = code;
+      }
+
+      logger.debug('Client joined game room', { socketId, room: `game-${code}` });
+    } catch (error) {
+      logger.error('Error handling watch-game', { socketId, error: error.message });
+      socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
+        message: 'Failed to join game room',
+        code: 'ERR_WATCH'
+      }));
+    }
+  });
   
   // Handle start-game event (Story 1.2)
   socket.on('start-game', (data) => {
