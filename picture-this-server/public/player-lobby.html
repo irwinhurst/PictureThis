@@ -363,7 +363,11 @@
 
       socket.on('connect', () => {
         console.log('Connected to server');
-        socket.emit('join-game', { code: gameCode, playerId: playerId });
+        socket.emit('join-game', { 
+          code: gameCode, 
+          name: playerName, 
+          avatar: playerAvatar 
+        });
       });
 
       socket.on('game-started', (data) => {

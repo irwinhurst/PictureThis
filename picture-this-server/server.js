@@ -430,8 +430,8 @@ app.post('/api/game/:code/start', auth.requireAuth, (req, res) => {
       sentence: updatedSession.sentenceTemplate
     });
 
-    // Broadcast game-started event to all connected players via WebSocket
-    io.to(updatedSession.gameId).emit('game-started', {
+    // Broadcast game-started event to all connected players via WebSocket using code-based room
+    io.to(`game-${code}`).emit('game-started', {
       gameId: updatedSession.gameId,
       code: updatedSession.code,
       round: updatedSession.currentRound,
@@ -454,7 +454,7 @@ app.post('/api/game/:code/start', auth.requireAuth, (req, res) => {
         clearInterval(countdownInterval);
         // Would auto-submit here in full implementation
       } else {
-        io.to(updatedSession.gameId).emit('timer-update', {
+        io.to(`game-${code}`).emit('timer-update', {
           time_remaining: timeRemaining
         });
       }
@@ -533,7 +533,7 @@ app.post('/api/game/:code/submit-selection', auth.requireAuth, (req, res) => {
     });
 
     // Broadcast update to all players
-    io.to(updatedSession.gameId).emit('selection-submitted', {
+    io.to(`game-${code}`).emit('selection-submitted', {
       playerId,
       submittedCount,
       totalPlayers
@@ -551,7 +551,7 @@ app.post('/api/game/:code/submit-selection', auth.requireAuth, (req, res) => {
         submittedCount
       });
 
-      io.to(updatedSession.gameId).emit('selections-complete', {
+      io.to(`game-${code}`).emit('selections-complete', {
         message: 'All players have submitted selections'
       });
     }
@@ -768,10 +768,11 @@ io.on('connection', (socket) => {
       if (clientInfo) {
         clientInfo.gameId = game.gameId;
         clientInfo.playerId = player.id;
+        clientInfo.code = code;
       }
       
-      // Join socket room for this game
-      socket.join(game.gameId);
+      // Join socket room using game CODE as room identifier  (not gameId)
+      socket.join(`game-${code}`);
       
       // Send join confirmation to player
       socket.emit('game-joined', createMessage('game_joined', {
@@ -790,7 +791,7 @@ io.on('connection', (socket) => {
       });
       
       // Broadcast player joined event to all in game
-      io.to(game.gameId).emit('player-joined', createMessage(MESSAGE_TYPES.PLAYER_JOINED, {
+      io.to(`game-${code}`).emit('player-joined', createMessage(MESSAGE_TYPES.PLAYER_JOINED, {
         player,
         player_count: newState.players.length
       }));
@@ -815,8 +816,8 @@ io.on('connection', (socket) => {
       
       const newState = gameManager.startGame(clientInfo.gameId);
       
-      // Broadcast game started event
-      io.to(clientInfo.gameId).emit('game-started', createMessage('game_started', {
+      // Broadcast game started event using code-based room
+      io.to(`game-${clientInfo.code}`).emit('game-started', createMessage('game_started', {
         round: newState.currentRound,
         phase: newState.currentPhase,
         judgeId: newState.judgeId,
@@ -945,7 +946,7 @@ function broadcastGameState() {
   for (const game of games) {
     const exportedState = gameManager.exportGameState(game.gameId);
     if (exportedState) {
-      io.to(game.gameId).emit('state-update', createMessage(MESSAGE_TYPES.STATE_UPDATE, {
+      io.to(`game-${game.code}`).emit('state-update', createMessage(MESSAGE_TYPES.STATE_UPDATE, {
         game_state: exportedState
       }));
     }
