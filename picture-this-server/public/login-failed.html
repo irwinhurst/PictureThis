@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Required - PictureThis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background-color: #357ae8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔒 Login Failed</h1>
+    <div class="error-message">
+        <p>Authentication failed. This could be due to:</p>
+        <ul style="text-align: left; display: inline-block;">
+            <li>User cancelled the Google login</li>
+            <li>Network error during authentication</li>
+            <li>Invalid OAuth configuration</li>
+        </ul>
+    </div>
+    <a href="/auth/google" class="btn">Try Again</a>
+    <a href="/" class="btn" style="background-color: #6c757d;">Go Home</a>
+</body>
+</html>

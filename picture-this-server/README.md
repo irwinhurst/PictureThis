@@ -213,7 +213,8 @@ Log format: `[TIMESTAMP] [LEVEL] Message {metadata}`
 
 - **Single-threaded:** Node.js event loop handles all connections
 - **In-memory state:** Game state is stored in memory (database integration in future stories)
-- **No authentication:** Authentication will be added in Story 1.5
+- **Authentication:** Google OAuth 2.0 for host authentication (Story 1.5) - see [GOOGLE_AUTH.md](docs/GOOGLE_AUTH.md)
+- **Session Management:** Express-session with secure cookies
 - **Stateless reconnection:** Reconnections are treated as new connections (session recovery in future)
 
 ## Performance
