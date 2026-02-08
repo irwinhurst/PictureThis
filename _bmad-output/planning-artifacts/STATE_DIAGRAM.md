@@ -77,7 +77,7 @@
 
 ### **LOBBY_WAITING**
 - **Purpose**: Players join game, host configures
-- **Entry**: Game created
+- **Entry**: Game created (choose rounds)
 - **Exit**: Host clicks "Start Game"
 - **Data**:
   - Game code
@@ -96,7 +96,7 @@
   1. Randomly select a new Judge (rotate, no repeats in 1 round)
   2. Judge draws/selects a sentence card from their hand
   3. Sentence displayed on TV with blanks
-  4. All other players shown their card hands
+  4. All other players shown their card hands on mobile
 - **Data**:
   - Current round number
   - Current judge (player ID)
@@ -182,7 +182,8 @@
 - **Actions**:
   1. Display final leaderboard
   2. Show "Funniest Judge" if applicable
-  3. Allow replay or exit
+  3. Play Again
+  4. Exit (to main menu)
 - **Data**:
   - Final standings
   - Game stats (total rounds, images generated)

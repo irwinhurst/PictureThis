@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const winston = require('winston');
+const path = require('path');
 
 // Configure Winston logger
 const logger = winston.createLogger({
@@ -38,6 +39,7 @@ const io = new Server(server, {
 
 // Middleware
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Track connected clients
 const connectedClients = new Map();
