@@ -960,8 +960,9 @@ function broadcastGameState() {
   logger.debug(`State broadcast sent to ${connectedClients.size} clients, ${games.length} games`);
 }
 
-// Set up periodic state broadcast (100ms intervals)
-const broadcastInterval = setInterval(broadcastGameState, 100);
+// Set up periodic state broadcast (1 second intervals - reduced from 100ms for performance)
+// Note: Most updates happen via WebSocket events, this is just a fallback
+const broadcastInterval = setInterval(broadcastGameState, 1000);
 
 // Start server
 const PORT = process.env.PORT || 3000;
