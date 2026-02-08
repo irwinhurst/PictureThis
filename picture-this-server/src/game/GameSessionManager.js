@@ -84,7 +84,7 @@ class GameSessionManager {
   createSession(hostId, maxRounds = 5, maxPlayers = 8) {
     // Validate parameters
     if (!hostId) throw new Error('hostId is required');
-    if (maxRounds < 5 || maxRounds > 20) throw new Error('maxRounds must be between 5 and 20');
+    if (maxRounds < 1 || maxRounds > 20) throw new Error('maxRounds must be between 1 and 20');
     if (maxPlayers < 2 || maxPlayers > 20) throw new Error('maxPlayers must be between 2 and 20');
 
     // Generate unique code

@@ -87,15 +87,15 @@ tests.push({
   }
 });
 
-// 5. Validate max rounds (5-20 range)
+// 5. Validate max rounds (1-20 range)
 tests.push({
-  name: 'Validate max rounds minimum (5)',
+  name: 'Validate max rounds minimum (1)',
   run: () => {
     const manager = new GameSessionManager();
     
     try {
-      manager.createSession(mockHost.id, 5, 8);
-      // Should succeed with 5 rounds
+      manager.createSession(mockHost.id, 1, 8);
+      // Should succeed with 1 round
       passed++;
       return;
     } catch (e) {

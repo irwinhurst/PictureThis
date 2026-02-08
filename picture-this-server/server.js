@@ -332,10 +332,10 @@ app.post('/api/game/create-session', auth.requireAuth, (req, res) => {
       });
     }
     
-    if (maxRoundsVal < 5 || maxRoundsVal > 20) {
+    if (maxRoundsVal < 1 || maxRoundsVal > 20) {
       return res.status(400).json({
         success: false,
-        error: 'Max rounds must be between 5 and 20'
+        error: 'Max rounds must be between 1 and 20'
       });
     }
     

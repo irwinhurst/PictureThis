@@ -271,7 +271,7 @@
             type="range" 
             id="maxRounds" 
             name="maxRounds" 
-            min="5" 
+            min="1" 
             max="20" 
             value="10"
           >
@@ -279,7 +279,7 @@
         </div>
         <div class="info-text">
           <span class="info-icon">ℹ️</span>
-          <span>Play 5-20 rounds</span>
+          <span>Play 1-20 rounds</span>
         </div>
       </div>
 
@@ -328,8 +328,8 @@
         return;
       }
 
-      if (maxRounds < 5 || maxRounds > 20) {
-        showError('Max rounds must be between 5 and 20');
+      if (maxRounds < 1 || maxRounds > 20) {
+        showError('Max rounds must be between 1 and 20');
         return;
       }
 
