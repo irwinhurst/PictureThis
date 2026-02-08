@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Game - Picture This</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: #ddd;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+
+    .value-display {
+      background: #f0f4ff;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      padding: 8px 16px;
+      min-width: 60px;
+      text-align: center;
+      font-weight: 600;
+      color: #667eea;
+      font-size: 18px;
+    }
+
+    .info-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      color: #999;
+      font-size: 13px;
+    }
+
+    .info-icon {
+      color: #667eea;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .error {
+      background: #fee;
+      border: 1px solid #fcc;
+      color: #c33;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 30px 0;
+      color: #999;
+      font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #ddd;
+    }
+
+    .link-btn {
+      background: none;
+      color: #667eea;
+      text-decoration: underline;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      width: auto;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .link-btn:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      label {
+        font-size: 14px;
+      }
+
+      button {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 Create Game</h1>
+    <p class="subtitle">Configure your game settings</p>
+
+    <div class="error" id="error"></div>
+
+    <form id="createGameForm">
+      <div class="form-group">
+        <label for="maxPlayers">Maximum Players</label>
+        <div class="input-group">
+          <input 
+            type="range" 
+            id="maxPlayers" 
+            name="maxPlayers" 
+            min="2" 
+            max="20" 
+            value="8"
+          >
+          <div class="value-display" id="maxPlayersValue">8</div>
+        </div>
+        <div class="info-text">
+          <span class="info-icon">ℹ️</span>
+          <span>Supports 2-20 players</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="maxRounds">Maximum Rounds</label>
+        <div class="input-group">
+          <input 
+            type="range" 
+            id="maxRounds" 
+            name="maxRounds" 
+            min="5" 
+            max="20" 
+            value="10"
+          >
+          <div class="value-display" id="maxRoundsValue">10</div>
+        </div>
+        <div class="info-text">
+          <span class="info-icon">ℹ️</span>
+          <span>Play 5-20 rounds</span>
+        </div>
+      </div>
+
+      <button type="submit" id="createBtn">Create Game</button>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        Creating your game...
+      </div>
+    </form>
+
+    <div class="divider">or</div>
+
+    <button class="link-btn" onclick="window.location.href='/login.html'">Back to Login</button>
+  </div>
+
+  <script>
+    const maxPlayersInput = document.getElementById('maxPlayers');
+    const maxRoundsInput = document.getElementById('maxRounds');
+    const maxPlayersValue = document.getElementById('maxPlayersValue');
+    const maxRoundsValue = document.getElementById('maxRoundsValue');
+    const errorDiv = document.getElementById('error');
+    const loadingDiv = document.getElementById('loading');
+    const createBtn = document.getElementById('createBtn');
+    const form = document.getElementById('createGameForm');
+
+    // Update value displays when sliders change
+    maxPlayersInput.addEventListener('input', (e) => {
+      maxPlayersValue.textContent = e.target.value;
+    });
+
+    maxRoundsInput.addEventListener('input', (e) => {
+      maxRoundsValue.textContent = e.target.value;
+    });
+
+    // Handle form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.classList.remove('show');
+
+      const maxPlayers = parseInt(maxPlayersInput.value);
+      const maxRounds = parseInt(maxRoundsInput.value);
+
+      // Validate
+      if (maxPlayers < 2 || maxPlayers > 20) {
+        showError('Max players must be between 2 and 20');
+        return;
+      }
+
+      if (maxRounds < 5 || maxRounds > 20) {
+        showError('Max rounds must be between 5 and 20');
+        return;
+      }
+
+      // Show loading state
+      createBtn.disabled = true;
+      loadingDiv.style.display = 'block';
+
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const response = await fetch('/api/game/create-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            maxPlayers,
+            maxRounds
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          showError(data.error || 'Failed to create game');
+          createBtn.disabled = false;
+          loadingDiv.style.display = 'none';
+          return;
+        }
+
+        // Success! Redirect to lobby with game code
+        localStorage.setItem('currentGameCode', data.code);
+        localStorage.setItem('currentGameId', data.gameId);
+        localStorage.setItem('isHost', 'true');
+        
+        window.location.href = `/lobby.html?code=${data.code}`;
+      } catch (error) {
+        showError(error.message || 'Network error');
+        createBtn.disabled = false;
+        loadingDiv.style.display = 'none';
+      }
+    });
+
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+    }
+
+    // Check authentication on page load
+    window.addEventListener('load', async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        // Not authenticated, redirect to login
+        window.location.href = '/login.html';
+      }
+    });
+  </script>
+</body>
+</html>

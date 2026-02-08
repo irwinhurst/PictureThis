@@ -315,7 +315,65 @@ app.get('/api/debug/game/:gameId', (req, res) => {
   });
 });
 
-// Create game endpoint
+// Create game endpoint (Story 1.6: Host Create Game Session)
+app.post('/api/game/create-session', auth.requireAuth, (req, res) => {
+  try {
+    const { maxRounds, maxPlayers } = req.body;
+    const hostId = req.user.id;
+    
+    // Validation
+    const maxPlayersVal = parseInt(maxPlayers) || 8;
+    const maxRoundsVal = parseInt(maxRounds) || 10;
+    
+    if (maxPlayersVal < 2 || maxPlayersVal > 20) {
+      return res.status(400).json({
+        success: false,
+        error: 'Max players must be between 2 and 20'
+      });
+    }
+    
+    if (maxRoundsVal < 5 || maxRoundsVal > 20) {
+      return res.status(400).json({
+        success: false,
+        error: 'Max rounds must be between 5 and 20'
+      });
+    }
+    
+    // Create session with GameSessionManager
+    const session = sessionManager.createSession(hostId, maxRoundsVal, maxPlayersVal);
+    
+    logger.info('Game session created', { 
+      code: session.code,
+      gameId: session.gameId,
+      hostId,
+      maxPlayers: maxPlayersVal,
+      maxRounds: maxRoundsVal
+    });
+    
+    res.json({
+      success: true,
+      gameId: session.gameId,
+      code: session.code,
+      hostId: session.hostId,
+      maxPlayers: maxPlayersVal,
+      maxRounds: maxRoundsVal,
+      status: session.status,
+      createdAt: session.createdAt,
+      settings: {
+        maxPlayers: maxPlayersVal,
+        maxRounds: maxRoundsVal
+      }
+    });
+  } catch (error) {
+    logger.error('Error creating game session', { error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Legacy create game endpoint
 app.post('/api/game/create', (req, res) => {
   try {
     const { maxRounds, maxPlayers, hostId } = req.body;

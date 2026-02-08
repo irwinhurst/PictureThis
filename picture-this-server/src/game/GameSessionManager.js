@@ -77,20 +77,20 @@ class GameSessionManager {
   /**
    * Create a new game session
    * @param {string} hostId - UUID of the host player
-   * @param {number} maxRounds - Maximum number of rounds (1-20)
-   * @param {number} maxPlayers - Maximum players (2-16)
+   * @param {number} maxRounds - Maximum number of rounds (5-20)
+   * @param {number} maxPlayers - Maximum players (2-20)
    * @returns {Object} - Created GameSession object
    */
   createSession(hostId, maxRounds = 5, maxPlayers = 8) {
     // Validate parameters
     if (!hostId) throw new Error('hostId is required');
-    if (maxRounds < 1 || maxRounds > 20) throw new Error('maxRounds must be between 1 and 20');
-    if (maxPlayers < 2 || maxPlayers > 16) throw new Error('maxPlayers must be between 2 and 16');
+    if (maxRounds < 5 || maxRounds > 20) throw new Error('maxRounds must be between 5 and 20');
+    if (maxPlayers < 2 || maxPlayers > 20) throw new Error('maxPlayers must be between 2 and 20');
 
     // Generate unique code
     const code = this.generateUniqueCode();
     const gameId = uuidv4();
-    const now = new Date().toISOString();
+    const now = Date.now(); // Use timestamp instead of ISO string
 
     // Create session object
     const session = {
@@ -172,7 +172,7 @@ class GameSessionManager {
     }
 
     // Add player
-    const now = new Date().toISOString();
+    const now = Date.now(); // Use timestamp
     session.players.push({
       playerId: player.playerId,
       name: player.name || 'Anonymous',
@@ -213,7 +213,7 @@ class GameSessionManager {
     session.players.splice(playerIndex, 1);
 
     // Update activity
-    session.lastActivityAt = new Date().toISOString();
+    session.lastActivityAt = Date.now();
 
     // If host leaves, mark session for cleanup
     if (isHost) {

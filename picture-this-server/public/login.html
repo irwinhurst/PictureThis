@@ -210,6 +210,28 @@
         .dashboard-link:hover {
             text-decoration: underline;
         }
+        
+        .create-game-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+            text-decoration: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .create-game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -244,19 +266,19 @@
             <div class="profile-card" id="profile-card">
                 <!-- Profile info will be inserted here -->
             </div>
+            <a href="/create-game.html" class="create-game-btn">🎮 Create New Game</a>
             <button class="logout-btn" id="logout-btn">Logout</button>
-            <a href="/" class="dashboard-link">Go to Dashboard</a>
         </div>
     </div>
     
     <script>
         // Check if user is already logged in (token in URL or stored)
         const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token') || localStorage.getItem('auth_token');
+        const token = urlParams.get('token') || localStorage.getItem('authToken');
         
         if (token) {
             // Store token
-            localStorage.setItem('auth_token', token);
+            localStorage.setItem('authToken', token);
             
             // Clear token from URL
             if (urlParams.has('token')) {
@@ -280,7 +302,7 @@
                     displayProfile(data.user);
                 } else {
                     // Token invalid, clear it
-                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('authToken');
                 }
             } catch (error) {
                 console.error('Error fetching profile:', error);
@@ -306,14 +328,16 @@
         
         document.getElementById('logout-btn').addEventListener('click', async () => {
             try {
+                const token = localStorage.getItem('authToken');
                 await fetch('/auth/logout', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     }
                 });
                 
-                localStorage.removeItem('auth_token');
+                localStorage.removeItem('authToken');
                 location.reload();
             } catch (error) {
                 console.error('Logout error:', error);
