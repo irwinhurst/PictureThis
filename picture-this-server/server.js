@@ -485,6 +485,95 @@ app.post('/api/game/:code/start', auth.requireAuth, (req, res) => {
   }
 });
 
+// Story 3.2: Submit card selections - player selects cards for sentence blanks
+app.post('/api/game/:code/submit-selection', auth.requireAuth, (req, res) => {
+  try {
+    const { code } = req.params;
+    const { playerId, selections } = req.body;
+    const userId = req.user.id;
+
+    // Validate required fields
+    if (!playerId || !selections || typeof selections !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing or invalid playerId or selections'
+      });
+    }
+
+    // Get the session
+    const session = sessionManager.getSessionByCode(code);
+    if (!session) {
+      return res.status(404).json({
+        success: false,
+        error: 'Game session not found'
+      });
+    }
+
+    // Validate game is in selection phase
+    if (session.currentPhase !== 'round_1_selection' && session.currentPhase !== 'round_voting') {
+      return res.status(400).json({
+        success: false,
+        error: `Game is not in selection phase (current: ${session.currentPhase})`
+      });
+    }
+
+    // Record the player's selection
+    const updatedSession = sessionManager.recordPlayerSelection(code, playerId, selections);
+
+    // Calculate how many players have submitted
+    const totalPlayers = updatedSession.players.filter(p => p.playerId !== updatedSession.judgeId).length;
+    const submittedCount = Object.keys(updatedSession.playerSelections).length;
+
+    logger.info('Player submitted card selection', {
+      code,
+      playerId,
+      selections,
+      submittedCount,
+      totalPlayers
+    });
+
+    // Broadcast update to all players
+    io.to(updatedSession.gameId).emit('selection-submitted', {
+      playerId,
+      submittedCount,
+      totalPlayers
+    });
+
+    // Check if all non-judge players have submitted
+    if (submittedCount === totalPlayers) {
+      // All selections received, advance to next phase
+      session.currentPhase = 'round_voting';
+      session.lastActivityAt = Date.now();
+      sessionManager.sessionMap.set(code, session);
+
+      logger.info('All selections received, advancing to voting phase', {
+        code,
+        submittedCount
+      });
+
+      io.to(updatedSession.gameId).emit('selections-complete', {
+        message: 'All players have submitted selections'
+      });
+    }
+
+    res.json({
+      success: true,
+      gameId: updatedSession.gameId,
+      code: updatedSession.code,
+      playerId,
+      submittedCount,
+      totalPlayers,
+      allSubmitted: submittedCount === totalPlayers
+    });
+  } catch (error) {
+    logger.error('Error submitting player selection', { error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Legacy create game endpoint
 app.post('/api/game/create', (req, res) => {
   try {

@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Picture This - Player Card Selection</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Header with timer */
+    .game-header {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #667eea;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .game-code {
+      font-size: 14px;
+      font-weight: 600;
+      color: #667eea;
+      text-transform: uppercase;
+    }
+
+    .timer-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timer-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+    }
+
+    .timer-display {
+      font-size: 28px;
+      font-weight: bold;
+      min-width: 50px;
+      text-align: right;
+      color: #fff;
+      background: #667eea;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .timer-display.warning {
+      background: #f59e0b;
+      animation: pulse-warning 0.5s ease-in-out infinite;
+    }
+
+    .timer-display.critical {
+      background: #ef4444;
+      animation: pulse-critical 0.3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-warning {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes pulse-critical {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+
+    /* Sentence display */
+    .sentence-section {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 16px;
+      margin: 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .sentence-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .sentence-display {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .blank {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #667eea;
+      padding: 2px 8px;
+      margin: 0 4px;
+      border-radius: 4px;
+      font-weight: bold;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .blank.filled {
+      background: #10b981;
+      color: white;
+    }
+
+    .selection-count {
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .selection-count.complete {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    /* Card hand section */
+    .card-hand-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      min-height: 0;
+    }
+
+    .card-hand-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .card-hand-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      padding: 4px;
+      align-content: start;
+    }
+
+    .card {
+      background: white;
+      border: 3px solid transparent;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100px;
+      user-select: none;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card:active {
+      transform: scale(0.95);
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card.available {
+      border-color: #e5e7eb;
+    }
+
+    .card.available:hover {
+      border-color: #667eea;
+      background: #f9fafb;
+    }
+
+    .card.selected {
+      background: #dbeafe;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 2px #e0e7ff, 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f3f4f6;
+      border-color: #e5e7eb;
+    }
+
+    .card-emoji {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .card-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .card-index {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      font-size: 10px;
+      background: #667eea;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+
+    .card-selected-indicator {
+      position: absolute;
+      top: 50%;
+      right: -12px;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      background: #10b981;
+      border: 2px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .card.selected .card-selected-indicator {
+      display: flex;
+    }
+
+    .card:not(.selected) .card-selected-indicator {
+      display: none;
+    }
+
+    /* Submit section */
+    .submit-section {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 16px;
+      border-top: 2px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      gap: 12px;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .submit-btn {
+      flex: 1;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+
+    .submit-btn.enabled {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .submit-btn.enabled:active {
+      transform: scale(0.98);
+    }
+
+    .submit-btn.disabled {
+      background: #e5e7eb;
+      color: #999;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .leave-btn {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 2px solid #ef4444;
+      background: transparent;
+      color: #ef4444;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+
+    .leave-btn:active {
+      background: rgba(239, 68, 68, 0.1);
+      transform: scale(0.98);
+    }
+
+    /* Loading state */
+    .loading-spinner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    /* Error state */
+    .error-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .error-message {
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .error-code {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .game-header {
+        padding: 10px 12px;
+      }
+
+      .timer-display {
+        font-size: 24px;
+        padding: 4px 10px;
+      }
+
+      .sentence-display {
+        font-size: 16px;
+      }
+
+      .card-hand-container {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 8px;
+      }
+
+      .card {
+        min-height: 90px;
+        padding: 10px;
+      }
+
+      .card-emoji {
+        font-size: 24px;
+      }
+
+      .card-text {
+        font-size: 12px;
+      }
+
+      .submit-section {
+        padding: 12px;
+        gap: 8px;
+      }
+
+      .submit-btn {
+        padding: 14px;
+        font-size: 14px;
+      }
+    }
+
+    /* Hide content initially */
+    .content {
+      display: none;
+    }
+
+    .content.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Loading state -->
+    <div id="loadingState" class="loading-spinner">
+      <div class="spinner"></div>
+      <div class="loading-text">Waiting for game to start...</div>
+    </div>
+
+    <!-- Error state -->
+    <div id="errorState" style="display: none;">
+      <div class="error-container">
+        <div class="error-message" id="errorMessage"></div>
+        <div class="error-code" id="errorCode"></div>
+      </div>
+    </div>
+
+    <!-- Game content -->
+    <div id="gameContent" class="content">
+      <!-- Header -->
+      <div class="game-header">
+        <div class="game-code" id="gameCodeDisplay"></div>
+        <div class="timer-section">
+          <div class="timer-label">Time Left</div>
+          <div class="timer-display" id="timer">45</div>
+        </div>
+      </div>
+
+      <!-- Sentence -->
+      <div class="sentence-section">
+        <div class="sentence-label">Complete the sentence:</div>
+        <div class="sentence-display" id="sentenceDisplay"></div>
+        <div class="selection-count" id="selectionCount">Select 0 / 2 cards</div>
+      </div>
+
+      <!-- Card hand -->
+      <div class="card-hand-section">
+        <div class="card-hand-label">Your cards:</div>
+        <div class="card-hand-container" id="cardHandContainer"></div>
+      </div>
+
+      <!-- Submit section -->
+      <div class="submit-section">
+        <button class="submit-btn disabled" id="submitBtn" disabled>Submit Selection</button>
+        <button class="leave-btn" id="leaveBtn">Leave Game</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    let gameState = {
+      code: null,
+      gameId: null,
+      playerId: null,
+      sentenceTemplate: null,
+      blanks: [],
+      hand: [],
+      selections: {}, // blankIndex -> cardIndex map
+      timeRemaining: 45,
+      isSubmitting: false,
+      isAutoSubmitting: false
+    };
+
+    let socket = null;
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      gameState.code = urlParams.get('code');
+      gameState.playerId = urlParams.get('playerId');
+
+      if (!gameState.code || !gameState.playerId) {
+        showError('Missing game code or player ID');
+        return;
+      }
+
+      initializeSocket();
+      fetchGameState();
+    });
+
+    function initializeSocket() {
+      socket = io();
+
+      socket.on('connect', () => {
+        console.log('Connected to server');
+        socket.emit('join-game', { code: gameState.code, playerId: gameState.playerId });
+      });
+
+      socket.on('game-started', (data) => {
+        console.log('Game started:', data);
+        gameState.sentenceTemplate = data.sentence;
+        gameState.blanks = parseTemplate(data.sentence);
+        gameState.timeRemaining = data.time_remaining;
+        showGameContent();
+        updateUI();
+      });
+
+      socket.on('timer-update', (data) => {
+        gameState.timeRemaining = data.time_remaining;
+        updateTimer();
+
+        // Auto-submit if time expires
+        if (gameState.timeRemaining <= 0 && !gameState.isAutoSubmitting) {
+          handleAutoSubmit();
+        }
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+      });
+
+      socket.on('error', (error) => {
+        console.error('Socket error:', error);
+        showError('Connection error: ' + error);
+      });
+    }
+
+    function fetchGameState() {
+      const token = localStorage.getItem('token');
+      const url = `/api/session/${gameState.code}`;
+
+      fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then(data => {
+          gameState.gameId = data.gameId;
+          gameState.hand = generateCardHand(); // Story 1.3 provides this
+          gameState.sentenceTemplate = data.sentenceTemplate;
+          
+          if (gameState.sentenceTemplate) {
+            gameState.blanks = parseTemplate(gameState.sentenceTemplate);
+            showGameContent();
+            updateUI();
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching game state:', error);
+          showError('Failed to load game state: ' + error.message);
+          setTimeout(() => {
+            window.location.href = '/player-join.html';
+          }, 3000);
+        });
+    }
+
+    function parseTemplate(template) {
+      // Parse template like "I SAW A _____ TRYING TO _____"
+      // Return array of blank positions
+      const blanks = [];
+      let match;
+      const regex = /_+/g;
+      while ((match = regex.exec(template)) !== null) {
+        blanks.push({ index: blanks.length, position: match.index });
+      }
+      return blanks;
+    }
+
+    function generateCardHand() {
+      // Placeholder: In Story 1.3, this would come from GameSessionManager
+      // For now, generate mock cards
+      const cardEmojis = ['🎬', '🎭', '🎪', '🎨', '🎸', '🎲', '🎯', '🎳'];
+      const cardTexts = [
+        'DANCING',
+        'SINGING',
+        'JUMPING',
+        'RUNNING',
+        'FALLING',
+        'LAUGHING',
+        'CRYING',
+        'FLYING'
+      ];
+
+      const hand = [];
+      for (let i = 0; i < cardEmojis.length; i++) {
+        hand.push({
+          id: i,
+          emoji: cardEmojis[i],
+          text: cardTexts[i]
+        });
+      }
+      return hand;
+    }
+
+    function showGameContent() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'none';
+      document.getElementById('gameContent').classList.add('active');
+    }
+
+    function showError(message) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('gameContent').classList.remove('active');
+      document.getElementById('errorState').style.display = 'flex';
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorCode').textContent = `Game Code: ${gameState.code}`;
+    }
+
+    function updateUI() {
+      updateSentenceDisplay();
+      updateCardHand();
+      updateSelectionCount();
+      document.getElementById('gameCodeDisplay').textContent = gameState.code;
+    }
+
+    function updateSentenceDisplay() {
+      const template = gameState.sentenceTemplate || '';
+      let html = template;
+
+      // Replace blanks with numbered blank indicators
+      let blankNumber = 1;
+      html = html.replace(/_+/g, () => {
+        const filled = gameState.selections[blankNumber - 1] !== undefined;
+        const className = filled ? 'blank filled' : 'blank';
+        return `<span class="${className}">${blankNumber++}</span>`;
+      });
+
+      document.getElementById('sentenceDisplay').innerHTML = html;
+    }
+
+    function updateCardHand() {
+      const container = document.getElementById('cardHandContainer');
+      container.innerHTML = '';
+
+      gameState.hand.forEach((card, index) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card available';
+        
+        const isSelected = Object.values(gameState.selections).includes(index);
+        if (isSelected) {
+          cardEl.classList.add('selected');
+        }
+
+        const selectedBlank = Object.entries(gameState.selections).find(([_, v]) => v === index);
+        const selectionNumber = selectedBlank ? parseInt(selectedBlank[0]) + 1 : null;
+
+        cardEl.innerHTML = `
+          <span class="card-index">${index + 1}</span>
+          <div class="card-emoji">${card.emoji}</div>
+          <div class="card-text">${card.text}</div>
+          ${selectionNumber ? `<div class="card-selected-indicator">${selectionNumber}</div>` : ''}
+        `;
+
+        cardEl.addEventListener('click', () => handleCardClick(index, card));
+        container.appendChild(cardEl);
+      });
+    }
+
+    function handleCardClick(cardIndex, card) {
+      if (gameState.isSubmitting) return;
+
+      // Find first unfilled blank
+      let unfilled = -1;
+      for (let i = 0; i < gameState.blanks.length; i++) {
+        if (!gameState.selections.hasOwnProperty(i)) {
+          unfilled = i;
+          break;
+        }
+      }
+
+      if (unfilled === -1) {
+        // All blanks filled, allow deselection of last card
+        const lastBlank = gameState.blanks.length - 1;
+        if (gameState.selections[lastBlank] === cardIndex) {
+          delete gameState.selections[lastBlank];
+        } else {
+          // Can't add more selections
+          return;
+        }
+      } else {
+        // Assign card to first unfilled blank
+        gameState.selections[unfilled] = cardIndex;
+      }
+
+      updateCardHand();
+      updateSelectionCount();
+    }
+
+    function updateSelectionCount() {
+      const count = Object.keys(gameState.selections).length;
+      const total = gameState.blanks.length;
+      const countEl = document.getElementById('selectionCount');
+      countEl.textContent = `Select ${count} / ${total} cards`;
+
+      if (count === total) {
+        countEl.classList.add('complete');
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').classList.add('enabled');
+        document.getElementById('submitBtn').classList.remove('disabled');
+      } else {
+        countEl.classList.remove('complete');
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').classList.remove('enabled');
+        document.getElementById('submitBtn').classList.add('disabled');
+      }
+    }
+
+    function updateTimer() {
+      const timerEl = document.getElementById('timer');
+      timerEl.textContent = Math.max(0, gameState.timeRemaining);
+
+      timerEl.classList.remove('warning', 'critical');
+      if (gameState.timeRemaining <= 5) {
+        timerEl.classList.add('critical');
+      } else if (gameState.timeRemaining <= 15) {
+        timerEl.classList.add('warning');
+      }
+    }
+
+    function handleAutoSubmit() {
+      gameState.isAutoSubmitting = true;
+      
+      const count = Object.keys(gameState.selections).length;
+      if (count === 0) {
+        // No selections, reject submission
+        alert('Time expired! You did not select any cards.');
+        window.location.href = '/player-join.html?code=' + gameState.code;
+        return;
+      }
+
+      // Auto-submit with selected cards
+      submitSelection();
+    }
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      const count = Object.keys(gameState.selections).length;
+      if (count === gameState.blanks.length) {
+        submitSelection();
+      }
+    });
+
+    function submitSelection() {
+      if (gameState.isSubmitting) return;
+
+      gameState.isSubmitting = true;
+      document.getElementById('submitBtn').disabled = true;
+
+      const token = localStorage.getItem('token');
+      const selections = {};
+      
+      // Convert to format: { blankIndex: cardIndex }
+      Object.entries(gameState.selections).forEach(([blankIdx, cardIdx]) => {
+        selections[parseInt(blankIdx)] = cardIdx;
+      });
+
+      fetch(`/api/game/${gameState.code}/submit-selection`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          playerId: gameState.playerId,
+          selections: selections
+        })
+      })
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+          return res.json();
+        })
+        .then(data => {
+          console.log('Selection submitted:', data);
+          // Wait for judge phase to begin
+          alert('Cards submitted! Waiting for judge...');
+          // Could transition to waiting state or show results
+        })
+        .catch(error => {
+          console.error('Error submitting selection:', error);
+          alert('Failed to submit selection: ' + error.message);
+          gameState.isSubmitting = false;
+          document.getElementById('submitBtn').disabled = false;
+        });
+    }
+
+    document.getElementById('leaveBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to leave the game?')) {
+        window.location.href = '/player-join.html?code=' + gameState.code;
+      }
+    });
+  </script>
+</body>
+</html>

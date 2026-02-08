@@ -107,6 +107,7 @@ class GameSessionManager {
       players: [],
       sentenceTemplate: null,
       selectedNouns: [],
+      playerSelections: {}, // playerId -> { blanks: [cardIndices] }
       timeoutMinutes: this.timeoutMinutes
     };
 
@@ -516,11 +517,98 @@ class GameSessionManager {
   }
 
   /**
+   * Record player's card selections for the current round
+   * @param {string} code - 6-character game code
+   * @param {string} playerId - UUID of the player
+   * @param {Object} selections - Map of { blankIndex: cardIndex }
+   * @returns {Object} - Updated session
+   * @throws {Error} - If validation fails
+   */
+  recordPlayerSelection(code, playerId, selections) {
+    const session = this.getSessionByCode(code);
+    if (!session) {
+      throw new Error('Session not found');
+    }
+
+    // Validate player is in game
+    const player = session.players.find(p => p.playerId === playerId);
+    if (!player) {
+      throw new Error('Player not found in session');
+    }
+
+    // Validate judge can't submit selections
+    if (session.judgeId === playerId) {
+      throw new Error('Judge cannot submit card selections');
+    }
+
+    // Validate selections format
+    if (!selections || typeof selections !== 'object') {
+      throw new Error('Invalid selections format');
+    }
+
+    // Store selections
+    session.playerSelections[playerId] = {
+      selections: selections,
+      submittedAt: Date.now()
+    };
+
+    session.lastActivityAt = Date.now();
+    this.sessionMap.set(code, session);
+
+    // Emit event
+    this.emit('onPlayerSelectionSubmitted', session.gameId, playerId, selections);
+
+    return session;
+  }
+
+  /**
+   * Get all player selections for the current round
+   * @param {string} code - 6-character game code
+   * @returns {Object} - Map of { playerId: selections }
+   */
+  getPlayerSelections(code) {
+    const session = this.getSessionByCode(code);
+    if (!session) return null;
+    return session.playerSelections;
+  }
+
+  /**
+   * Get selection for a specific player
+   * @param {string} code - 6-character game code
+   * @param {string} playerId - UUID of the player
+   * @returns {Object|null} - Player's selections or null
+   */
+  getPlayerSelection(code, playerId) {
+    const session = this.getSessionByCode(code);
+    if (!session) return null;
+    return session.playerSelections[playerId] || null;
+  }
+
+  /**
    * Shutdown the session manager (cleanup resources)
    */
   shutdown() {
     // Could stop interval here if needed
     // For now, sessions are stored in memory
+  }
+
+  /**
+   * Get session statistics
+   * @returns {Object} - Statistics object
+   */
+  getStatistics() {
+    const sessions = this.getAllActiveSessions();
+    const lobbyCount = sessions.filter(s => s.status === 'lobby').length;
+    const inProgressCount = sessions.filter(s => s.status === 'in_progress').length;
+    const totalPlayers = sessions.reduce((sum, s) => sum + s.players.length, 0);
+
+    return {
+      totalActiveSessions: sessions.length,
+      lobbyCount,
+      inProgressCount,
+      totalPlayers,
+      activeCodes: Array.from(this.activeGameCodes)
+    };
   }
 
   /**
