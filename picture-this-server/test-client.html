@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PictureThis - WebSocket Test Client</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        #log {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 15px;
+            height: 400px;
+            overflow-y: scroll;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .log-entry.success {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 PictureThis WebSocket Test Client</h1>
+    
+    <div id="status" class="status disconnected">Disconnected</div>
+    
+    <div class="controls">
+        <h3>Connection</h3>
+        <button onclick="connect()">Connect</button>
+        <button onclick="disconnect()">Disconnect</button>
+        
+        <h3>Game Actions</h3>
+        <input type="text" id="playerName" placeholder="Player Name" value="TestPlayer">
+        <input type="text" id="gameCode" placeholder="Game Code" value="TEST01">
+        <button onclick="joinGame()">Join Game</button>
+        
+        <h3>Info</h3>
+        <button onclick="clearLog()">Clear Log</button>
+        <span id="socketId"></span>
+    </div>
+    
+    <div id="log"></div>
+    
+    <script>
+        let socket = null;
+        let stateUpdateCount = 0;
+        
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function updateStatus(connected) {
+            const statusDiv = document.getElementById('status');
+            if (connected) {
+                statusDiv.textContent = 'Connected';
+                statusDiv.className = 'status connected';
+            } else {
+                statusDiv.textContent = 'Disconnected';
+                statusDiv.className = 'status disconnected';
+            }
+        }
+        
+        function connect() {
+            if (socket && socket.connected) {
+                log('Already connected', 'error');
+                return;
+            }
+            
+            log('Connecting to server...', 'info');
+            socket = io('http://localhost:3000');
+            
+            socket.on('connect', () => {
+                log('Connected to server!', 'success');
+                updateStatus(true);
+            });
+            
+            socket.on('disconnect', (reason) => {
+                log(`Disconnected: ${reason}`, 'error');
+                updateStatus(false);
+            });
+            
+            socket.on('connected', (message) => {
+                log(`Server sent connected event: ${JSON.stringify(message)}`, 'success');
+                document.getElementById('socketId').textContent = `Socket ID: ${message.data.socket_id}`;
+            });
+            
+            socket.on('state-update', (message) => {
+                stateUpdateCount++;
+                if (stateUpdateCount % 10 === 0) { // Log every 10th update to avoid spam
+                    log(`State update #${stateUpdateCount}: ${JSON.stringify(message.data.game_state)}`, 'info');
+                }
+            });
+            
+            socket.on('player-joined', (message) => {
+                log(`Player joined: ${JSON.stringify(message.data)}`, 'success');
+            });
+            
+            socket.on('phase-change', (message) => {
+                log(`Phase changed: ${JSON.stringify(message.data)}`, 'info');
+            });
+            
+            socket.on('error', (message) => {
+                log(`Server error: ${JSON.stringify(message.data)}`, 'error');
+            });
+        }
+        
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                log('Disconnected from server', 'info');
+                updateStatus(false);
+                document.getElementById('socketId').textContent = '';
+            }
+        }
+        
+        function joinGame() {
+            if (!socket || !socket.connected) {
+                log('Not connected to server', 'error');
+                return;
+            }
+            
+            const playerName = document.getElementById('playerName').value;
+            const gameCode = document.getElementById('gameCode').value;
+            
+            log(`Joining game: ${gameCode} as ${playerName}`, 'info');
+            socket.emit('join-game', {
+                code: gameCode,
+                name: playerName,
+                avatar: '🎮'
+            });
+        }
+        
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+            stateUpdateCount = 0;
+        }
+        
+        // Auto-connect on load
+        window.onload = () => {
+            log('Test client loaded. Click Connect to start.', 'info');
+        };
+    </script>
+</body>
+</html>
