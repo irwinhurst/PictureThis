@@ -360,6 +360,7 @@
       socket.on('game-started', (payload) => {
         console.log('Game started event received:', payload);
         gameStarted = true;
+        stopPolling(); // Stop polling once we get the real-time event
         gameData = payload;
 
         // Update UI
@@ -400,6 +401,7 @@
 
       socket.on('disconnect', () => {
         console.log('Disconnected from server');
+        stopPolling(); // Stop polling if disconnected
       });
     }
 
@@ -432,38 +434,79 @@
       window.location.href = '/player-join.html';
     });
 
-    // Fetch game state and connect
-    async function initializeGame() {
+    // Fetch game state via REST API
+    async function fetchGameState() {
       try {
-        // Fetch session info to get current state
         const response = await fetch(`/api/session/${gameCode}`);
         if (!response.ok) {
-          throw new Error('Failed to load game');
+          throw new Error('Failed to fetch game state');
         }
 
         const data = await response.json();
-        console.log('Game session:', data);
+        console.log('Fetching game state from:', `/api/session/${gameCode}`);
+        console.log('Game session data:', data);
 
-        // Connect to WebSocket
-        connectWebSocket();
+        // Check if game has started
+        const gameInProgress = data.status === 'in_progress' || 
+                              data.currentPhase === 'round_1_selection' ||
+                              (data.currentRound && data.currentRound > 0);
 
-        // If game is already in progress, show the game screen
-        if (data.phase === 'round_1_selection' || data.phase === 'in_progress') {
-          gameStarted = true;
-          document.getElementById('loadingView').style.display = 'none';
-          document.getElementById('gameScreen').classList.add('active');
+        if (data.sentenceTemplate && gameInProgress) {
+          // Game has started, show game content
+          if (!gameStarted) {
+            gameStarted = true;
+            console.log('Game started detected via polling');
+            
+            // Hide loading, show game screen
+            const loadingView = document.getElementById('loadingView');
+            const gameScreen = document.getElementById('gameScreen');
+            if (loadingView) loadingView.style.display = 'none';
+            if (gameScreen) gameScreen.classList.add('active');
 
-          // Display sentence and judge if available
-          if (data.sentence_template) {
-            const formattedSentence = data.sentence_template.replace(/_____/g, '<span class="blank">BLANK</span>');
-            document.getElementById('sentenceTemplate').innerHTML = formattedSentence;
+            // Display sentence template with blanks highlighted
+            const formattedSentence = data.sentenceTemplate.replace(/_____/g, '<span class="blank">BLANK</span>');
+            const sentenceEl = document.getElementById('sentenceTemplate');
+            if (sentenceEl) sentenceEl.innerHTML = formattedSentence;
+
+            // Display judge info if available
+            if (data.judgeId) {
+              document.getElementById('judgeAvatar').textContent = '🎮'; // Default avatar
+              document.getElementById('judgeName').textContent = 'Judge ' + data.judgeId.substring(0, 4);
+            }
           }
-
-          if (data.judge_name) {
-            document.getElementById('judgeAvatar').textContent = data.judge_avatar || '🎮';
-            document.getElementById('judgeName').textContent = data.judge_name;
-          }
+        } else {
+          console.log('Game not started yet, waiting for game-started event...');
         }
+      } catch (error) {
+        console.error('Error fetching game state:', error);
+      }
+    }
+
+    // Poll game state periodically
+    let pollInterval = null;
+
+    function startPolling() {
+      // Poll immediately
+      fetchGameState();
+      // Then poll every 2 seconds
+      pollInterval = setInterval(fetchGameState, 2000);
+    }
+
+    function stopPolling() {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    }
+
+    // Initialize game
+    async function initializeGame() {
+      try {
+        // Start polling for game state changes
+        startPolling();
+
+        // Connect to WebSocket for real-time updates
+        connectWebSocket();
       } catch (error) {
         console.error('Error initializing game:', error);
         showError('Failed to load game: ' + error.message);
@@ -475,6 +518,9 @@
 
     // Initialize on page load
     window.addEventListener('load', initializeGame);
+
+    // Stop polling when page unloads
+    window.addEventListener('beforeunload', stopPolling);
   </script>
 </body>
 </html>
