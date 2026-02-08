@@ -7,6 +7,7 @@ const path = require('path');
 
 // Import game management modules
 const GameManager = require('./src/game/GameManager');
+const GameSessionManager = require('./src/game/GameSessionManager');
 const { getPlayerBySocketId } = require('./src/game/GameState');
 const passport = require('passport');
 const session = require('express-session');
@@ -82,6 +83,33 @@ auth.configureGoogleStrategy();
 // Initialize Game Manager (Story 1.2)
 const gameManager = new GameManager(logger, io);
 
+// Initialize Game Session Manager (Story 1.4)
+const sessionManager = new GameSessionManager({
+  timeoutMinutes: parseInt(process.env.GAME_SESSION_TIMEOUT_MINUTES) || 60,
+  checkIntervalSeconds: 300 // Check every 5 minutes
+});
+
+// Log session events
+sessionManager.on('onSessionCreated', (gameId, code) => {
+  logger.info('Session created', { gameId, code });
+});
+
+sessionManager.on('onSessionEnded', (code) => {
+  logger.info('Session ended', { code });
+});
+
+sessionManager.on('onSessionTimedOut', (code) => {
+  logger.warn('Session timed out', { code });
+});
+
+sessionManager.on('onPlayerJoined', (code, playerId, playerCount) => {
+  logger.debug('Player joined session', { code, playerId, playerCount });
+});
+
+sessionManager.on('onHostDisconnected', (code) => {
+  logger.warn('Host disconnected from session', { code });
+});
+
 // Track connected clients and their game associations
 const connectedClients = new Map(); // socketId -> { gameId, playerId }
 
@@ -120,11 +148,155 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: Date.now(),
-    activeGames: gameManager.getGameCount()
+    activeGames: gameManager.getGameCount(),
+    activeSessions: sessionManager.getAllActiveSessions().length
   });
 });
 
-// Debug endpoint for game state (Story 1.2)
+// Session Management Endpoints (Story 1.4)
+
+// Create a new game session
+app.post('/api/session/create', auth.requireAuth, (req, res) => {
+  try {
+    const { maxRounds, maxPlayers } = req.body;
+    const hostId = req.user.id;
+    
+    const session = sessionManager.createSession(
+      hostId,
+      maxRounds || 5,
+      maxPlayers || 8
+    );
+    
+    logger.info('Session created via API', { 
+      sessionCode: session.code, 
+      hostId,
+      gameId: session.gameId 
+    });
+    
+    res.json({
+      success: true,
+      gameId: session.gameId,
+      code: session.code,
+      status: session.status
+    });
+  } catch (error) {
+    logger.error('Error creating session', { error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Get session info by code
+app.get('/api/session/:code', (req, res) => {
+  try {
+    const { code } = req.params;
+    const session = sessionManager.getSessionByCode(code);
+    
+    if (!session) {
+      return res.status(404).json({
+        error: 'Session not found',
+        code
+      });
+    }
+    
+    res.json({
+      gameId: session.gameId,
+      code: session.code,
+      hostId: session.hostId,
+      currentPhase: session.currentPhase,
+      currentRound: session.currentRound,
+      maxRounds: session.maxRounds,
+      status: session.status,
+      playerCount: session.players.length,
+      maxPlayers: session.maxPlayers,
+      players: session.players
+    });
+  } catch (error) {
+    logger.error('Error getting session', { error: error.message });
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
+
+// Join a session
+app.post('/api/session/:code/join', (req, res) => {
+  try {
+    const { code } = req.params;
+    const { playerId, name, avatar } = req.body;
+    
+    if (!playerId || !name) {
+      return res.status(400).json({
+        error: 'playerId and name are required'
+      });
+    }
+    
+    const session = sessionManager.joinSession(code, {
+      playerId,
+      name,
+      avatar: avatar || '🎮'
+    });
+    
+    logger.info('Player joined session', { 
+      code, 
+      playerId, 
+      playerCount: session.players.length 
+    });
+    
+    res.json({
+      success: true,
+      gameId: session.gameId,
+      code: session.code,
+      playerCount: session.players.length,
+      maxPlayers: session.maxPlayers
+    });
+  } catch (error) {
+    logger.error('Error joining session', { error: error.message });
+    res.status(400).json({
+      error: error.message
+    });
+  }
+});
+
+// Get session statistics
+app.get('/api/session/stats/all', (req, res) => {
+  try {
+    const stats = sessionManager.getStatistics();
+    
+    res.json({
+      sessions: stats.totalActiveSessions,
+      lobbyCount: stats.lobbyCount,
+      inProgressCount: stats.inProgressCount,
+      totalPlayers: stats.totalPlayers,
+      activeCodes: stats.activeCodes
+    });
+  } catch (error) {
+    logger.error('Error getting session stats', { error: error.message });
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
+
+// Debug endpoint for session state (Story 1.4)
+app.get('/api/debug/session/:code', (req, res) => {
+  const { code } = req.params;
+  const session = sessionManager.getSessionByCode(code);
+  
+  if (!session) {
+    return res.status(404).json({
+      error: 'Session not found',
+      code
+    });
+  }
+  
+  res.json({
+    session,
+    timestamp: Date.now()
+  });
+});
 app.get('/api/debug/game/:gameId', (req, res) => {
   const { gameId } = req.params;
   const state = gameManager.exportGameState(gameId);
@@ -541,11 +713,12 @@ server.listen(PORT, () => {
   logger.info(`Max concurrent players: ${process.env.MAX_CONCURRENT_PLAYERS}`);
 });
 
-// Graceful shutdown (Story 1.2 - Enhanced)
+// Graceful shutdown (Story 1.2 - Enhanced, Story 1.4)
 process.on('SIGTERM', () => {
   logger.info('SIGTERM signal received: closing HTTP server');
   clearInterval(broadcastInterval);
   gameManager.shutdown(); // Clean up game manager
+  sessionManager.shutdown(); // Clean up session manager
   server.close(() => {
     logger.info('HTTP server closed');
     process.exit(0);
@@ -556,6 +729,7 @@ process.on('SIGINT', () => {
   logger.info('SIGINT signal received: closing HTTP server');
   clearInterval(broadcastInterval);
   gameManager.shutdown(); // Clean up game manager
+  sessionManager.shutdown(); // Clean up session manager
   server.close(() => {
     logger.info('HTTP server closed');
     process.exit(0);

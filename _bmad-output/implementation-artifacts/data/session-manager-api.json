@@ -1,0 +1,167 @@
+{
+  "GameSessionManager": {
+    "description": "Manager class for handling all game session operations",
+    "methods": {
+      "createSession": {
+        "signature": "createSession(hostId, maxRounds = 5, maxPlayers = 8) -> GameSession",
+        "description": "Create a new game session with a unique code",
+        "returns": {
+          "gameId": "UUID",
+          "code": "6-char alphanumeric",
+          "status": "lobby"
+        },
+        "throws": ["CodeGenerationError", "InvalidParameterError"]
+      },
+      "getSessionByCode": {
+        "signature": "getSessionByCode(code) -> GameSession | null",
+        "description": "Retrieve a session by its unique code (O(1) lookup)",
+        "complexity": "O(1)",
+        "returns": "GameSession object or null if not found"
+      },
+      "joinSession": {
+        "signature": "joinSession(code, player) -> GameSession",
+        "description": "Add a player to an existing session",
+        "parameters": {
+          "code": "6-char game code",
+          "player": {
+            "playerId": "UUID",
+            "name": "string",
+            "avatar": "emoji string"
+          }
+        },
+        "updates": ["lastActivityAt", "players array"],
+        "throws": ["SessionNotFoundError", "SessionFullError", "GameAlreadyStartedError"]
+      },
+      "removePlayerFromSession": {
+        "signature": "removePlayerFromSession(code, playerId) -> GameSession",
+        "description": "Remove a player from session",
+        "special": "If removed player is host, mark session for cleanup",
+        "throws": ["SessionNotFoundError", "PlayerNotFoundError"]
+      },
+      "updateSessionPhase": {
+        "signature": "updateSessionPhase(code, newPhase) -> GameSession",
+        "description": "Transition session to next phase",
+        "validTransitions": {
+          "lobby": ["round_intro"],
+          "round_intro": ["card_selection"],
+          "card_selection": ["judge_phase"],
+          "judge_phase": ["results"],
+          "results": ["round_intro", "completed"],
+          "completed": []
+        },
+        "updates": ["lastActivityAt", "currentPhase"]
+      },
+      "updateLastActivity": {
+        "signature": "updateLastActivity(code) -> void",
+        "description": "Update lastActivityAt timestamp (prevents timeout)",
+        "calls": "Called on every player action"
+      },
+      "endSession": {
+        "signature": "endSession(code) -> void",
+        "description": "Mark session as completed",
+        "updates": ["status = 'completed'", "lastActivityAt"],
+        "retention": "Keep for 1 hour for results review"
+      },
+      "getAllActiveSessions": {
+        "signature": "getAllActiveSessions() -> Array<GameSession>",
+        "description": "Get list of all active sessions",
+        "returnExample": ["ABC123", "DEF456", "GHI789"]
+      },
+      "checkTimeouts": {
+        "signature": "checkTimeouts() -> Array<string>",
+        "description": "Find sessions inactive for 60+ minutes",
+        "returnExample": ["timedOutSessionCode1", "timedOutSessionCode2"],
+        "frequency": "Called every 5 minutes (cron job)"
+      },
+      "cleanupSession": {
+        "signature": "cleanupSession(code) -> void",
+        "description": "Remove session from active registry",
+        "process": [
+          "Mark status as 'inactive'",
+          "Archive to storage (for history)",
+          "Remove from activeGameCodes Set",
+          "Remove from sessionMap"
+        ]
+      },
+      "generateUniqueCode": {
+        "signature": "generateUniqueCode() -> string",
+        "description": "Generate 6-char alphanumeric code with collision check",
+        "algorithm": [
+          "Generate random [A-Z0-9]{6}",
+          "Check if code exists in activeGameCodes",
+          "If exists, retry (max 10 times)",
+          "If not exists, add to activeGameCodes and return"
+        ],
+        "maxRetries": 10,
+        "throws": ["CodeGenerationFailedError"]
+      }
+    },
+    "properties": {
+      "sessionMap": {
+        "type": "Map<string, GameSession>",
+        "description": "Map with code as key, GameSession as value",
+        "purpose": "O(1) session lookup by code"
+      },
+      "activeGameCodes": {
+        "type": "Set<string>",
+        "description": "Set of currently active game codes",
+        "purpose": "Fast collision detection when generating new codes"
+      },
+      "timeoutMinutes": {
+        "type": "number",
+        "default": 60,
+        "description": "Minutes of inactivity before session timeout"
+      },
+      "checkIntervalSeconds": {
+        "type": "number",
+        "default": 300,
+        "description": "How often to check for timeouts (5 minutes)"
+      }
+    },
+    "initialization": {
+      "constructor": "GameSessionManager(config: SessionConfig)",
+      "setup": [
+        "Initialize empty sessionMap",
+        "Initialize empty activeGameCodes Set",
+        "Load config (timeout, check interval)",
+        "Start timeout checker cron job"
+      ]
+    },
+    "eventHooks": [
+      "onSessionCreated(gameId, code)",
+      "onPlayerJoined(code, playerId, playerCount)",
+      "onPlayerLeft(code, playerId, playerCount)",
+      "onPhaseChanged(code, oldPhase, newPhase)",
+      "onSessionEnded(code)", 
+      "onSessionTimedOut(code)",
+      "onSessionCleaned(code)"
+    ],
+    "errorHandling": {
+      "SessionNotFoundError": "Code doesn't match any active session",
+      "SessionFullError": "Maximum players reached",
+      "GameAlreadyStartedError": "Game past lobby phase",
+      "InvalidPhaseTransitionError": "Can't transition to that phase from current phase",
+      "CodeGenerationFailedError": "Failed to generate unique code after retries",
+      "PlayerNotFoundError": "Player ID not in session"
+    },
+    "testing": {
+      "unitTests": [
+        "test_createSession_generates_unique_code",
+        "test_getSessionByCode_returns_correct_session",
+        "test_code_uniqueness_no_collisions",
+        "test_joinSession_updates_player_list",
+        "test_phase_transition_validation",
+        "test_timeout_detection_after_60_minutes",
+        "test_concurrent_games_isolation",
+        "test_cleanup_removes_from_map_and_set",
+        "test_maximum_retries_on_code_collision"
+      ],
+      "integrationTests": [
+        "test_create_and_join_game",
+        "test_multiple_concurrent_games",
+        "test_host_disconnect_cleanup",
+        "test_timeout_and_cleanup_workflow"
+      ]
+    }
+  }
+}
