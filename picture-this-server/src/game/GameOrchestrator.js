@@ -431,8 +431,8 @@ class GameOrchestrator {
       throw new Error('Game can only be started from LOBBY phase');
     }
     
-    if (state.players.length < 3) {
-      throw new Error('Need at least 3 players to start game');
+    if (state.players.length < 2) {
+      throw new Error('Need at least 2 players to start game');
     }
     
     this.logger.info('Starting game', {

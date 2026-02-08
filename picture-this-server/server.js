@@ -201,6 +201,9 @@ app.get('/api/session/:code', (req, res) => {
       });
     }
     
+    // Find the judge player info
+    const judgePlayer = session.judgeId ? session.players.find(p => p.playerId === session.judgeId) : null;
+    
     res.json({
       gameId: session.gameId,
       code: session.code,
@@ -213,7 +216,12 @@ app.get('/api/session/:code', (req, res) => {
       maxPlayers: session.maxPlayers,
       players: session.players,
       sentenceTemplate: session.sentenceTemplate,
-      judgeId: session.judgeId
+      judgeId: session.judgeId,
+      judge: judgePlayer ? {
+        id: judgePlayer.playerId,
+        name: judgePlayer.name,
+        avatar: judgePlayer.avatar
+      } : null
     });
   } catch (error) {
     logger.error('Error getting session', { error: error.message });
@@ -744,35 +752,82 @@ io.on('connection', (socket) => {
     try {
       logger.info('Player joining game', { socketId, data });
       
-      const { code, name, avatar } = data;
+      const { code, name, avatar, playerId } = data;
       
-      // Find game by code
-      let game = gameManager.getGameByCode(code);
-      
-      // If no game exists, create one for backward compatibility
-      if (!game) {
-        game = gameManager.createGame({ code });
-        logger.info('Auto-created game for join', { code, gameId: game.gameId });
+      // Check SessionManager first to see if game exists via REST API
+      const session = sessionManager.getSessionByCode(code);
+      if (!session) {
+        throw new Error(`Game session not found: ${code}`);
       }
       
-      // Add player to game
-      const newState = gameManager.addPlayerToGame(game.gameId, {
-        socketId,
-        name: name || 'Anonymous',
-        avatar: avatar || '🎮',
-        isHost: game.players.length === 0
-      });
+      // Find game in GameManager
+      let game = gameManager.getGameByCode(code);
+      
+      // If game doesn't exist in GameManager but exists in SessionManager,
+      // create it in GameManager to sync both systems
+      if (!game) {
+        game = gameManager.createGame({ code });
+        logger.info('Created game in GameManager to sync with SessionManager', { code, gameId: game.gameId });
+      }
+      
+      // Check if player already exists in SessionManager (by playerId)
+      let existingPlayer = session.players.find(p => p.playerId === playerId);
+      
+      if (existingPlayer) {
+        logger.info('Player reconnecting, not adding duplicate', { 
+          code, 
+          playerId,
+          socketId
+        });
+        // Find the player in game or just use the first matching name
+        let gamePlayer = game.players.find(p => p.socketId === socketId);
+        if (!gamePlayer) {
+          // Add player to GameManager if not there
+          gameManager.addPlayerToGame(game.gameId, {
+            socketId,
+            name: existingPlayer.name,
+            avatar: existingPlayer.avatar,
+            isHost: false
+          });
+          const updatedGame = gameManager.getGame(game.gameId);
+          gamePlayer = updatedGame.players[updatedGame.players.length - 1];
+          game = updatedGame;
+          logger.info('Added reconnecting player to GameManager', { code, playerId, socketId });
+        }
+      } else {
+        // New player - add to both systems
+        const newState = gameManager.addPlayerToGame(game.gameId, {
+          socketId,
+          name: name || 'Anonymous',
+          avatar: avatar || '🎮',
+          isHost: game.players.length === 0
+        });
+        game = newState;
+        
+        // Add to SessionManager
+        sessionManager.joinSession(code, {
+          playerId,
+          name: name || 'Anonymous',
+          avatar: avatar || '🎮'
+        });
+        logger.info('Added new player to both managers', { code, playerId, socketId });
+      }
+      
+      // Get the final player object
+      const player = game.players.find(p => p.socketId === socketId);
+      if (!player) {
+        throw new Error(`Could not find player in game. Players: ${game.players.length}, socketId: ${socketId}`);
+      }
       
       // Store player's game association
-      const player = newState.players[newState.players.length - 1];
       const clientInfo = connectedClients.get(socketId);
       if (clientInfo) {
         clientInfo.gameId = game.gameId;
-        clientInfo.playerId = player.id;
+        clientInfo.playerId = playerId || player.id;
         clientInfo.code = code;
       }
       
-      // Join socket room using game CODE as room identifier  (not gameId)
+      // Join socket room using game CODE as room identifier
       socket.join(`game-${code}`);
       
       // Send join confirmation to player
@@ -783,19 +838,23 @@ io.on('connection', (socket) => {
         player
       }));
       
-      // Legacy support - update old gameState
-      gameState.players.push({
-        socketId,
-        name: name || 'Anonymous',
-        avatar: avatar || '🎮',
-        code
-      });
-      
-      // Broadcast player joined event to all in game
-      io.to(`game-${code}`).emit('player-joined', createMessage(MESSAGE_TYPES.PLAYER_JOINED, {
-        player,
-        player_count: newState.players.length
-      }));
+      // Legacy support - update old gameState (only if new player)
+      if (!existingPlayer) {
+        gameState.players.push({
+          socketId,
+          name: name || 'Anonymous',
+          avatar: avatar || '🎮',
+          code
+        });
+        
+        // Broadcast player joined event to all in game (only if new player)
+        io.to(`game-${code}`).emit('player-joined', createMessage(MESSAGE_TYPES.PLAYER_JOINED, {
+          player,
+          player_count: game.players.length
+        }));
+      } else {
+        logger.info('Existing player reconnected', { code, playerId, socketId });
+      }
     } catch (error) {
       logger.error('Error handling join-game', { socketId, error: error.message });
       socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
@@ -838,21 +897,58 @@ io.on('connection', (socket) => {
   socket.on('start-game', (data) => {
     try {
       const clientInfo = connectedClients.get(socketId);
-      if (!clientInfo || !clientInfo.gameId) {
+      if (!clientInfo || !clientInfo.code) {
         throw new Error('Not in a game');
       }
       
-      logger.info('Starting game', { socketId, gameId: clientInfo.gameId });
+      logger.info('Starting game via WebSocket', { socketId, code: clientInfo.code });
       
-      const newState = gameManager.startGame(clientInfo.gameId);
+      // Get session
+      const session = sessionManager.getSessionByCode(clientInfo.code);
+      if (!session) {
+        throw new Error(`Session not found for code: ${clientInfo.code}`);
+      }
+      
+      // Default sentence templates
+      const sentenceTemplates = [
+        'I SAW A _____ TRYING TO _____',
+        'THE _____ WAS _____ AND _____',
+        'MY FRIEND _____ LOVES _____',
+        'IN THE _____, THERE WAS A _____',
+        'THE BEST _____ I EVER SAW WAS _____'
+      ];
+      
+      // Start game in SessionManager (source of truth)
+      const updatedSession = sessionManager.startGame(clientInfo.code, sentenceTemplates);
+      
+      // Find the judge player info
+      const judge = updatedSession.players.find(p => p.playerId === updatedSession.judgeId);
+      
+      logger.info('Game started', {
+        code: clientInfo.code,
+        gameId: updatedSession.gameId,
+        players: updatedSession.players.length,
+        judgeId: updatedSession.judgeId,
+        judgeName: judge?.name,
+        judgeAvatar: judge?.avatar
+      });
       
       // Broadcast game started event using code-based room
-      io.to(`game-${clientInfo.code}`).emit('game-started', createMessage('game_started', {
-        round: newState.currentRound,
-        phase: newState.currentPhase,
-        judgeId: newState.judgeId,
-        sentenceTemplate: newState.sentenceTemplate
-      }));
+      io.to(`game-${clientInfo.code}`).emit('game-started', {
+        gameId: updatedSession.gameId,
+        code: updatedSession.code,
+        round: updatedSession.currentRound,
+        judge: judge ? {
+          id: judge.playerId,
+          name: judge.name,
+          avatar: judge.avatar
+        } : null,
+        sentence: updatedSession.sentenceTemplate,
+        sentenceTemplate: updatedSession.sentenceTemplate,
+        time_remaining: 45,
+        max_rounds: updatedSession.maxRounds,
+        status: updatedSession.currentPhase
+      });
       
     } catch (error) {
       logger.error('Error starting game', { socketId, error: error.message });

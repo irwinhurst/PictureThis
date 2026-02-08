@@ -78,8 +78,9 @@ function test2() {
 // Test 3: Validate selections parameter is required
 function test3() {
   try {
-    const { code, players } = setupGame();
-    const nonJudgePlayers = players.filter(p => p.playerId !== setupGame().session.judgeId);
+    const gameSetup = setupGame();
+    const { code, session, players } = gameSetup;
+    const nonJudgePlayers = players.filter(p => p.playerId !== session.judgeId);
     
     try {
       manager.recordPlayerSelection(code, nonJudgePlayers[0].playerId, null);
@@ -143,8 +144,9 @@ function test5() {
 // Test 6: Validate HTTP 400 response for invalid selections format
 function test6() {
   try {
-    const { code, players } = setupGame();
-    const nonJudgePlayers = players.filter(p => p.playerId !== setupGame().session.judgeId);
+    const gameSetup = setupGame();
+    const { code, session, players } = gameSetup;
+    const nonJudgePlayers = players.filter(p => p.playerId !== session.judgeId);
     
     try {
       manager.recordPlayerSelection(code, nonJudgePlayers[0].playerId, 'invalid');

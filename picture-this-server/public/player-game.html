@@ -524,8 +524,17 @@
 
       socket.on('game-started', (data) => {
         console.log('Game started:', data);
-        gameState.sentenceTemplate = data.sentence;
-        gameState.blanks = parseTemplate(data.sentence);
+        
+        // Check if current player is the judge
+        if (data.judge && data.judge.id === gameState.playerId) {
+          console.log('Current player is the judge, redirecting to voting page');
+          window.location.href = `/player-voting.html?code=${gameState.code}&playerId=${gameState.playerId}`;
+          return;
+        }
+        
+        // Not a judge, show card selection
+        gameState.sentenceTemplate = data.sentence || data.sentenceTemplate;
+        gameState.blanks = parseTemplate(gameState.sentenceTemplate);
         gameState.timeRemaining = data.time_remaining;
         showGameContent();
         updateUI();
@@ -580,7 +589,17 @@
                                 (data.phrase && data.phrase !== 'lobby');
           
           if (data.sentenceTemplate && gameInProgress) {
-            console.log('Game is in progress, showing game content');
+            console.log('Game is in progress');
+            
+            // Check if current player is the judge
+            if (data.judgeId === gameState.playerId || (data.judge && data.judge.id === gameState.playerId)) {
+              console.log('Current player is the judge, redirecting to voting page');
+              window.location.href = `/player-voting.html?code=${gameState.code}&playerId=${gameState.playerId}`;
+              return;
+            }
+            
+            // Not a judge, show card selection
+            console.log('Player is not judge, showing game content');
             gameState.sentenceTemplate = data.sentenceTemplate;
             gameState.blanks = parseTemplate(data.sentenceTemplate);
             gameState.timeRemaining = data.timeRemaining || 45;

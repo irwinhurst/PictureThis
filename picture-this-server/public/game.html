@@ -371,7 +371,7 @@
         if (gameScreen) gameScreen.classList.add('active');
 
         // Display sentence template with blanks highlighted
-        const sentence = payload.sentence || 'I SAW A _____ TRYING TO _____';
+        const sentence = payload.sentence || payload.sentenceTemplate || 'I SAW A _____ TRYING TO _____';
         const formattedSentence = sentence.replace(/_____/g, '<span class="blank">BLANK</span>');
         const sentenceEl = document.getElementById('sentenceTemplate');
         if (sentenceEl) sentenceEl.innerHTML = formattedSentence;
@@ -379,8 +379,15 @@
         // Display judge info
         const judgeAvatar = document.getElementById('judgeAvatar');
         const judgeName = document.getElementById('judgeName');
-        if (judgeAvatar) judgeAvatar.textContent = payload.judge.avatar || '🎮';
-        if (judgeName) judgeName.textContent = payload.judge.name || 'Unknown Judge';
+        const judgeInfo = document.querySelector('.judge-info');
+        if (payload.judge && payload.judge.name) {
+          if (judgeInfo) judgeInfo.style.display = '';
+          if (judgeAvatar) judgeAvatar.textContent = payload.judge.avatar || '🎮';
+          if (judgeName) judgeName.textContent = payload.judge.name;
+        } else {
+          // Hide judge info if no judge selected
+          if (judgeInfo) judgeInfo.style.display = 'none';
+        }
 
         // Start timer
         currentTimer = payload.time_remaining || 45;
@@ -469,9 +476,21 @@
             if (sentenceEl) sentenceEl.innerHTML = formattedSentence;
 
             // Display judge info if available
-            if (data.judgeId) {
-              document.getElementById('judgeAvatar').textContent = '🎮'; // Default avatar
-              document.getElementById('judgeName').textContent = 'Judge ' + data.judgeId.substring(0, 4);
+            const judgeAvatarEl = document.getElementById('judgeAvatar');
+            const judgeNameEl = document.getElementById('judgeName');
+            const judgeInfoEl = document.querySelector('.judge-info');
+            if (data.judge && data.judge.name) {
+              if (judgeInfoEl) judgeInfoEl.style.display = '';
+              if (judgeAvatarEl) judgeAvatarEl.textContent = data.judge.avatar || '🎮';
+              if (judgeNameEl) judgeNameEl.textContent = data.judge.name;
+            } else if (data.judgeId) {
+              // Fallback to judgeId if no judge object
+              if (judgeInfoEl) judgeInfoEl.style.display = '';
+              if (judgeAvatarEl) judgeAvatarEl.textContent = '🎮';
+              if (judgeNameEl) judgeNameEl.textContent = 'Judge ' + data.judgeId.substring(0, 8);
+            } else {
+              // Hide judge info if no judge assigned
+              if (judgeInfoEl) judgeInfoEl.style.display = 'none';
             }
           }
         } else {
