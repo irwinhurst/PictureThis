@@ -1,9 +1,11 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 // In-memory user storage (temporary until Story 2.1 database is implemented)
-const users = new Map();
+const users = new Map(); // Indexed by google_id
+const usersById = new Map(); // Indexed by user id for O(1) lookups
 
 // Find or create user from Google profile
 function findOrCreateUser(profile) {
@@ -19,7 +21,7 @@ function findOrCreateUser(profile) {
   
   // Create new user
   const newUser = {
-    id: generateUUID(),
+    id: crypto.randomUUID(),
     google_id: googleId,
     email: profile.emails && profile.emails[0] ? profile.emails[0].value : null,
     name: profile.displayName,
@@ -29,26 +31,13 @@ function findOrCreateUser(profile) {
   };
   
   users.set(googleId, newUser);
+  usersById.set(newUser.id, newUser);
   return newUser;
 }
 
-// Find user by ID
+// Find user by ID (O(1) lookup)
 function findUserById(userId) {
-  for (const user of users.values()) {
-    if (user.id === userId) {
-      return user;
-    }
-  }
-  return null;
-}
-
-// Generate UUID (simple implementation)
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
+  return usersById.get(userId) || null;
 }
 
 // Configure Google OAuth Strategy
@@ -86,7 +75,16 @@ function configureGoogleStrategy() {
 
 // Generate JWT token for authenticated user
 function generateToken(user) {
-  const secret = process.env.JWT_SECRET || 'default-secret-change-in-production';
+  const secret = process.env.JWT_SECRET;
+  
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET must be set in production');
+    }
+    console.warn('WARNING: JWT_SECRET not set. Using default for development only.');
+  }
+  
+  const tokenSecret = secret || 'default-secret-change-in-production';
   const expiresIn = process.env.JWT_EXPIRY || '24h';
   
   return jwt.sign(
@@ -95,17 +93,25 @@ function generateToken(user) {
       email: user.email,
       name: user.name
     },
-    secret,
+    tokenSecret,
     { expiresIn }
   );
 }
 
 // Verify JWT token
 function verifyToken(token) {
-  const secret = process.env.JWT_SECRET || 'default-secret-change-in-production';
+  const secret = process.env.JWT_SECRET;
+  
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET must be set in production');
+    }
+  }
+  
+  const tokenSecret = secret || 'default-secret-change-in-production';
   
   try {
-    return jwt.verify(token, secret);
+    return jwt.verify(token, tokenSecret);
   } catch (error) {
     return null;
   }

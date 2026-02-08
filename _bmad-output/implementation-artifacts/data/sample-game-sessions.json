@@ -1,0 +1,123 @@
+[
+  {
+    "gameId": "550e8400-e29b-41d4-a716-446655440001",
+    "code": "ABC123",
+    "hostId": "user-001",
+    "createdAt": "2026-02-08T14:30:00Z",
+    "lastActivityAt": "2026-02-08T14:35:22Z",
+    "maxRounds": 5,
+    "currentRound": 0,
+    "currentPhase": "lobby",
+    "maxPlayers": 8,
+    "status": "lobby",
+    "players": [
+      {
+        "playerId": "user-001",
+        "name": "Sarah",
+        "avatar": "🎨",
+        "isHost": true,
+        "joinedAt": "2026-02-08T14:30:00Z"
+      },
+      {
+        "playerId": "user-002",
+        "name": "Mike",
+        "avatar": "🎭",
+        "isHost": false,
+        "joinedAt": "2026-02-08T14:31:15Z"
+      },
+      {
+        "playerId": "user-003",
+        "name": "Emma",
+        "avatar": "🎪",
+        "isHost": false,
+        "joinedAt": "2026-02-08T14:32:45Z"
+      }
+    ],
+    "sentenceTemplate": null,
+    "selectedNouns": [],
+    "timeoutMinutes": 60
+  },
+  {
+    "gameId": "550e8400-e29b-41d4-a716-446655440002",
+    "code": "DEF456",
+    "hostId": "user-004",
+    "createdAt": "2026-02-08T14:25:00Z",
+    "lastActivityAt": "2026-02-08T14:47:30Z",
+    "maxRounds": 5,
+    "currentRound": 2,
+    "currentPhase": "card_selection",
+    "maxPlayers": 6,
+    "status": "in_progress",
+    "players": [
+      {
+        "playerId": "user-004",
+        "name": "James",
+        "avatar": "🎬",
+        "isHost": true,
+        "joinedAt": "2026-02-08T14:25:00Z"
+      },
+      {
+        "playerId": "user-005",
+        "name": "Lisa",
+        "avatar": "🎵",
+        "isHost": false,
+        "joinedAt": "2026-02-08T14:26:20Z"
+      },
+      {
+        "playerId": "user-006",
+        "name": "David",
+        "avatar": "🎸",
+        "isHost": false,
+        "joinedAt": "2026-02-08T14:27:10Z"
+      },
+      {
+        "playerId": "user-007",
+        "name": "Anna",
+        "avatar": "🎤",
+        "isHost": false,
+        "joinedAt": "2026-02-08T14:28:05Z"
+      }
+    ],
+    "sentenceTemplate": "The _______ flew upward into open _______",
+    "selectedNouns": ["Dragon", "Sky"],
+    "timeoutMinutes": 60
+  },
+  {
+    "gameId": "550e8400-e29b-41d4-a716-446655440003",
+    "code": "GHI789",
+    "hostId": "user-008",
+    "createdAt": "2026-02-08T13:15:00Z",
+    "lastActivityAt": "2026-02-08T14:15:00Z",
+    "maxRounds": 5,
+    "currentRound": 5,
+    "currentPhase": "completed",
+    "maxPlayers": 8,
+    "status": "completed",
+    "players": [
+      {
+        "playerId": "user-008",
+        "name": "Robert",
+        "avatar": "🏆",
+        "isHost": true,
+        "joinedAt": "2026-02-08T13:15:00Z"
+      },
+      {
+        "playerId": "user-009",
+        "name": "Sandra",
+        "avatar": "⭐",
+        "isHost": false,
+        "joinedAt": "2026-02-08T13:16:30Z"
+      },
+      {
+        "playerId": "user-010",
+        "name": "Chris",
+        "avatar": "🎯",
+        "isHost": false,
+        "joinedAt": "2026-02-08T13:17:45Z"
+      }
+    ],
+    "sentenceTemplate": null,
+    "selectedNouns": [],
+    "timeoutMinutes": 60
+  }
+]

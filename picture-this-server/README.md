@@ -59,7 +59,7 @@ Environment variables (see `.env.example`):
 To enable host authentication:
 
 1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable Google+ API
+2. Enable **Google OAuth 2.0** API (Google+ API is deprecated)
 3. Create OAuth 2.0 credentials (Web application)
 4. Add authorized redirect URIs:
    - `http://localhost:3000/auth/google/callback` (development)
@@ -74,6 +74,8 @@ GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
 SESSION_SECRET=your-random-secret-string
 JWT_SECRET=your-random-jwt-secret
 ```
+
+**Security Note:** In production, `SESSION_SECRET` and `JWT_SECRET` MUST be set to random, secure values. The server will refuse to start in production without these values.
 
 ## API Endpoints
 

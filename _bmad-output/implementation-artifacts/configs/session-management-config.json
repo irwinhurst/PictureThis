@@ -1,0 +1,132 @@
+{
+  "sessionManagement": {
+    "codeGeneration": {
+      "format": "alphanumeric_6char",
+      "pattern": "^[A-Z0-9]{6}$",
+      "totalPossibleCodes": 2176782336,
+      "collisionCheckStrategy": "hash_map_lookup",
+      "description": "Generates 6-character uppercase alphanumeric codes. ~2.2 billion possible combinations minimize collision risk"
+    },
+    "codeCharacters": {
+      "uppercase": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      "numbers": "0123456789",
+      "total": 36,
+      "combinations": 46656
+    },
+    "sessionTimeout": {
+      "inactivityMinutes": 60,
+      "cleanupCheckIntervalSeconds": 300,
+      "description": "Sessions are marked inactive after 60 minutes with no activity and cleaned up periodically"
+    },
+    "sessionLimits": {
+      "minPlayers": 2,
+      "defaultMaxPlayers": 8,
+      "maxPlayersAllowed": 16,
+      "minRounds": 1,
+      "maxRounds": 20,
+      "defaultRounds": 5
+    },
+    "sessionPhases": [
+      {
+        "id": "lobby",
+        "name": "Lobby",
+        "description": "Waiting for players to join before game starts",
+        "canJoin": true,
+        "canLeave": true,
+        "duration": "unlimited"
+      },
+      {
+        "id": "round_intro",
+        "name": "Round Introduction",
+        "description": "Announcing the current round and judge",
+        "canJoin": false,
+        "canLeave": false,
+        "duration": "10 seconds"
+      },
+      {
+        "id": "card_selection",
+        "name": "Card Selection",
+        "description": "Players selecting cards to complete sentence",
+        "canJoin": false,
+        "canLeave": false,
+        "duration": "60 seconds"
+      },
+      {
+        "id": "judge_phase",
+        "name": "Judge Phase",
+        "description": "Judge evaluating player selections",
+        "canJoin": false,
+        "canLeave": false,
+        "duration": "30 seconds"
+      },
+      {
+        "id": "results",
+        "name": "Results & Scoring",
+        "description": "Displaying round results and leaderboard",
+        "canJoin": false,
+        "canLeave": false,
+        "duration": "20 seconds"
+      },
+      {
+        "id": "completed",
+        "name": "Game Completed",
+        "description": "Game has finished all rounds",
+        "canJoin": false,
+        "canLeave": true,
+        "duration": "unlimited"
+      }
+    ],
+    "sessionStatus": [
+      {
+        "id": "lobby",
+        "name": "Lobby",
+        "description": "Game waiting for players to join or start"
+      },
+      {
+        "id": "in_progress",
+        "name": "In Progress",
+        "description": "Game is actively being played"
+      },
+      {
+        "id": "completed",
+        "name": "Completed",
+        "description": "Game has finished all rounds"
+      },
+      {
+        "id": "inactive",
+        "name": "Inactive",
+        "description": "Game marked inactive due to timeout, eligible for cleanup"
+      }
+    ],
+    "codeUniqueness": {
+      "strategy": "set_based_collision_detection",
+      "maxRetries": 10,
+      "description": "Before assigning a code, check if it exists in activeGameCodes Set. Retry up to 10 times on collision",
+      "riskOfCollision": "extremely_low",
+      "rationale": "With 2.2B possible codes and typical max ~1000 concurrent games, collision probability is negligible"
+    },
+    "sessionLookup": {
+      "strategy": "hash_map_by_code",
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "description": "Sessions stored in Map with code as key for constant-time lookup"
+    },
+    "hostDisconnectBehavior": {
+      "onHostDisconnect": "mark_inactive_and_cleanup",
+      "cleanupDelay": "5 minutes",
+      "notifyPlayers": true,
+      "description": "When host disconnects, session is marked for cleanup. Other players notified."
+    },
+    "sessionCleanup": {
+      "triggers": [
+        "inactivity_timeout",
+        "host_disconnect",
+        "game_completion",
+        "manual_cleanup"
+      ],
+      "retentionAfterCompletion": "1 hour",
+      "archiveCompletedSessions": true,
+      "description": "Sessions removed from active game registry after cleanup triggers"
+    }
+  }
+}
