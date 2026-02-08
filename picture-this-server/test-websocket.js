@@ -2,6 +2,7 @@
 const io = require('socket.io-client');
 
 const SERVER_URL = 'http://localhost:3000';
+const REQUIRED_STATE_UPDATES = 10; // Number of state updates to receive before testing disconnect
 
 console.log('🧪 Testing PictureThis WebSocket Server...\n');
 
@@ -63,8 +64,8 @@ socket.on('state-update', (message) => {
         testsPassed++;
     }
     
-    // After receiving 10 state updates, run disconnect test
-    if (receivedStateUpdates === 10) {
+    // After receiving required state updates, run disconnect test
+    if (receivedStateUpdates === REQUIRED_STATE_UPDATES) {
         console.log(`   Received ${receivedStateUpdates} state updates total\n`);
         
         // Test 5: Disconnect

@@ -181,6 +181,9 @@ io.on('connection', (socket) => {
 });
 
 // Broadcast game state to all connected clients
+// Note: Currently broadcasts every 100ms unconditionally.
+// Future optimization (Story 1.2+): Only broadcast when state changes,
+// or use different intervals for lobby vs active game clients.
 function broadcastGameState() {
   if (connectedClients.size === 0) {
     return; // No clients connected, skip broadcast
