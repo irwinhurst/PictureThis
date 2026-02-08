@@ -4,10 +4,16 @@ const http = require('http');
 const { Server } = require('socket.io');
 const winston = require('winston');
 const path = require('path');
+const passport = require('passport');
+const session = require('express-session');
 
 // Import game management modules
 const GameManager = require('./src/game/GameManager');
 const { getPlayerBySocketId } = require('./src/game/GameState');
+
+// Import authentication modules
+const { configurePassport } = require('./src/auth/passport-config');
+const { ensureAuthenticated } = require('./src/auth/middleware');
 
 // Configure Winston logger
 const logger = winston.createLogger({
@@ -44,6 +50,27 @@ const io = new Server(server, {
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Session configuration
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'picture-this-dev-secret-change-in-prod',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  })
+);
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure Passport with Google OAuth
+configurePassport(logger);
 
 // Initialize Game Manager (Story 1.2)
 const gameManager = new GameManager(logger, io);
@@ -90,6 +117,73 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Authentication routes (Story 1.5)
+
+// Initiate Google OAuth login
+app.get('/auth/google', 
+  passport.authenticate('google', { 
+    scope: ['openid', 'profile', 'email'] 
+  })
+);
+
+// Google OAuth callback
+app.get('/auth/google/callback',
+  passport.authenticate('google', { 
+    failureRedirect: '/login-failed' 
+  }),
+  (req, res) => {
+    logger.info('User authenticated successfully', { userId: req.user.id });
+    // Redirect to dashboard or home page after successful login
+    res.redirect('/dashboard');
+  }
+);
+
+// Logout endpoint
+app.post('/auth/logout', (req, res) => {
+  const userId = req.user?.id;
+  req.logout((err) => {
+    if (err) {
+      logger.error('Error during logout', { error: err.message, userId });
+      return res.status(500).json({
+        success: false,
+        error: 'Logout failed'
+      });
+    }
+    
+    logger.info('User logged out', { userId });
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  });
+});
+
+// Get current user profile
+app.get('/api/auth/profile', ensureAuthenticated, (req, res) => {
+  logger.debug('Profile requested', { userId: req.user.id });
+  res.json({
+    success: true,
+    user: {
+      id: req.user.id,
+      email: req.user.email,
+      name: req.user.name,
+      profile_picture_url: req.user.profile_picture_url
+    }
+  });
+});
+
+// Check authentication status
+app.get('/api/auth/status', (req, res) => {
+  res.json({
+    authenticated: req.isAuthenticated(),
+    user: req.isAuthenticated() ? {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email
+    } : null
+  });
+});
+
 // Debug endpoint for game state (Story 1.2)
 app.get('/api/debug/game/:gameId', (req, res) => {
   const { gameId } = req.params;
@@ -109,17 +203,22 @@ app.get('/api/debug/game/:gameId', (req, res) => {
   });
 });
 
-// Create game endpoint
-app.post('/api/game/create', (req, res) => {
+// Create game endpoint (Story 1.5 - Protected with authentication)
+app.post('/api/game/create', ensureAuthenticated, (req, res) => {
   try {
-    const { maxRounds, maxPlayers, hostId } = req.body;
+    const { maxRounds, maxPlayers } = req.body;
     const game = gameManager.createGame({
       maxRounds: maxRounds || 5,
       maxPlayers: maxPlayers || 8,
-      hostId
+      hostId: req.user.id  // Use authenticated user's ID
     });
     
-    logger.info('Game created via API', { gameId: game.gameId, code: game.code });
+    logger.info('Game created via API', { 
+      gameId: game.gameId, 
+      code: game.code,
+      hostId: req.user.id,
+      hostEmail: req.user.email
+    });
     
     res.json({
       success: true,
