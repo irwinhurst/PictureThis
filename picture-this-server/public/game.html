@@ -349,28 +349,37 @@
 
       socket.on('connect', () => {
         console.log('Connected to game server');
-        // Join the game room so host/player receives broadcasts
-        socket.emit('watch-game', { code: gameCode });
+        // Small delay to ensure all event listeners are registered before joining room
+        setTimeout(() => {
+          socket.emit('watch-game', { code: gameCode });
+          console.log('Joined game room:', gameCode);
+        }, 100);
       });
 
-      // Listen for game-started event
+      // Listen for game-started event BEFORE joining the room
       socket.on('game-started', (payload) => {
-        console.log('Game started:', payload);
+        console.log('Game started event received:', payload);
         gameStarted = true;
         gameData = payload;
 
         // Update UI
-        document.getElementById('loadingView').style.display = 'none';
-        document.getElementById('gameScreen').classList.add('active');
+        const loadingView = document.getElementById('loadingView');
+        const gameScreen = document.getElementById('gameScreen');
+        
+        if (loadingView) loadingView.style.display = 'none';
+        if (gameScreen) gameScreen.classList.add('active');
 
         // Display sentence template with blanks highlighted
         const sentence = payload.sentence || 'I SAW A _____ TRYING TO _____';
         const formattedSentence = sentence.replace(/_____/g, '<span class="blank">BLANK</span>');
-        document.getElementById('sentenceTemplate').innerHTML = formattedSentence;
+        const sentenceEl = document.getElementById('sentenceTemplate');
+        if (sentenceEl) sentenceEl.innerHTML = formattedSentence;
 
         // Display judge info
-        document.getElementById('judgeAvatar').textContent = payload.judge.avatar || '🎮';
-        document.getElementById('judgeName').textContent = payload.judge.name || 'Unknown Judge';
+        const judgeAvatar = document.getElementById('judgeAvatar');
+        const judgeName = document.getElementById('judgeName');
+        if (judgeAvatar) judgeAvatar.textContent = payload.judge.avatar || '🎮';
+        if (judgeName) judgeName.textContent = payload.judge.name || 'Unknown Judge';
 
         // Start timer
         currentTimer = payload.time_remaining || 45;
@@ -385,11 +394,12 @@
 
       // Listen for errors
       socket.on('error', (error) => {
+        console.error('Socket error:', error);
         showError('Connection error: ' + error);
       });
 
       socket.on('disconnect', () => {
-        // Player disconnected
+        console.log('Disconnected from server');
       });
     }
 
