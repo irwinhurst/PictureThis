@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Waiting for Game - Picture This</title>
+  <script src="/socket.io/socket.io.js"></script>
   <style>
     * {
       margin: 0;
@@ -328,6 +329,7 @@
     let playerName = '';
     let playerAvatar = '';
     let refreshInterval = null;
+    let socket = null;
 
     async function initializePlayerLobby() {
       // Get data from localStorage
@@ -346,11 +348,37 @@
       document.getElementById('myName').textContent = playerName;
       document.getElementById('myAvatar').textContent = playerAvatar;
 
+      // Initialize WebSocket to listen for game-started event
+      initializeWebSocket();
+
       // Load initial players
       await refreshPlayerList();
 
       // Refresh player list every 2 seconds
       refreshInterval = setInterval(refreshPlayerList, 2000);
+    }
+
+    function initializeWebSocket() {
+      socket = io();
+
+      socket.on('connect', () => {
+        console.log('Connected to server');
+        socket.emit('join-game', { code: gameCode, playerId: playerId });
+      });
+
+      socket.on('game-started', (data) => {
+        console.log('Game started!', data);
+        // Redirect to player game screen
+        window.location.href = `/player-game.html?code=${gameCode}&playerId=${playerId}`;
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+      });
+
+      socket.on('error', (error) => {
+        console.error('Socket error:', error);
+      });
     }
 
     async function refreshPlayerList() {
