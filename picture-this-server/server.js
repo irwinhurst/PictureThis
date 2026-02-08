@@ -211,7 +211,9 @@ app.get('/api/session/:code', (req, res) => {
       status: session.status,
       playerCount: session.players.length,
       maxPlayers: session.maxPlayers,
-      players: session.players
+      players: session.players,
+      sentenceTemplate: session.sentenceTemplate,
+      judgeId: session.judgeId
     });
   } catch (error) {
     logger.error('Error getting session', { error: error.message });
