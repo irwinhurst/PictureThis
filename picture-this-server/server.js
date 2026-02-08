@@ -5,6 +5,10 @@ const { Server } = require('socket.io');
 const winston = require('winston');
 const path = require('path');
 
+// Import game management modules
+const GameManager = require('./src/game/GameManager');
+const { getPlayerBySocketId } = require('./src/game/GameState');
+
 // Configure Winston logger
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
@@ -41,10 +45,13 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Track connected clients
-const connectedClients = new Map();
+// Initialize Game Manager (Story 1.2)
+const gameManager = new GameManager(logger, io);
 
-// Placeholder game state
+// Track connected clients and their game associations
+const connectedClients = new Map(); // socketId -> { gameId, playerId }
+
+// Legacy placeholder for backward compatibility
 let gameState = {
   round: 0,
   phase: 'waiting',
@@ -78,8 +85,54 @@ app.get('/api/health', (req, res) => {
   logger.info('Health check requested');
   res.json({
     status: 'ok',
+    timestamp: Date.now(),
+    activeGames: gameManager.getGameCount()
+  });
+});
+
+// Debug endpoint for game state (Story 1.2)
+app.get('/api/debug/game/:gameId', (req, res) => {
+  const { gameId } = req.params;
+  const state = gameManager.exportGameState(gameId);
+  
+  if (!state) {
+    return res.status(404).json({
+      error: 'Game not found',
+      gameId
+    });
+  }
+  
+  res.json({
+    gameState: state,
+    timerInfo: gameManager.timerManager.getTimerInfo(gameId),
     timestamp: Date.now()
   });
+});
+
+// Create game endpoint
+app.post('/api/game/create', (req, res) => {
+  try {
+    const { maxRounds, maxPlayers, hostId } = req.body;
+    const game = gameManager.createGame({
+      maxRounds: maxRounds || 5,
+      maxPlayers: maxPlayers || 8,
+      hostId
+    });
+    
+    logger.info('Game created via API', { gameId: game.gameId, code: game.code });
+    
+    res.json({
+      success: true,
+      gameId: game.gameId,
+      code: game.code
+    });
+  } catch (error) {
+    logger.error('Error creating game', { error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // Keep-alive endpoint
@@ -101,7 +154,9 @@ io.on('connection', (socket) => {
   connectedClients.set(socketId, {
     id: socketId,
     connectedAt: Date.now(),
-    socket: socket
+    socket: socket,
+    gameId: null,
+    playerId: null
   });
   
   // Send connected event to client
@@ -110,23 +165,86 @@ io.on('connection', (socket) => {
     timestamp: Date.now()
   }));
   
-  // Handle join-game event
+  // Handle create-game event
+  socket.on('create-game', (data) => {
+    try {
+      logger.info('Creating new game', { socketId, data });
+      
+      const game = gameManager.createGame({
+        maxRounds: data.maxRounds || 5,
+        maxPlayers: data.maxPlayers || 8,
+        hostId: socketId
+      });
+      
+      socket.emit('game-created', createMessage('game_created', {
+        gameId: game.gameId,
+        code: game.code
+      }));
+      
+    } catch (error) {
+      logger.error('Error creating game', { socketId, error: error.message });
+      socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
+        message: 'Failed to create game',
+        code: 'ERR_CREATE_GAME'
+      }));
+    }
+  });
+  
+  // Handle join-game event (Story 1.2 - Updated)
   socket.on('join-game', (data) => {
     try {
       logger.info('Player joining game', { socketId, data });
       
-      // Add player to game state
-      gameState.players.push({
+      const { code, name, avatar } = data;
+      
+      // Find game by code
+      let game = gameManager.getGameByCode(code);
+      
+      // If no game exists, create one for backward compatibility
+      if (!game) {
+        game = gameManager.createGame({ code });
+        logger.info('Auto-created game for join', { code, gameId: game.gameId });
+      }
+      
+      // Add player to game
+      const newState = gameManager.addPlayerToGame(game.gameId, {
         socketId,
-        name: data.name || 'Anonymous',
-        avatar: data.avatar || '🎮',
-        code: data.code
+        name: name || 'Anonymous',
+        avatar: avatar || '🎮',
+        isHost: game.players.length === 0
       });
       
-      // Broadcast player joined event
-      io.emit('player-joined', createMessage(MESSAGE_TYPES.PLAYER_JOINED, {
-        player: gameState.players[gameState.players.length - 1],
-        player_count: gameState.players.length
+      // Store player's game association
+      const player = newState.players[newState.players.length - 1];
+      const clientInfo = connectedClients.get(socketId);
+      if (clientInfo) {
+        clientInfo.gameId = game.gameId;
+        clientInfo.playerId = player.id;
+      }
+      
+      // Join socket room for this game
+      socket.join(game.gameId);
+      
+      // Send join confirmation to player
+      socket.emit('game-joined', createMessage('game_joined', {
+        gameId: game.gameId,
+        playerId: player.id,
+        code: game.code,
+        player
+      }));
+      
+      // Legacy support - update old gameState
+      gameState.players.push({
+        socketId,
+        name: name || 'Anonymous',
+        avatar: avatar || '🎮',
+        code
+      });
+      
+      // Broadcast player joined event to all in game
+      io.to(game.gameId).emit('player-joined', createMessage(MESSAGE_TYPES.PLAYER_JOINED, {
+        player,
+        player_count: newState.players.length
       }));
     } catch (error) {
       logger.error('Error handling join-game', { socketId, error: error.message });
@@ -137,42 +255,127 @@ io.on('connection', (socket) => {
     }
   });
   
-  // Handle select-cards event
+  // Handle start-game event (Story 1.2)
+  socket.on('start-game', (data) => {
+    try {
+      const clientInfo = connectedClients.get(socketId);
+      if (!clientInfo || !clientInfo.gameId) {
+        throw new Error('Not in a game');
+      }
+      
+      logger.info('Starting game', { socketId, gameId: clientInfo.gameId });
+      
+      const newState = gameManager.startGame(clientInfo.gameId);
+      
+      // Broadcast game started event
+      io.to(clientInfo.gameId).emit('game-started', createMessage('game_started', {
+        round: newState.currentRound,
+        phase: newState.currentPhase,
+        judgeId: newState.judgeId,
+        sentenceTemplate: newState.sentenceTemplate
+      }));
+      
+    } catch (error) {
+      logger.error('Error starting game', { socketId, error: error.message });
+      socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
+        message: error.message,
+        code: 'ERR_START_GAME'
+      }));
+    }
+  });
+  
+  // Handle select-cards event (Story 1.2 - Updated)
   socket.on('select-cards', (data) => {
     try {
-      logger.debug('Player selecting cards', { socketId, data });
-      // Placeholder - actual game logic will be in Story 1.2
+      const clientInfo = connectedClients.get(socketId);
+      if (!clientInfo || !clientInfo.gameId || !clientInfo.playerId) {
+        throw new Error('Not in a game');
+      }
+      
+      logger.debug('Player selecting cards', { 
+        socketId, 
+        gameId: clientInfo.gameId,
+        playerId: clientInfo.playerId,
+        cards: data.cards 
+      });
+      
+      const newState = gameManager.submitSelection(
+        clientInfo.gameId,
+        clientInfo.playerId,
+        data.cards
+      );
+      
+      // Confirmation sent to player
+      socket.emit('selection-confirmed', createMessage('selection_confirmed', {
+        success: true
+      }));
+      
     } catch (error) {
       logger.error('Error handling select-cards', { socketId, error: error.message });
       socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
-        message: 'Failed to select cards',
+        message: error.message,
         code: 'ERR_002'
       }));
     }
   });
   
-  // Handle judge-select event
+  // Handle judge-select event (Story 1.2 - Updated)
   socket.on('judge-select', (data) => {
     try {
-      logger.debug('Judge selecting winner', { socketId, data });
-      // Placeholder - actual game logic will be in Story 1.2
+      const clientInfo = connectedClients.get(socketId);
+      if (!clientInfo || !clientInfo.gameId || !clientInfo.playerId) {
+        throw new Error('Not in a game');
+      }
+      
+      logger.debug('Judge selecting winner', { 
+        socketId,
+        gameId: clientInfo.gameId,
+        selection: data 
+      });
+      
+      const newState = gameManager.submitJudgeSelection(
+        clientInfo.gameId,
+        clientInfo.playerId,
+        {
+          firstPlace: data.firstPlace,
+          secondPlace: data.secondPlace
+        }
+      );
+      
+      // Results will be broadcast automatically by orchestrator
+      
     } catch (error) {
       logger.error('Error handling judge-select', { socketId, error: error.message });
       socket.emit('error', createMessage(MESSAGE_TYPES.ERROR, {
-        message: 'Failed to select winner',
+        message: error.message,
         code: 'ERR_003'
       }));
     }
   });
   
-  // Handle disconnect
+  // Handle disconnect (Story 1.2 - Updated)
   socket.on('disconnect', (reason) => {
     logger.info(`Client disconnected: ${socketId}`, { reason });
+    
+    const clientInfo = connectedClients.get(socketId);
+    
+    // Remove player from their game if they were in one
+    if (clientInfo && clientInfo.gameId && clientInfo.playerId) {
+      try {
+        gameManager.removePlayerFromGame(clientInfo.gameId, clientInfo.playerId);
+        logger.info('Player removed from game on disconnect', {
+          gameId: clientInfo.gameId,
+          playerId: clientInfo.playerId
+        });
+      } catch (error) {
+        logger.error('Error removing player on disconnect', { error: error.message });
+      }
+    }
     
     // Remove from connected clients
     connectedClients.delete(socketId);
     
-    // Remove player from game state
+    // Legacy support - remove from old gameState
     gameState.players = gameState.players.filter(p => p.socketId !== socketId);
   });
   
@@ -182,24 +385,31 @@ io.on('connection', (socket) => {
   });
 });
 
-// Broadcast game state to all connected clients
-// Note: Currently broadcasts every 100ms unconditionally.
-// Future optimization (Story 1.2+): Only broadcast when state changes,
-// or use different intervals for lobby vs active game clients.
+// Broadcast game state to all connected clients (Story 1.2 - Enhanced)
+// Broadcasts state for each active game to its participants
 function broadcastGameState() {
   if (connectedClients.size === 0) {
     return; // No clients connected, skip broadcast
   }
   
-  // Update timestamp
-  gameState.timestamp = Date.now();
+  // Broadcast state for each active game
+  const games = gameManager.getAllGames();
+  for (const game of games) {
+    const exportedState = gameManager.exportGameState(game.gameId);
+    if (exportedState) {
+      io.to(game.gameId).emit('state-update', createMessage(MESSAGE_TYPES.STATE_UPDATE, {
+        game_state: exportedState
+      }));
+    }
+  }
   
-  // Send state update to all connected clients
+  // Legacy support - broadcast old gameState to all
+  gameState.timestamp = Date.now();
   io.emit('state-update', createMessage(MESSAGE_TYPES.STATE_UPDATE, {
     game_state: gameState
   }));
   
-  logger.debug(`State broadcast sent to ${connectedClients.size} clients`);
+  logger.debug(`State broadcast sent to ${connectedClients.size} clients, ${games.length} games`);
 }
 
 // Set up periodic state broadcast (100ms intervals)
@@ -214,10 +424,11 @@ server.listen(PORT, () => {
   logger.info(`Max concurrent players: ${process.env.MAX_CONCURRENT_PLAYERS}`);
 });
 
-// Graceful shutdown
+// Graceful shutdown (Story 1.2 - Enhanced)
 process.on('SIGTERM', () => {
   logger.info('SIGTERM signal received: closing HTTP server');
   clearInterval(broadcastInterval);
+  gameManager.shutdown(); // Clean up game manager
   server.close(() => {
     logger.info('HTTP server closed');
     process.exit(0);
@@ -227,6 +438,7 @@ process.on('SIGTERM', () => {
 process.on('SIGINT', () => {
   logger.info('SIGINT signal received: closing HTTP server');
   clearInterval(broadcastInterval);
+  gameManager.shutdown(); // Clean up game manager
   server.close(() => {
     logger.info('HTTP server closed');
     process.exit(0);
