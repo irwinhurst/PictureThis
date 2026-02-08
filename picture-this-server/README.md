@@ -47,6 +47,33 @@ Environment variables (see `.env.example`):
 | `GAME_SESSION_TIMEOUT` | Game session timeout in ms | `3600000` (1 hour) |
 | `MAX_CONCURRENT_PLAYERS` | Max concurrent player connections | `200` |
 | `DATABASE_URL` | PostgreSQL connection string (future use) | - |
+| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 Client ID | - |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret | - |
+| `GOOGLE_CALLBACK_URL` | OAuth callback URL | `http://localhost:3000/auth/google/callback` |
+| `SESSION_SECRET` | Express session secret | (auto-generated) |
+| `JWT_SECRET` | JWT signing secret | (auto-generated) |
+| `JWT_EXPIRY` | JWT token expiration time | `24h` |
+
+### Google OAuth Setup
+
+To enable host authentication:
+
+1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable Google+ API
+3. Create OAuth 2.0 credentials (Web application)
+4. Add authorized redirect URIs:
+   - `http://localhost:3000/auth/google/callback` (development)
+   - Your production URL (production)
+5. Copy Client ID and Client Secret to `.env`
+
+Example `.env` configuration:
+```
+GOOGLE_CLIENT_ID=123456789-abcdefg.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=YOUR_SECRET_HERE
+GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+SESSION_SECRET=your-random-secret-string
+JWT_SECRET=your-random-jwt-secret
+```
 
 ## API Endpoints
 
@@ -75,6 +102,77 @@ Response:
 {
   "status": "ok",
   "timestamp": 1707350400000
+}
+```
+
+### Authentication Endpoints
+
+#### Google OAuth Login
+```
+GET /auth/google
+```
+Redirects to Google OAuth consent screen.
+
+#### Google OAuth Callback
+```
+GET /auth/google/callback
+```
+Handles OAuth callback from Google. Redirects to homepage with JWT token.
+
+#### Logout
+```
+POST /auth/logout
+```
+Ends user session and clears cookies.
+
+Response:
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+#### Get User Profile (Protected)
+```
+GET /api/profile
+Authorization: Bearer <JWT_TOKEN>
+```
+
+Response:
+```json
+{
+  "user": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "profile_picture_url": "https://..."
+  }
+}
+```
+
+### Protected Game Endpoints
+
+These endpoints require authentication via JWT token in the `Authorization` header:
+
+#### Create Game (Protected)
+```
+POST /api/games
+Authorization: Bearer <JWT_TOKEN>
+```
+(Full implementation in Story 1.6)
+
+#### Start Game (Protected)
+```
+POST /api/games/:id/start
+Authorization: Bearer <JWT_TOKEN>
+```
+(Full implementation in Story 1.6)
+
+**Unauthorized Response (401):**
+```json
+{
+  "error": "Unauthorized",
+  "message": "Authentication required"
 }
 ```
 
@@ -213,7 +311,9 @@ Log format: `[TIMESTAMP] [LEVEL] Message {metadata}`
 
 - **Single-threaded:** Node.js event loop handles all connections
 - **In-memory state:** Game state is stored in memory (database integration in future stories)
-- **No authentication:** Authentication will be added in Story 1.5
+- **Authentication:** Google OAuth 2.0 with JWT tokens for host authentication (Story 1.5)
+- **User storage:** In-memory Map (temporary - database integration in Story 2.1)
+- **Session management:** Express-session with JWT tokens (24-hour expiry)
 - **Stateless reconnection:** Reconnections are treated as new connections (session recovery in future)
 
 ## Performance
