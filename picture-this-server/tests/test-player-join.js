@@ -1,6 +1,10 @@
 /**
- * Story 3.1: Player Join & Avatar Setup - Test Suite
- * Tests for player joining with validation and avatar selection
+ * ---
+ * title: Player Join Tests
+ * purpose: Tests Story 3.1 - Player joining with validation and avatar selection
+ * exports: None (test script)
+ * dependencies: assert, GameSessionManager
+ * ---
  */
 
 const assert = require('assert');

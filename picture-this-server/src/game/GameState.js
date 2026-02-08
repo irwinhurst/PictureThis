@@ -1,8 +1,13 @@
 /**
- * Game State Management
- * Story 1.2: Game State Management & Round Orchestration
- * 
- * Manages the complete game state with immutable updates
+ * ---
+ * title: Game State Management
+ * purpose: Manages complete game state with immutable updates. Provides functions for
+ *          creating/updating game state, adding/removing players, and state transitions.
+ * exports: createGameState, createPlayer, updateState, addPlayer, removePlayer,
+ *          updatePlayer, getPlayer, getPlayerBySocketId, selectNextJudge,
+ *          recordTransition, resetGame, exportState, generateGameCode
+ * dependencies: phases.js (PHASES), uuid (v4)
+ * ---
  */
 
 const { PHASES } = require('./phases');

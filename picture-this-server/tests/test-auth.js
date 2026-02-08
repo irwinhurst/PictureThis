@@ -1,3 +1,13 @@
+/**
+ * ---
+ * title: Authentication Endpoint Tests
+ * purpose: Verifies authentication endpoints including JWT validation,
+ *          protected routes, and error responses for unauthorized access.
+ * exports: None (test script)
+ * dependencies: http (Node.js built-in)
+ * ---
+ */
+
 // Simple test script to verify authentication endpoints
 const http = require('http');
 

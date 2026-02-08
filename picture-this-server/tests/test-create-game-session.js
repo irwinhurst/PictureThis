@@ -1,6 +1,10 @@
 /**
- * Story 1.6: Host Create Game Session - Test Suite
- * Tests for game session creation with validation and authentication
+ * ---
+ * title: Create Game Session Tests
+ * purpose: Tests Story 1.6 - Game session creation with validation and authentication
+ * exports: None (test script)
+ * dependencies: assert, GameSessionManager
+ * ---
  */
 
 const assert = require('assert');

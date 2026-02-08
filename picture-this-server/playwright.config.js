@@ -1,3 +1,13 @@
+/**
+ * ---
+ * title: Playwright E2E Test Configuration
+ * purpose: Configures Playwright for end-to-end testing across multiple browsers
+ *          and devices. Includes local dev server setup for test runs.
+ * exports: Playwright config object
+ * dependencies: @playwright/test
+ * ---
+ */
+
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 

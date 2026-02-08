@@ -1,0 +1,32 @@
+/**
+ * ---
+ * title: Winston Logger Configuration
+ * purpose: Centralizes logging configuration for the entire application.
+ *          Provides consistent log formatting, timestamps, and colorization
+ *          for console output. Can be extended to add file transports.
+ * exports: logger - Configured Winston logger instance
+ * ---
+ */
+
+const winston = require('winston');
+
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.printf(({ timestamp, level, message, ...meta }) => {
+          const metaStr = Object.keys(meta).length ? JSON.stringify(meta) : '';
+          return `[${timestamp}] [${level}] ${message} ${metaStr}`;
+        })
+      )
+    })
+  ]
+});
+
+module.exports = logger;

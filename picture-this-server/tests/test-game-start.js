@@ -1,5 +1,10 @@
 /**
- * Story 3.0: Game Start & Round 1 Initialization - Test Suite
+ * ---
+ * title: Game Start Tests
+ * purpose: Tests Story 3.0 - Game start and Round 1 initialization
+ * exports: None (test script)
+ * dependencies: assert, GameSessionManager
+ * ---
  */
 
 const assert = require('assert');

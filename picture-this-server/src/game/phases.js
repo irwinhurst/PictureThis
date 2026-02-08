@@ -1,6 +1,14 @@
 /**
- * Game Phase Constants and Transition Rules
- * Story 1.2: Game State Management & Round Orchestration
+ * ---
+ * title: Game Phase Constants
+ * purpose: Defines game phase states, valid transitions between phases, and timeout
+ *          configurations. Provides helper functions for phase flow validation.
+ * exports: PHASES - Enum of all game phases
+ *          VALID_TRANSITIONS - Map of allowed phase transitions
+ *          PHASE_TIMEOUTS - Duration for each phase
+ *          isValidTransition, getPhaseTimeout, getNextPhase - Helper functions
+ * dependencies: None (constants module)
+ * ---
  */
 
 // Phase enum

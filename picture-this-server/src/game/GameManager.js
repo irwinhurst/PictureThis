@@ -1,8 +1,11 @@
 /**
- * Game Manager
- * Story 1.2: Game State Management & Round Orchestration
- * 
- * Central manager for all active games
+ * ---
+ * title: Game Manager
+ * purpose: Central manager for all active games. Handles game creation, player management,
+ *          phase advancement, and state broadcasting via Socket.io.
+ * exports: GameManager - Class for managing active games
+ * dependencies: GameState.js, GameOrchestrator.js, TimerManager.js, Socket.io
+ * ---
  */
 
 const { createGameState, addPlayer, removePlayer, exportState, getPlayerBySocketId } = require('./GameState');

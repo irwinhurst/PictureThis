@@ -1,7 +1,11 @@
 /**
- * Card Deck Management
- * Story 1.2: Game State Management & Round Orchestration
- * Handles card shuffling, dealing, and hand management
+ * ---
+ * title: Card Deck Management
+ * purpose: Handles card shuffling, dealing, and hand management using Fisher-Yates
+ *          algorithm. Manages draw pile, discard pile, and player hand refills.
+ * exports: CardDeck - Class for deck operations
+ * dependencies: None (self-contained)
+ * ---
  */
 
 class CardDeck {

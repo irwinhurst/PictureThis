@@ -1,8 +1,11 @@
 /**
- * Timer Manager
- * Story 1.2: Game State Management & Round Orchestration
- * 
- * Manages phase timeouts and automatic advancement
+ * ---
+ * title: Timer Manager
+ * purpose: Manages phase timeouts and automatic phase advancement during gameplay.
+ *          Provides scheduling, cancellation, and remaining time tracking for game phases.
+ * exports: TimerManager - Class for managing game phase timers
+ * dependencies: None (self-contained)
+ * ---
  */
 
 class TimerManager {

@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Story 3.2: Card Selection - Error & Edge Case Tests
- * Tests error handling, edge cases, and boundary conditions
+ * ---
+ * title: Card Selection Edge Case Tests
+ * purpose: Tests Story 3.2 - Error handling, edge cases, and boundary conditions
+ * exports: None (test script)
+ * dependencies: assert, GameSessionManager
+ * ---
  */
 
 const assert = require('assert');

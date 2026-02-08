@@ -1,3 +1,13 @@
+/**
+ * ---
+ * title: WebSocket Integration Tests
+ * purpose: Verifies WebSocket connectivity, event handling, and real-time
+ *          communication between client and server via Socket.io.
+ * exports: None (test script)
+ * dependencies: socket.io-client
+ * ---
+ */
+
 // Simple test script to verify WebSocket functionality
 const io = require('socket.io-client');
 

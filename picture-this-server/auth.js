@@ -1,3 +1,14 @@
+/**
+ * ---
+ * title: Authentication Module
+ * purpose: Handles Google OAuth authentication, JWT token generation/verification,
+ *          and authentication middleware. Provides in-memory user storage until
+ *          database integration (Story 2.1).
+ * exports: configureGoogleStrategy, generateToken, verifyToken, requireAuth, findUserById, users
+ * dependencies: passport, passport-google-oauth20, jsonwebtoken, crypto
+ * ---
+ */
+
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');

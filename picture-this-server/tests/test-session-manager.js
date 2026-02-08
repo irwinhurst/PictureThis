@@ -1,6 +1,11 @@
 /**
- * GameSessionManager Tests
- * Unit tests for session management functionality
+ * ---
+ * title: Game Session Manager Unit Tests
+ * purpose: Unit tests for GameSessionManager functionality including session
+ *          creation, player management, phase transitions, and timeout handling.
+ * exports: None (test script)
+ * dependencies: GameSessionManager
+ * ---
  */
 
 const GameSessionManager = require('../src/game/GameSessionManager');

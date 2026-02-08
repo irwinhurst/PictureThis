@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Story 3.2: Player Card Hand Display & Selection - Test Suite
- * Tests player card selection, submission, and phase transitions
+ * ---
+ * title: Card Selection Tests
+ * purpose: Tests Story 3.2 - Player card selection, submission, and phase transitions
+ * exports: None (test script)
+ * dependencies: assert, GameSessionManager
+ * ---
  */
 
 const assert = require('assert');

@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Story 3.2: Card Selection - API Validation Tests
- * Tests API request/response validation and error handling
+ * ---
+ * title: Card Selection API Validation Tests
+ * purpose: Tests Story 3.2 - API request/response validation and error handling
+ * exports: None (test script)
+ * dependencies: assert, GameSessionManager
+ * ---
  */
 
 const assert = require('assert');

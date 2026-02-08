@@ -1,8 +1,11 @@
 /**
- * Game Orchestrator
- * Story 1.2: Game State Management & Round Orchestration
- * 
- * Handles phase transitions and game flow orchestration
+ * ---
+ * title: Game Orchestrator
+ * purpose: Handles phase transitions and game flow orchestration. Executes phase-specific
+ *          logic, manages round setup, card selections, judging, and scoring.
+ * exports: GameOrchestrator - Class for orchestrating game flow
+ * dependencies: phases.js, GameState.js, CardDeck.js, TimerManager
+ * ---
  */
 
 const { PHASES, isValidTransition, getPhaseTimeout, getNextPhase } = require('./phases');

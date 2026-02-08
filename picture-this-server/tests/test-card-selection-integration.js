@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Story 3.2: Card Selection - API Integration Tests
- * Tests the POST /api/game/:code/submit-selection endpoint
+ * ---
+ * title: Card Selection API Integration Tests
+ * purpose: Tests Story 3.2 - POST /api/game/:code/submit-selection endpoint
+ * exports: None (test script)
+ * dependencies: assert, GameSessionManager
+ * ---
  */
 
 const assert = require('assert');
