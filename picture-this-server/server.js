@@ -47,8 +47,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Session configuration
+const sessionSecret = process.env.SESSION_SECRET;
+
+if (!sessionSecret) {
+  if (process.env.NODE_ENV === 'production') {
+    logger.error('SESSION_SECRET must be set in production');
+    process.exit(1);
+  }
+  logger.warn('WARNING: SESSION_SECRET not set. Using default for development only.');
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'default-session-secret-change-in-production',
+  secret: sessionSecret || 'default-session-secret-change-in-production',
   resave: false,
   saveUninitialized: false,
   cookie: {
