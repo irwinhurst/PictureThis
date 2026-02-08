@@ -35,3 +35,8 @@ build/
 # Temporary files
 *.tmp
 .cache/
+
+# Test artifacts
+test-results/
+playwright-report/
+.last-run.json
