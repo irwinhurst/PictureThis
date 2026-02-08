@@ -132,10 +132,11 @@ function test4() {
 function test5() {
   try {
     const { code, session, players } = setupGame();
+    const nonJudgePlayers = players.filter(p => p.playerId !== session.judgeId);
     const selections = { 0: 3, 1: 7 };
     
-    manager.recordPlayerSelection(code, players[0].playerId, selections);
-    const retrieved = manager.getPlayerSelection(code, players[0].playerId);
+    manager.recordPlayerSelection(code, nonJudgePlayers[0].playerId, selections);
+    const retrieved = manager.getPlayerSelection(code, nonJudgePlayers[0].playerId);
     
     assert(retrieved, 'Selection not found');
     assert.deepEqual(retrieved.selections, selections, 'Retrieved selections mismatch');
@@ -242,6 +243,7 @@ function test8() {
 function test9() {
   try {
     const { code, session, players } = setupGame();
+    const nonJudgePlayers = players.filter(p => p.playerId !== session.judgeId);
     const originalActivity = session.lastActivityAt;
     
     // Wait a moment
@@ -250,7 +252,7 @@ function test9() {
       // Spin to ensure time advances
     }
     
-    manager.recordPlayerSelection(code, players[0].playerId, { 0: 1, 1: 2 });
+    manager.recordPlayerSelection(code, nonJudgePlayers[0].playerId, { 0: 1, 1: 2 });
     
     const updatedSession = manager.getSessionByCode(code);
     assert(updatedSession.lastActivityAt > originalActivity, 'Activity timestamp not updated');
@@ -267,6 +269,7 @@ function test9() {
 function test10() {
   try {
     const { code, session, players } = setupGame();
+    const nonJudgePlayers = players.filter(p => p.playerId !== session.judgeId);
     
     // Sentence: "I SAW A _____ TRYING TO _____" has 2 blanks
     const template = session.sentenceTemplate;
@@ -280,8 +283,8 @@ function test10() {
       selections[i] = i + 1; // Card indices
     }
     
-    manager.recordPlayerSelection(code, players[0].playerId, selections);
-    const retrieved = manager.getPlayerSelection(code, players[0].playerId);
+    manager.recordPlayerSelection(code, nonJudgePlayers[0].playerId, selections);
+    const retrieved = manager.getPlayerSelection(code, nonJudgePlayers[0].playerId);
     
     assert.strictEqual(Object.keys(retrieved.selections).length, blankCount, 'Selection count mismatch');
     
