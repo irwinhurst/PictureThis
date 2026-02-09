@@ -1,6 +1,25 @@
 /**
- * Test suite for ImageGeneratorService - File saving functionality
- * Tests that generated images are saved to the correct disk location
+ * Test suite for ImageGeneratorService - Mocked File Saving Tests
+ * 
+ * Uses mocked axios to test file saving LOCALLY without making real API calls.
+ * Perfect for development, CI/CD pipelines, and quick validation.
+ * 
+ * Cost: FREE (uses mocked data)
+ * Speed: Fast (~5-10 seconds)
+ * 
+ * ✅ Best for:
+ * - Development and testing
+ * - CI/CD pipelines  
+ * - Quick validation of file saving logic
+ * - No API key required
+ * 
+ * ❌ Does NOT test:
+ * - Real DALL-E 3 API connectivity
+ * - Actual image download/save behavior
+ * - Real PNG generation
+ * 
+ * For testing with REAL DALL-E 3 API, use:
+ *   node tests/test-image-generation-real-api.js
  */
 
 const fs = require('fs');
@@ -8,7 +27,6 @@ const path = require('path');
 const Module = require('module');
 
 // Test configuration
-const MOCK_API_KEY = 'sk-test-mock-key-for-testing';
 const TEST_GAME_CODE = 'TEST123';
 const TEST_ROUND = 1;
 const TEST_PLAYER_ID = 'player-uuid-123';
@@ -145,6 +163,7 @@ async function runTest(name, testFn) {
 async function runAllTests() {
   console.log('=====================================');
   console.log('ImageGeneratorService - File Save Tests');
+  console.log('(Using Mocked DALL-E API)');
   console.log('=====================================');
 
   // Cleanup before tests
@@ -154,7 +173,7 @@ async function runAllTests() {
   await runTest('Image file created at correct location', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
@@ -186,7 +205,7 @@ async function runAllTests() {
   await runTest('Saved image file has content', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
@@ -209,7 +228,7 @@ async function runAllTests() {
   await runTest('Directory structure created correctly', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
@@ -233,7 +252,7 @@ async function runAllTests() {
   await runTest('Multiple player images saved in same round', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
@@ -261,7 +280,7 @@ async function runAllTests() {
   await runTest('Different rounds create separate directories', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
@@ -290,7 +309,7 @@ async function runAllTests() {
   await runTest('File overwrites previous version of same player', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
@@ -333,7 +352,7 @@ async function runAllTests() {
   await runTest('Generated image metadata includes correct path', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
@@ -361,7 +380,7 @@ async function runAllTests() {
   await runTest('Saved image file can be read and has PNG signature', async () => {
     cleanupTestDirectory();
     const service = new ImageGeneratorService({
-      apiKey: MOCK_API_KEY,
+      apiKey: 'mock-key-for-testing',
       serviceType: 'dalle3'
     });
 
