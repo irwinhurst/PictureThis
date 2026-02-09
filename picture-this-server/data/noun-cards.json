@@ -1,0 +1,1004 @@
+{
+  "cards": [
+    {
+      "id": 1,
+      "text": "Disco-Dancing Llama",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 2,
+      "text": "Sentient Rubber Duck",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 3,
+      "text": "Penguin in a Tuxedo",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 4,
+      "text": "Vampire Bat with Braces",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 5,
+      "text": "Ninja Goldfish",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 6,
+      "text": "Motivational Dragon",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 7,
+      "text": "Judgmental Ghost",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 8,
+      "text": "Angry Clown",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 9,
+      "text": "Medieval Knight on Rollerblades",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 10,
+      "text": "Dinosaur with a Smartphone",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 11,
+      "text": "Whale with a British Accent",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 12,
+      "text": "Phoenix Wearing Sunglasses",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 13,
+      "text": "Rainbow Unicorn",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 14,
+      "text": "Werewolf with Commitment Issues",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 15,
+      "text": "Zombie Influencer",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 16,
+      "text": "Alien Life Coach",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 17,
+      "text": "Mummy with Separation Anxiety",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 18,
+      "text": "Yeti in a Sauna",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 19,
+      "text": "Sphinx Telling Dad Jokes",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 20,
+      "text": "Kraken Doing CrossFit",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 21,
+      "text": "Griffin with Road Rage",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 22,
+      "text": "Basilisk That's Actually Nice",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 23,
+      "text": "Centaur Training for Marathons",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 24,
+      "text": "Minotaur Interior Designer",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 25,
+      "text": "Harpy Obsessed with Karaoke",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 26,
+      "text": "Pegasus Delivering Amazon Packages",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 27,
+      "text": "Cheshire Cat That Snores",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 28,
+      "text": "Sasquatch Influencer",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 29,
+      "text": "Loch Ness Monster on TikTok",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 30,
+      "text": "Rogue Ostrich",
+      "category": "Animals & Creatures"
+    },
+    {
+      "id": 31,
+      "text": "Sentient Pizza Slice",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 32,
+      "text": "Sentient Block of Cheese",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 33,
+      "text": "Cupcake with a Criminal Record",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 34,
+      "text": "Donut That Gained Consciousness",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 35,
+      "text": "Spaghetti That's Self-Aware",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 36,
+      "text": "Taco Truck Powered by Dreams",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 37,
+      "text": "Sushi with Trust Issues",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 38,
+      "text": "Hamburger Attending Therapy",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 39,
+      "text": "Ice Cream Melting in Real-Time",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 40,
+      "text": "Chocolate That Never Expires",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 41,
+      "text": "Coffee That Gives High School Flashbacks",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 42,
+      "text": "Tea with Anxiety",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 43,
+      "text": "Sentient Milkshake",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 44,
+      "text": "Lemonade Made by Cats",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 45,
+      "text": "Soda That Belches Back",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 46,
+      "text": "Disgruntled Vending Machine",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 47,
+      "text": "Expired Yogurt with a Memoir",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 48,
+      "text": "Candy That Judges Your Life Choices",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 49,
+      "text": "Popcorn in Slow Motion",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 50,
+      "text": "Pretzel Shaped Like a Crown",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 51,
+      "text": "Waffles That Whisper Secrets",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 52,
+      "text": "Pancakes with Commitment Issues",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 53,
+      "text": "Bacon That's a Motivational Speaker",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 54,
+      "text": "Egg That Cracks Jokes",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 55,
+      "text": "Bread That Has Achieved Enlightenment",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 56,
+      "text": "Butter That Went to Art School",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 57,
+      "text": "Jam That's Secretly a Spy",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 58,
+      "text": "Honey with an Accent",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 59,
+      "text": "Salt That's Gained Consciousness",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 60,
+      "text": "Sugar Crash Personified",
+      "category": "Hilarious Objects"
+    },
+    {
+      "id": 61,
+      "text": "Sentient Toaster",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 62,
+      "text": "Refrigerator Full of Secrets",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 63,
+      "text": "Doorbell That Never Stops Ringing",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 64,
+      "text": "Clock That Runs Backwards",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 65,
+      "text": "Mirror That Won't Stop Complimenting You",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 66,
+      "text": "Window That's Judging Your Interior Design",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 67,
+      "text": "Door That Locks You Out on Purpose",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 68,
+      "text": "Stairs That Multiply When You're Not Looking",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 69,
+      "text": "Lamp That Flickers Meaningfully",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 70,
+      "text": "Mailbox Filled with Your Failures",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 71,
+      "text": "Calendar That Moves Too Fast",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 72,
+      "text": "Telephone That Only Gets Wrong Numbers",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 73,
+      "text": "Pencil That Breaks Constantly",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 74,
+      "text": "Eraser That Erases Everything",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 75,
+      "text": "Notebook That Rewrites Itself",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 76,
+      "text": "Pen That's Out of Ink",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 77,
+      "text": "Backpack with Its Own Problems",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 78,
+      "text": "Shoes That Walk Themselves",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 79,
+      "text": "Socks That Disappear in the Laundry",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 80,
+      "text": "Glasses That Show Too Much Truth",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 81,
+      "text": "Watch That Stops Time",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 82,
+      "text": "Key That Opens Wrong Doors",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 83,
+      "text": "Lock That Has Trust Issues",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 84,
+      "text": "Blanket That's Actually Sentient",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 85,
+      "text": "Pillow Recording Your Secrets",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 86,
+      "text": "Mattress That Never Gets Made",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 87,
+      "text": "Desk Full of Regret",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 88,
+      "text": "Chair That Remembers Everyone Who Sat on It",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 89,
+      "text": "Table Witnessing Many Arguments",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 90,
+      "text": "Bookshelf Judging Your Reading Habits",
+      "category": "Household Chaos"
+    },
+    {
+      "id": 91,
+      "text": "Confused Robot Lost in a Mall",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 92,
+      "text": "Giant Rubber Duck in an Office Meeting",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 93,
+      "text": "Penguin Doing Parkour",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 94,
+      "text": "Fish Riding a Skateboard",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 95,
+      "text": "Dragon Cooking Dinner",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 96,
+      "text": "Ghost Playing Video Games",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 97,
+      "text": "Dinosaur at a Coffee Shop",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 98,
+      "text": "Llama Wearing Roller Skates",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 99,
+      "text": "Submarine Made of Cheese",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 100,
+      "text": "Vampire at the Beach with Sunscreen",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 101,
+      "text": "Knight Shopping at Costco",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 102,
+      "text": "Pirate Working at McDonald's",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 103,
+      "text": "Wizard Ordering Uber Eats",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 104,
+      "text": "Astronaut Playing Basketball",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 105,
+      "text": "Samurai Doing Yoga",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 106,
+      "text": "T-Rex Using a Tiny Toothbrush",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 107,
+      "text": "Mummy Doing Laundry",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 108,
+      "text": "Yeti Sunbathing on a Beach",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 109,
+      "text": "Kraken Playing Chess",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 110,
+      "text": "Phoenix in a Snowstorm",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 111,
+      "text": "Unicorn in Overalls",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 112,
+      "text": "Werewolf at a Day Spa",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 113,
+      "text": "Zombie at a Gym Class",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 114,
+      "text": "Alien Driving a Tiny Car",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 115,
+      "text": "Skeleton Gardening",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 116,
+      "text": "Witch Painting Her Nails",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 117,
+      "text": "Frankenstein's Monster Doing Ballet",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 118,
+      "text": "Mermaid Walking on Land in a Bikini",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 119,
+      "text": "Golem Eating Spaghetti",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 120,
+      "text": "Gargoyle Sitting at a Desk",
+      "category": "Absurd Scenarios"
+    },
+    {
+      "id": 121,
+      "text": "Wizard Still Paying Off Student Loans",
+      "category": "People & Situations"
+    },
+    {
+      "id": 122,
+      "text": "Pirate Using a GPS",
+      "category": "People & Situations"
+    },
+    {
+      "id": 123,
+      "text": "Knight Who Lost His Armor in a Bet",
+      "category": "People & Situations"
+    },
+    {
+      "id": 124,
+      "text": "Detective with No Clues",
+      "category": "People & Situations"
+    },
+    {
+      "id": 125,
+      "text": "Musician Who Only Plays One Note",
+      "category": "People & Situations"
+    },
+    {
+      "id": 126,
+      "text": "Artist Who Only Paints Beige",
+      "category": "People & Situations"
+    },
+    {
+      "id": 127,
+      "text": "Baker Who Never Tasted Their Food",
+      "category": "People & Situations"
+    },
+    {
+      "id": 128,
+      "text": "Chef Ordering Takeout in Secret",
+      "category": "People & Situations"
+    },
+    {
+      "id": 129,
+      "text": "Gardener Killing Plants on Purpose",
+      "category": "People & Situations"
+    },
+    {
+      "id": 130,
+      "text": "Farmer Who's Afraid of Animals",
+      "category": "People & Situations"
+    },
+    {
+      "id": 131,
+      "text": "Fisherman Who Hates Water",
+      "category": "People & Situations"
+    },
+    {
+      "id": 132,
+      "text": "Sailor with Severe Motion Sickness",
+      "category": "People & Situations"
+    },
+    {
+      "id": 133,
+      "text": "Astronaut with a Fear of Heights",
+      "category": "People & Situations"
+    },
+    {
+      "id": 134,
+      "text": "Pilot Who Only Knows How to Crash",
+      "category": "People & Situations"
+    },
+    {
+      "id": 135,
+      "text": "Doctor Who Faints at the Sight of Blood",
+      "category": "People & Situations"
+    },
+    {
+      "id": 136,
+      "text": "Teacher Everyone Actually Liked",
+      "category": "People & Situations"
+    },
+    {
+      "id": 137,
+      "text": "Librarian Who Shouts in Libraries",
+      "category": "People & Situations"
+    },
+    {
+      "id": 138,
+      "text": "Barista Who Spells No Name Right",
+      "category": "People & Situations"
+    },
+    {
+      "id": 139,
+      "text": "Bartender Mixing Random Liquids",
+      "category": "People & Situations"
+    },
+    {
+      "id": 140,
+      "text": "Tailor Who Only Makes Clothes Twice Your Size",
+      "category": "People & Situations"
+    },
+    {
+      "id": 141,
+      "text": "Jeweler Who Lost the Real Gems",
+      "category": "People & Situations"
+    },
+    {
+      "id": 142,
+      "text": "Blacksmith Making Plastic Swords",
+      "category": "People & Situations"
+    },
+    {
+      "id": 143,
+      "text": "Sculptor Who Only Works with Cheese",
+      "category": "People & Situations"
+    },
+    {
+      "id": 144,
+      "text": "Painter Using His Feet",
+      "category": "People & Situations"
+    },
+    {
+      "id": 145,
+      "text": "Poet Writing Only About Socks",
+      "category": "People & Situations"
+    },
+    {
+      "id": 146,
+      "text": "Writer With Severe Writer's Block (Since 2003)",
+      "category": "People & Situations"
+    },
+    {
+      "id": 147,
+      "text": "Actor Who Can't Remember Lines",
+      "category": "People & Situations"
+    },
+    {
+      "id": 148,
+      "text": "Comedian With No Jokes",
+      "category": "People & Situations"
+    },
+    {
+      "id": 149,
+      "text": "Dancer Who Trips Constantly",
+      "category": "People & Situations"
+    },
+    {
+      "id": 150,
+      "text": "Superhero With Crippling Anxiety",
+      "category": "People & Situations"
+    },
+    {
+      "id": 151,
+      "text": "Sentient Couch Chasing Someone",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 152,
+      "text": "Socks Dancing Together",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 153,
+      "text": "Toaster Overheating and Smoking",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 154,
+      "text": "Fridge with Googly Eyes",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 155,
+      "text": "Sentient Microwave Spinning Wildly",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 156,
+      "text": "Haunted Mailbox Delivering the Weird",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 157,
+      "text": "Shoes Learning to Walk by Themselves",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 158,
+      "text": "Recliner Chair with Attitude",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 159,
+      "text": "Lamp That's Way Too Bright",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 160,
+      "text": "Thermostat Causing Chaos",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 161,
+      "text": "Sentient Alarm Clock Grinning Mischievously",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 162,
+      "text": "Dishwasher Rebelling",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 163,
+      "text": "Shower Head Taking Over the Bathroom",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 164,
+      "text": "Toilet That Won't Stop Flushing",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 165,
+      "text": "Vacuum Cleaner on a Rampage",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 166,
+      "text": "Coffee Maker Staging a Protest",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 167,
+      "text": "Blender Gone Haywire",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 168,
+      "text": "Ceiling Fan Going Super Fast",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 169,
+      "text": "Light Switch That Won't Stay On",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 170,
+      "text": "Door That Jams Constantly",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 171,
+      "text": "Staircase That's Come to Life",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 172,
+      "text": "Window Fogging Up Mysteriously",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 173,
+      "text": "Bed That Bounces Uncontrollably",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 174,
+      "text": "Pillow Fort Under Attack",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 175,
+      "text": "Rug That's Always Trying to Trip You",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 176,
+      "text": "Painting Coming to Life",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 177,
+      "text": "Mirror Showing the Wrong Reflection",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 178,
+      "text": "Bookshelf Falling Dramatically",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 179,
+      "text": "Plant Growing Out of Control",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 180,
+      "text": "Potted Cactus Having Opinions",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 181,
+      "text": "Lawn Mower with a Mind of Its Own",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 182,
+      "text": "Garden Gnome Plotting Something",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 183,
+      "text": "Sprinkler System Malfunctioning",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 184,
+      "text": "Barbecue Grill Actually On Fire",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 185,
+      "text": "Trash Can Overflowing Everywhere",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 186,
+      "text": "Garden Hose Tangling Everything",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 187,
+      "text": "Door Knob That's Alive",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 188,
+      "text": "Welcome Mat That's Sentient",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 189,
+      "text": "Porch Swing Going Wild",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 190,
+      "text": "Fence Post Wobbling About",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 191,
+      "text": "Gate That Won't Close",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 192,
+      "text": "Driveway Cracking Into Pieces",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 193,
+      "text": "Wreath on the Door Judging You",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 194,
+      "text": "Door Handle Breaking Off Dramatically",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 195,
+      "text": "Doorbell Ringing Nonstop",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 196,
+      "text": "Mailslot Eating Letters",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 197,
+      "text": "Brick in the Wall That's Loose",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 198,
+      "text": "Gutter Falling Down",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 199,
+      "text": "Weathervane Spinning Frantically",
+      "category": "Wild Cards"
+    },
+    {
+      "id": 200,
+      "text": "Garden Hose Coming Alive",
+      "category": "Wild Cards"
+    }
+  ]
+}

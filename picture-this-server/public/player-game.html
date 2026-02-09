@@ -498,6 +498,7 @@
     };
 
     let socket = null;
+    let nounCardsData = null; // Will hold all available noun cards
 
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
@@ -510,8 +511,19 @@
         return;
       }
 
-      initializeSocket();
-      fetchGameState();
+      // Load noun cards from JSON
+      fetch('/data/noun-cards.json')
+        .then(res => res.json())
+        .then(data => {
+          nounCardsData = data;
+          console.log('Loaded', data.cards.length, 'noun cards');
+          initializeSocket();
+          fetchGameState();
+        })
+        .catch(error => {
+          console.error('Failed to load noun cards:', error);
+          showError('Failed to load game cards');
+        });
     });
 
     function initializeSocket() {
@@ -632,28 +644,29 @@
     }
 
     function generateCardHand() {
-      // Placeholder: In Story 1.3, this would come from GameSessionManager
-      // For now, generate mock cards
-      const cardEmojis = ['🎬', '🎭', '🎪', '🎨', '🎸', '🎲', '🎯', '🎳'];
-      const cardTexts = [
-        'DANCING',
-        'SINGING',
-        'JUMPING',
-        'RUNNING',
-        'FALLING',
-        'LAUGHING',
-        'CRYING',
-        'FLYING'
-      ];
-
-      const hand = [];
-      for (let i = 0; i < cardEmojis.length; i++) {
-        hand.push({
-          id: i,
-          emoji: cardEmojis[i],
-          text: cardTexts[i]
-        });
+      if (!nounCardsData || !nounCardsData.cards) {
+        console.error('Noun cards not loaded');
+        return [];
       }
+
+      // Randomly select 8 cards from the full deck
+      const hand = [];
+      const selectedIndices = new Set();
+      const handSize = 8;
+
+      while (hand.length < handSize && hand.length < nounCardsData.cards.length) {
+        const randomIdx = Math.floor(Math.random() * nounCardsData.cards.length);
+        if (!selectedIndices.has(randomIdx)) {
+          selectedIndices.add(randomIdx);
+          const card = nounCardsData.cards[randomIdx];
+          hand.push({
+            id: card.id,
+            text: card.text,
+            category: card.category
+          });
+        }
+      }
+
       return hand;
     }
 
@@ -711,7 +724,6 @@
 
         cardEl.innerHTML = `
           <span class="card-index">${index + 1}</span>
-          <div class="card-emoji">${card.emoji}</div>
           <div class="card-text">${card.text}</div>
           ${selectionNumber ? `<div class="card-selected-indicator">${selectionNumber}</div>` : ''}
         `;

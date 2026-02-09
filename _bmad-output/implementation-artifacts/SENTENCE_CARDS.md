@@ -208,7 +208,7 @@ A collection of 200 sentence cards for the PictureThis game with fill-in-the-bla
 193. My _______ showed me the _______ in everything
 194. A _______ arranged gardens that told life _______
 195. The _______ led into my own _______
-196. A _______, _______, and _______ baked with ingredient that was pure joy
+196. A _______, _______, and _______ baked with ingredients that were pure joy
 197. My _______, _______, and _______ sketched without lifting from the page
 198. A _______ played _______ made of captured _______ that healed what hurt
 199. The _______, _______, and _______ beneath my feet led me home

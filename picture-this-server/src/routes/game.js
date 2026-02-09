@@ -9,6 +9,9 @@
  * ---
  */
 
+const fs = require('fs');
+const path = require('path');
+
 module.exports = function(app, { gameManager, sessionManager, auth, io, logger }) {
 
   // Create game endpoint (Story 1.6: Host Create Game Session)
@@ -101,15 +104,27 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
       }
 
       // Default sentence templates (Story 1.3 would load from database)
-      const sentenceTemplates = [
-        'I SAW A _____ TRYING TO _____',
-        'THE _____ WAS _____ AND _____',
-        'MY FRIEND _____ LOVES _____',
-        'IN THE _____, THERE WAS A _____',
-        'THE BEST _____ I EVER SAW WAS _____',
-        'A _____ IS NOT A _____',
-        'IF I HAD A _____, I WOULD _____'
-      ];
+      let sentenceTemplates = [];
+      try {
+        const sentenceDataPath = path.join(__dirname, '../..', 'data', 'sentence-cards.json');
+        const sentenceData = JSON.parse(fs.readFileSync(sentenceDataPath, 'utf8'));
+        if (sentenceData && sentenceData.cards && sentenceData.cards.length > 0) {
+          sentenceTemplates = sentenceData.cards.map(card => card.text);
+          logger.info('Loaded sentence templates from JSON', { count: sentenceTemplates.length });
+        }
+      } catch (error) {
+        logger.warn('Failed to load sentence templates from JSON, using defaults', { error: error.message });
+        // Fallback to hardcoded templates
+        sentenceTemplates = [
+          'I SAW A _____ TRYING TO _____',
+          'THE _____ WAS _____ AND _____',
+          'MY FRIEND _____ LOVES _____',
+          'IN THE _____, THERE WAS A _____',
+          'THE BEST _____ I EVER SAW WAS _____',
+          'A _____ IS NOT A _____',
+          'IF I HAD A _____, I WOULD _____'
+        ];
+      }
 
       // Start the game
       const updatedSession = sessionManager.startGame(code, sentenceTemplates);
