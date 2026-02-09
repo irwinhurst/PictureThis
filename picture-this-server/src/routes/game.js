@@ -215,9 +215,27 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
       // Record the player's selection
       const updatedSession = sessionManager.recordPlayerSelection(code, playerId, selections);
 
+      // Validate session after recording selection
+      if (!updatedSession || !updatedSession.players) {
+        logger.error('Session data invalid after recording selection', { code, playerId });
+        return res.status(500).json({
+          success: false,
+          error: 'Failed to record selection: Invalid session state'
+        });
+      }
+
+      // Validate judge was assigned
+      if (!updatedSession.judgeId) {
+        logger.error('Judge not assigned before selection submission', { code, playerId });
+        return res.status(500).json({
+          success: false,
+          error: 'Game state error: Judge not assigned'
+        });
+      }
+
       // Calculate how many players have submitted
       const totalPlayers = updatedSession.players.filter(p => p.playerId !== updatedSession.judgeId).length;
-      const submittedCount = Object.keys(updatedSession.playerSelections).length;
+      const submittedCount = Object.keys(updatedSession.playerSelections || {}).length;
 
       logger.info('Player submitted card selection', {
         code,
@@ -237,9 +255,10 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
       // Check if all non-judge players have submitted
       if (submittedCount === totalPlayers) {
         // All selections received, advance to next phase
-        session.currentPhase = 'round_voting';
-        session.lastActivityAt = Date.now();
-        sessionManager.sessionMap.set(code, session);
+        updatedSession.currentPhase = 'round_voting';
+        updatedSession.lastActivityAt = Date.now();
+        // Use the sessionManager's internal store to persist the updated session
+        sessionManager.store.set(code, updatedSession);
 
         logger.info('All selections received, advancing to voting phase', {
           code,

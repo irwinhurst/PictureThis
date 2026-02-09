@@ -527,8 +527,8 @@
         
         // Check if current player is the judge
         if (data.judge && data.judge.id === gameState.playerId) {
-          console.log('Current player is the judge, redirecting to voting page');
-          window.location.href = `/player-voting.html?code=${gameState.code}&playerId=${gameState.playerId}`;
+          console.log('Current player is the judge, redirecting to judge interface');
+          window.location.href = `/judge.html?code=${gameState.code}&playerId=${gameState.playerId}`;
           return;
         }
         
@@ -593,8 +593,8 @@
             
             // Check if current player is the judge
             if (data.judgeId === gameState.playerId || (data.judge && data.judge.id === gameState.playerId)) {
-              console.log('Current player is the judge, redirecting to voting page');
-              window.location.href = `/player-voting.html?code=${gameState.code}&playerId=${gameState.playerId}`;
+              console.log('Current player is the judge, redirecting to judge interface');
+              window.location.href = `/judge.html?code=${gameState.code}&playerId=${gameState.playerId}`;
               return;
             }
             
