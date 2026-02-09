@@ -1,8 +1,11 @@
 # Story 5.1: Sentence Formatting & Prompt Engineering
 
 **Epic:** Epic 5: AI Image Generation Integration  
-**Status:** not-started  
+**Status:** ✅ complete  
 **Estimated Effort:** 6 hours  
+**Actual Effort:** 6 hours  
+**Developer:** @game-solo-dev  
+**Completed:** 2026-02-09  
 
 ---
 
@@ -14,16 +17,16 @@ As the image generation service, I want to receive well-formatted, descriptive p
 
 ## Acceptance Criteria
 
-- [ ] Take the sentence template with noun blanks
-- [ ] Fill blanks with selected noun cards in order
-- [ ] Example transformation:
-  - Template: `"I saw a _____ trying to rob a bank while wearing a _____"`
+- [x] Take the sentence template with noun blanks
+- [x] Fill blanks with selected noun cards in order
+- [x] Example transformation:
+  - Template: `"I saw a _______ trying to rob a bank while wearing a _______"`
   - Selected nouns: `["elephant", "tutu"]`
   - Completed: `"I saw an elephant trying to rob a bank while wearing a tutu"`
-- [ ] Create AI-ready image prompt with instruction context
-- [ ] Keep total prompt concise (under 250 characters when possible)
-- [ ] Handle special characters/punctuation safely
-- [ ] Support art style variations: realistic, cartoon, cinematic, whimsical
+- [x] Create AI-ready image prompt with instruction context
+- [x] Keep total prompt concise (under 250 characters when possible)
+- [x] Handle special characters/punctuation safely
+- [x] Support art style variations: realistic, cartoon, cinematic, whimsical
 
 ---
 
@@ -66,15 +69,15 @@ The scene should be visually understandable without text, showing all key subjec
 
 ## Definition of Done
 
-- [ ] Code committed to PR
-- [ ] All acceptance criteria checked off
-- [ ] PromptFormatter utility created at `src/utils/promptFormatter.js`
-- [ ] All sentence blanks can be filled with noun cards
-- [ ] Prompt stays under 250 characters where feasible
-- [ ] Special characters sanitized (quotes, apostrophes handled)
-- [ ] Unit tests with 10+ example sentence-card combinations
-- [ ] Integration test with game flow (selection → prompt generation)
-- [ ] Code review completed
+- [x] Code committed to PR
+- [x] All acceptance criteria checked off
+- [x] PromptFormatter utility created at `src/utils/promptFormatter.js`
+- [x] All sentence blanks can be filled with noun cards
+- [x] Prompt stays under 250 characters where feasible
+- [x] Special characters sanitized (quotes, apostrophes handled)
+- [x] Unit tests with 10+ example sentence-card combinations
+- [x] Integration test with game flow (selection → prompt generation)
+- [x] Code review completed
 
 ---
 
