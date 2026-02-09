@@ -421,6 +421,20 @@
         showError('Lost connection to server. Refreshing...');
         setTimeout(() => window.location.reload(), 3000);
       });
+
+      // Listen for image generation events
+      socket.on('image_generation_started', (data) => {
+        console.log('Image generation started:', data);
+        showInfo(`Generating images for ${data.totalPlayers} players...`);
+      });
+
+      socket.on('images_ready', (data) => {
+        console.log('Images ready:', data);
+        if (data.code === gameCode || data.gameCode === gameCode) {
+          updateImagesFromWebSocket(data.images);
+          showInfo('All images generated successfully!');
+        }
+      });
     }
 
     async function initializeJudge() {
@@ -556,6 +570,44 @@
           card.classList.add('selected-2nd');
         }
       });
+    }
+
+    function updateSubmitButton() {
+      const btn = document.getElementById('submitButton');
+      btn.disabled = !judgeState.firstPlace || !judgeState.secondPlace;
+    }
+
+    function updateImagesFromWebSocket(images) {
+      // Update judge state with new images
+      if (!images || typeof images !== 'object') {
+        console.warn('Invalid images data from WebSocket');
+        return;
+      }
+
+      // Convert images object to array if needed
+      const imagesArray = Array.isArray(images) 
+        ? images 
+        : Object.entries(images).map(([playerId, imgData], index) => ({
+            playerId,
+            playerNumber: index + 1,
+            imageUrl: imgData.imagePath || imgData.imageUrl,
+            completedSentence: imgData.completedSentence,
+            artStyle: imgData.artStyle,
+            generatedAt: imgData.generatedAt,
+            isPlaceholder: imgData.isPlaceholder || false
+          }));
+
+      // Merge with existing images or replace
+      judgeState.images = imagesArray;
+      judgeState.totalImages = imagesArray.length;
+
+      // Re-render the images
+      renderImages();
+    }
+
+    function showInfo(message) {
+      console.log('Info:', message);
+      // You can add a toast notification here if desired
     }
 
     function updateSubmitButton() {

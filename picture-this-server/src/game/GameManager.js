@@ -288,6 +288,31 @@ class GameManager {
       });
     } else if (eventType === 'phase_timeout' && data.gameId) {
       this.handlePhaseTimeout(data.gameId);
+    } else if (eventType === 'image_generation_started') {
+      // Broadcast image generation started to game room
+      const room = data.code ? `game-${data.code}` : data.gameId;
+      this.io.to(room).emit('image_generation_started', {
+        gameId: data.gameId,
+        code: data.code,
+        totalPlayers: data.totalPlayers,
+        timestamp: Date.now()
+      });
+      this.logger.info('Broadcasting image generation started', { room, gameId: data.gameId });
+    } else if (eventType === 'images_ready') {
+      // Broadcast generated images to game room
+      const room = data.code ? `game-${data.code}` : data.gameId;
+      this.io.to(room).emit('images_ready', {
+        gameId: data.gameId,
+        code: data.code,
+        images: data.images,
+        round: data.round,
+        timestamp: Date.now()
+      });
+      this.logger.info('Broadcasting images ready', { 
+        room, 
+        gameId: data.gameId, 
+        imageCount: Object.keys(data.images || {}).length 
+      });
     }
   }
 

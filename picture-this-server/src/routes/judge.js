@@ -11,14 +11,14 @@
 /**
  * Setup judge interface routes
  * @param {Object} app - Express app instance
- * @param {Object} deps - Dependencies { sessionManager: GameSessionManager }
+ * @param {Object} deps - Dependencies { sessionManager: GameSessionManager, gameManager: GameManager }
  */
 function setupJudgeRoutes(app, deps) {
   if (!deps || !deps.sessionManager) {
     throw new Error('setupJudgeRoutes requires sessionManager in dependencies');
   }
   
-  const { sessionManager: manager } = deps;
+  const { sessionManager: manager, gameManager } = deps;
 
   /**
    * GET /api/judge/:code/images
@@ -33,25 +33,36 @@ function setupJudgeRoutes(app, deps) {
         return res.status(404).json({ error: 'Session not found' });
       }
 
-      // Get all player selections (generated images)
-      const selections = manager.getPlayerSelections(code);
-      
-      if (!selections || Object.keys(selections).length === 0) {
-        return res.json({
-          gameCode: code,
-          images: [],
-          totalImages: 0,
-          judgeId: session.judgeId
-        });
+      // Try to get images from GameManager first (WebSocket flow)
+      let images = [];
+      if (gameManager) {
+        const game = gameManager.getGameByCode(code);
+        if (game && game.generatedImages) {
+          // Convert generatedImages map to array
+          images = Object.entries(game.generatedImages).map(([playerId, imgData], index) => ({
+            playerId,
+            playerNumber: index + 1,
+            imageUrl: imgData.imagePath || imgData.imageUrl,
+            completedSentence: imgData.completedSentence,
+            artStyle: imgData.artStyle,
+            generatedAt: imgData.generatedAt,
+            isPlaceholder: imgData.isPlaceholder || false
+          }));
+        }
       }
 
-      // Convert selections to image list with player numbers
-      const images = Object.entries(selections).map(([playerId, selection], index) => ({
-        playerId,
-        playerNumber: index + 1, // 1-indexed
-        imageUrl: selection.selections?.imageUrl || null, // Assuming selections has imageUrl
-        submittedAt: selection.submittedAt
-      }));
+      // Fallback: check if images are stored in session
+      if (images.length === 0 && session.generatedImages) {
+        images = Object.entries(session.generatedImages).map(([playerId, imgData], index) => ({
+          playerId,
+          playerNumber: index + 1,
+          imageUrl: imgData.imagePath || imgData.imageUrl,
+          completedSentence: imgData.completedSentence,
+          artStyle: imgData.artStyle,
+          generatedAt: imgData.generatedAt,
+          isPlaceholder: imgData.isPlaceholder || false
+        }));
+      }
 
       res.json({
         gameCode: code,
