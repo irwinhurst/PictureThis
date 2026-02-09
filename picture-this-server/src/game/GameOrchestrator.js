@@ -16,6 +16,7 @@ const {
   updatePlayer 
 } = require('./GameState');
 const CardDeck = require('./CardDeck');
+const ImageGeneratorService = require('../services/ImageGeneratorService');
 
 class GameOrchestrator {
   /**
@@ -28,6 +29,22 @@ class GameOrchestrator {
     this.logger = logger;
     this.timerManager = timerManager;
     this.broadcastCallback = broadcastCallback;
+    
+    // Initialize image generator service
+    try {
+      this.imageGenerator = new ImageGeneratorService({
+        apiKey: process.env.OPENAI_API_KEY,
+        serviceType: process.env.IMAGE_GENERATION_SERVICE || 'dalle3',
+        timeout: parseInt(process.env.IMAGE_GENERATION_TIMEOUT || '60000', 10),
+        maxConcurrent: parseInt(process.env.IMAGE_GENERATION_MAX_CONCURRENT || '2', 10)
+      });
+      logger.info('ImageGeneratorService initialized');
+    } catch (error) {
+      logger.warn('ImageGeneratorService initialization failed - image generation disabled', {
+        error: error.message
+      });
+      this.imageGenerator = null;
+    }
     
     // Default noun cards for deck (will be loaded from DB in Story 2.3)
     this.defaultCards = [
@@ -63,9 +80,9 @@ class GameOrchestrator {
    * @param {Object} state - Current game state
    * @param {string} targetPhase - Optional target phase (if not specified, uses automatic flow)
    * @param {string} reason - Reason for advancement
-   * @returns {Object} New state after advancement
+   * @returns {Promise<Object>} New state after advancement
    */
-  advancePhase(state, targetPhase = null, reason = '') {
+  async advancePhase(state, targetPhase = null, reason = '') {
     try {
       // Determine next phase
       const nextPhase = targetPhase || getNextPhase(state.currentPhase, state.currentRound, state.maxRounds);
@@ -103,8 +120,8 @@ class GameOrchestrator {
       // Record transition
       let newState = recordTransition(state, nextPhase, reason);
       
-      // Execute phase-specific logic
-      newState = this._executePhaseLogic(newState, nextPhase);
+      // Execute phase-specific logic (may be async for IMAGE_GEN phase)
+      newState = await this._executePhaseLogic(newState, nextPhase);
       
       // Update phase
       newState = updateState(newState, {
@@ -151,10 +168,10 @@ class GameOrchestrator {
    * Executes phase-specific logic
    * @param {Object} state - Current state
    * @param {string} phase - Phase to execute logic for
-   * @returns {Object} Updated state
+   * @returns {Promise<Object>} Updated state
    * @private
    */
-  _executePhaseLogic(state, phase) {
+  async _executePhaseLogic(state, phase) {
     switch (phase) {
       case PHASES.ROUND_SETUP:
         return this._setupRound(state);
@@ -166,7 +183,7 @@ class GameOrchestrator {
         return this._completeSelection(state);
       
       case PHASES.IMAGE_GEN:
-        return this._startImageGen(state);
+        return await this._startImageGen(state);
       
       case PHASES.IMAGE_GEN_COMPLETE:
         return this._completeImageGen(state);
@@ -289,19 +306,75 @@ class GameOrchestrator {
   /**
    * Starts image generation phase
    * @param {Object} state - Current state
-   * @returns {Object} Updated state
+   * @returns {Promise<Object>} Updated state
    * @private
    */
-  _startImageGen(state) {
+  async _startImageGen(state) {
     this.logger.info('Image generation started', {
       gameId: state.gameId,
       selectionsCount: Object.keys(state.playerSelections).length
     });
     
-    // Image generation will be triggered here in future stories
-    // For now, just a placeholder
+    // If image generator not available, skip to next phase
+    if (!this.imageGenerator) {
+      this.logger.warn('Image generator not available, skipping image generation', {
+        gameId: state.gameId
+      });
+      return updateState(state, {
+        generatedImages: {}
+      });
+    }
     
-    return state;
+    try {
+      // Broadcast "generating images" status to all clients
+      if (this.broadcastCallback) {
+        this.broadcastCallback('image_generation_started', {
+          gameId: state.gameId,
+          code: state.code,
+          totalPlayers: Object.keys(state.playerSelections).length
+        });
+      }
+      
+      // Generate images for all players
+      const generatedImages = await this.imageGenerator.generateImagesForRound(state);
+      
+      // Convert array to object keyed by playerId
+      const imagesMap = {};
+      generatedImages.forEach(img => {
+        imagesMap[img.playerId] = {
+          imageUrl: img.imageUrl,
+          imagePath: img.imagePath,
+          completedSentence: img.completedSentence,
+          artStyle: img.artStyle,
+          generatedAt: img.generatedAt,
+          isPlaceholder: img.isPlaceholder || false
+        };
+      });
+      
+      this.logger.info('Image generation complete', {
+        gameId: state.gameId,
+        totalGenerated: generatedImages.length,
+        placeholders: generatedImages.filter(i => i.isPlaceholder).length
+      });
+      
+      // Update state with generated images
+      return updateState(state, {
+        generatedImages: imagesMap
+      });
+      
+    } catch (error) {
+      this.logger.error('Image generation failed', {
+        gameId: state.gameId,
+        error: error.message,
+        stack: error.stack
+      });
+      
+      // Return state with empty images on error
+      return updateState(state, {
+        generatedImages: {},
+        imageGenerationError: error.message
+      });
+    }
   }
 
   /**
@@ -312,8 +385,19 @@ class GameOrchestrator {
    */
   _completeImageGen(state) {
     this.logger.info('Image generation complete', {
-      gameId: state.gameId
+      gameId: state.gameId,
+      imagesGenerated: Object.keys(state.generatedImages || {}).length
     });
+    
+    // Broadcast generated images to all clients (judge and display)
+    if (this.broadcastCallback) {
+      this.broadcastCallback('images_ready', {
+        gameId: state.gameId,
+        code: state.code,
+        images: state.generatedImages,
+        round: state.currentRound
+      });
+    }
     
     return state;
   }

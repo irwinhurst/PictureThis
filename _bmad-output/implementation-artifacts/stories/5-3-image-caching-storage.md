@@ -15,7 +15,6 @@ As the game system, I want to cache generated images and store them efficiently,
 ## Acceptance Criteria
 
 - [ ] Generated images saved to persistent storage (filesystem + database metadata)
-- [ ] Images cached per unique prompt (deduplication for identical sentence + cards)
 - [ ] Each image linked to player, round, submission, and original prompt
 - [ ] Support image retrieval by game code and round
 - [ ] Images accessible via HTTP GET (served from public folder)

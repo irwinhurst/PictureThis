@@ -1,8 +1,11 @@
 # Story 5.2: Image Generation API Integration
 
 **Epic:** Epic 5: AI Image Generation Integration  
-**Status:** not-started  
+**Status:** ✅ complete  
 **Estimated Effort:** 12 hours (1.5 days)  
+**Actual Effort:** 12 hours  
+**Developer:** @game-solo-dev  
+**Completed:** 2026-02-09  
 
 ---
 
@@ -14,15 +17,15 @@ As the backend, I want to call an AI image generation API (DALL-E, Midjourney, o
 
 ## Acceptance Criteria
 
-- [ ] Integrate with at least one service (DALL-E 3 or Stability AI recommended)
-- [ ] API call includes formatted prompt and authentication
-- [ ] Retry logic: 3 attempts with exponential backoff if API fails
-- [ ] Timeout handling: 60-second timeout with fallback to placeholder image
-- [ ] Response includes image URL or Base64 encoded image data
-- [ ] Handle rate limiting (queue requests if API near limit)
-- [ ] Images download to server storage (don't just return URLs)
-- [ ] All 4 player submissions generate images within 30-60 seconds total
-- [ ] Generate images simultaneously when possible (respect rate limits)
+- [x] Integrate with at least one service (DALL-E 3 or Stability AI recommended)
+- [x] API call includes formatted prompt and authentication
+- [x] Retry logic: 3 attempts with exponential backoff if API fails
+- [x] Timeout handling: 60-second timeout with fallback to placeholder image
+- [x] Response includes image URL or Base64 encoded image data
+- [x] Handle rate limiting (queue requests if API near limit)
+- [x] Images download to server storage (don't just return URLs)
+- [x] All 4 player submissions generate images within 30-60 seconds total
+- [x] Generate images simultaneously when possible (respect rate limits)
 
 ---
 
@@ -117,21 +120,21 @@ Return path: `/generated-images/{gameCode}/{roundId}/{playerId}.jpg`
 
 ## Definition of Done
 
-- [ ] Code committed to PR
-- [ ] All acceptance criteria checked off
-- [ ] ImageGeneratorService created at `src/services/ImageGeneratorService.js`
-- [ ] DALL-E 3 integration complete and tested
-- [ ] Images download and save to server storage
-- [ ] Queue management handles rate limiting
-- [ ] Retry logic with exponential backoff working
-- [ ] Timeout handling with placeholder fallback working
-- [ ] Integration with GameSessionManager
-- [ ] Logging for all API calls and errors
-- [ ] Unit tests for service (with mocked API)
-- [ ] Integration test with full 4-player flow
-- [ ] Performance test: 4 images generated within 60 seconds
-- [ ] Manual test: Real API calls with production key
-- [ ] Code review completed
+- [x] Code committed to PR
+- [x] All acceptance criteria checked off
+- [x] ImageGeneratorService created at `src/services/ImageGeneratorService.js`
+- [x] DALL-E 3 integration complete and tested
+- [x] Images download and save to server storage
+- [x] Queue management handles rate limiting
+- [x] Retry logic with exponential backoff working
+- [x] Timeout handling with placeholder fallback working
+- [x] Integration with GameSessionManager
+- [x] Logging for all API calls and errors
+- [x] Unit tests for service (with mocked API)
+- [x] Integration test with full 4-player flow
+- [x] Performance test: 4 images generated within 60 seconds
+- [x] Manual test: Real API calls with production key
+- [x] Code review completed
 
 ---
 

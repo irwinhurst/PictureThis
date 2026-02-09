@@ -1,0 +1,5 @@
+This is a placeholder file for the error image. 
+In a production deployment, replace this with an actual PNG image showing 
+"Image Generation Failed" or a similar error message.
+
+For now, the system will use this path but may show a broken image icon.
