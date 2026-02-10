@@ -252,7 +252,7 @@
             type="range" 
             id="maxPlayers" 
             name="maxPlayers" 
-            min="2" 
+            min="1" 
             max="20" 
             value="8"
           >
@@ -260,7 +260,7 @@
         </div>
         <div class="info-text">
           <span class="info-icon">ℹ️</span>
-          <span>Supports 2-20 players</span>
+          <span>Supports 1-20 players (single-player mode available)</span>
         </div>
       </div>
 
@@ -323,8 +323,8 @@
       const maxRounds = parseInt(maxRoundsInput.value);
 
       // Validate
-      if (maxPlayers < 2 || maxPlayers > 20) {
-        showError('Max players must be between 2 and 20');
+      if (maxPlayers < 1 || maxPlayers > 20) {
+        showError('Max players must be between 1 and 20');
         return;
       }
 

@@ -89,11 +89,26 @@ class ImageGeneratorService {
   async _processQueue() {
     // Check if we can process more requests
     if (this.activeRequests >= this.maxConcurrent || this.queue.length === 0) {
+      if (this.queue.length > 0 && this.activeRequests >= this.maxConcurrent) {
+        logger.debug('Queue throttled', {
+          queueLength: this.queue.length,
+          activeRequests: this.activeRequests,
+          maxConcurrent: this.maxConcurrent
+        });
+      }
       return;
     }
 
     const request = this.queue.shift();
     this.activeRequests++;
+    
+    logger.debug('Processing queued image request', {
+      gameCode: request.gameCode,
+      playerId: request.playerId,
+      queueRemaining: this.queue.length,
+      activeRequests: this.activeRequests,
+      maxConcurrent: this.maxConcurrent
+    });
 
     try {
       const result = await this._executeGeneration(request);
@@ -102,6 +117,12 @@ class ImageGeneratorService {
       request.reject(error);
     } finally {
       this.activeRequests--;
+      logger.debug('Completed image generation request', {
+        gameCode: request.gameCode,
+        playerId: request.playerId,
+        activeRequests: this.activeRequests,
+        queueRemaining: this.queue.length
+      });
       this._processQueue(); // Process next item in queue
     }
   }
@@ -230,7 +251,8 @@ class ImageGeneratorService {
     logger.debug('Calling DALL-E 3 API', {
       gameCode,
       playerId,
-      promptLength: prompt.length
+      promptLength: prompt.length,
+      prompt: prompt  // Log the actual prompt being sent
     });
 
     try {
@@ -352,19 +374,26 @@ class ImageGeneratorService {
    */
   async generateImagesForRound(gameState) {
     const { gameId, code, currentRound, playerSelections, sentenceTemplate, judgeId } = gameState;
+    const startTime = Date.now();
 
-    logger.info('Generating images for round', {
+    logger.info('generateImagesForRound started', {
       gameId,
       code,
       round: currentRound,
-      playerCount: Object.keys(playerSelections).length
+      playerCount: Object.keys(playerSelections).length,
+      judgeId,
+      sentenceTemplate: sentenceTemplate.substring(0, 50) + '...'
     });
 
     const promises = [];
+    let queuedCount = 0;
+    let skippedCount = 0;
 
     for (const [playerId, selection] of Object.entries(playerSelections)) {
       // Skip judge
       if (playerId === judgeId) {
+        logger.debug('Skipping judge for image generation', { code, playerId, judgeId });
+        skippedCount++;
         continue;
       }
 
@@ -375,6 +404,14 @@ class ImageGeneratorService {
           selection.selectedCards || selection,
           selection.artStyle // Pass art style if provided in selection
         );
+
+        logger.debug('Queuing image generation', {
+          code,
+          round: currentRound,
+          playerId,
+          promptLength: prompt.length,
+          artStyle
+        });
 
         // Queue image generation
         const promise = this.generateImage(
@@ -407,6 +444,7 @@ class ImageGeneratorService {
           playerId,
           promise
         });
+        queuedCount++;
 
       } catch (error) {
         logger.error('Failed to format prompt for player', {
@@ -415,11 +453,26 @@ class ImageGeneratorService {
           playerId,
           error: error.message
         });
+        skippedCount++;
       }
     }
 
+    logger.info('Image generation queued', {
+      gameId,
+      code,
+      round: currentRound,
+      queuedCount,
+      skippedCount,
+      totalPromises: promises.length,
+      currentQueueLength: this.queue.length,
+      activeRequests: this.activeRequests
+    });
+
     // Wait for all images to generate (with timeout)
     const results = [];
+    let completedCount = 0;
+    let failedCount = 0;
+
     for (const { playerId, promise } of promises) {
       try {
         const result = await promise;
@@ -427,8 +480,19 @@ class ImageGeneratorService {
           playerId,
           ...result
         });
+        completedCount++;
+
+        logger.debug('Image generation completed for player', {
+          gameId,
+          code,
+          playerId,
+          completedCount,
+          totalQueued: queuedCount,
+          isPlaceholder: result.isPlaceholder
+        });
+
       } catch (error) {
-        logger.error('Image generation promise rejected', {
+        logger.error('Image generation promise rejected for player', {
           gameId,
           code,
           playerId,
@@ -441,15 +505,22 @@ class ImageGeneratorService {
           error: error.message,
           isPlaceholder: true
         });
+        failedCount++;
       }
     }
 
-    logger.info('Round image generation complete', {
+    const elapsedMs = Date.now() - startTime;
+
+    logger.info('Round image generation batch complete', {
       gameId,
       code,
       round: currentRound,
       totalGenerated: results.length,
-      placeholders: results.filter(r => r.isPlaceholder).length
+      successCount: completedCount,
+      failedCount,
+      placeholders: results.filter(r => r.isPlaceholder).length,
+      elapsedMs,
+      averagePerImage: results.length > 0 ? Math.round(elapsedMs / results.length) + 'ms' : 'N/A'
     });
 
     return results;

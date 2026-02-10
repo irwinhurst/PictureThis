@@ -11,6 +11,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const logger = require('../config/logger');
+const auth = require('../../auth');
+const ImageGeneratorService = require('../services/ImageGeneratorService');
+const PromptFormatter = require('../utils/promptFormatter');
 
 module.exports = function(app, { gameManager, sessionManager, auth, io, logger }) {
 
@@ -24,10 +28,10 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
       const maxPlayersVal = parseInt(maxPlayers) || 8;
       const maxRoundsVal = parseInt(maxRounds) || 10;
       
-      if (maxPlayersVal < 2 || maxPlayersVal > 20) {
+      if (maxPlayersVal < 1 || maxPlayersVal > 20) {
         return res.status(400).json({
           success: false,
-          error: 'Max players must be between 2 and 20'
+          error: 'Max players must be between 1 and 20'
         });
       }
       
@@ -95,11 +99,11 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
         });
       }
 
-      // Validate at least 2 players
-      if (!session.players || session.players.length < 2) {
+      // Validate at least 1 player (single-player mode supported)
+      if (!session.players || session.players.length < 1) {
         return res.status(400).json({
           success: false,
-          error: `Not enough players to start game (need 2, have ${session.players.length})`
+          error: `Not enough players to start game (need at least 1, have ${session.players.length})`
         });
       }
 
@@ -129,8 +133,10 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
       // Start the game
       const updatedSession = sessionManager.startGame(code, sentenceTemplates);
 
-      // Find the judge player info
-      const judge = updatedSession.players.find(p => p.playerId === updatedSession.judgeId);
+      // Find the judge player info (may be null in single-player mode)
+      const judge = updatedSession.judgeId 
+        ? updatedSession.players.find(p => p.playerId === updatedSession.judgeId)
+        : null;
 
       logger.info('Game started', {
         code,
@@ -138,19 +144,24 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
         hostId,
         players: updatedSession.players.length,
         judge: judge?.name,
+        isSinglePlayer: updatedSession.isSinglePlayer,
         sentence: updatedSession.sentenceTemplate
       });
+
+      // Prepare judge info (null for single-player mode)
+      const judgeInfo = judge ? {
+        id: judge.playerId,
+        name: judge.name,
+        avatar: judge.avatar
+      } : null;
 
       // Broadcast game-started event to all connected players via WebSocket using code-based room
       io.to(`game-${code}`).emit('game-started', {
         gameId: updatedSession.gameId,
         code: updatedSession.code,
         round: updatedSession.currentRound,
-        judge: {
-          id: judge.playerId,
-          name: judge.name,
-          avatar: judge.avatar
-        },
+        judge: judgeInfo,
+        isSinglePlayer: updatedSession.isSinglePlayer,
         sentence: updatedSession.sentenceTemplate,
         time_remaining: 45,
         max_rounds: updatedSession.maxRounds,
@@ -177,11 +188,8 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
         gameId: updatedSession.gameId,
         code: updatedSession.code,
         round: updatedSession.currentRound,
-        judge: {
-          id: judge.playerId,
-          name: judge.name,
-          avatar: judge.avatar
-        },
+        judge: judgeInfo,
+        isSinglePlayer: updatedSession.isSinglePlayer,
         sentence: updatedSession.sentenceTemplate,
         time_remaining: timeRemaining,
         max_rounds: updatedSession.maxRounds,
@@ -200,7 +208,7 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
   app.post('/api/game/:code/submit-selection', (req, res) => {
     try {
       const { code } = req.params;
-      const { playerId, selections } = req.body;
+      const { playerId, selections, selectedCards, artStyle } = req.body;
 
       // Validate required fields
       if (!playerId || !selections || typeof selections !== 'object') {
@@ -227,8 +235,13 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
         });
       }
 
-      // Record the player's selection
-      const updatedSession = sessionManager.recordPlayerSelection(code, playerId, selections);
+      // Record the player's selection (including selectedCards and artStyle for image gen)
+      const selectionData = {
+        selections,
+        selectedCards,
+        artStyle
+      };
+      const updatedSession = sessionManager.recordPlayerSelection(code, playerId, selectionData);
 
       // Validate session after recording selection
       if (!updatedSession || !updatedSession.players) {
@@ -239,8 +252,8 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
         });
       }
 
-      // Validate judge was assigned
-      if (!updatedSession.judgeId) {
+      // Validate judge was assigned (except in single-player mode)
+      if (!updatedSession.isSinglePlayer && !updatedSession.judgeId) {
         logger.error('Judge not assigned before selection submission', { code, playerId });
         return res.status(500).json({
           success: false,
@@ -249,7 +262,10 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
       }
 
       // Calculate how many players have submitted
-      const totalPlayers = updatedSession.players.filter(p => p.playerId !== updatedSession.judgeId).length;
+      // In single-player mode, count all players; in multiplayer, exclude the judge
+      const totalPlayers = updatedSession.isSinglePlayer
+        ? updatedSession.players.length
+        : updatedSession.players.filter(p => p.playerId !== updatedSession.judgeId).length;
       const submittedCount = Object.keys(updatedSession.playerSelections || {}).length;
 
       logger.info('Player submitted card selection', {
@@ -257,7 +273,8 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
         playerId,
         selections,
         submittedCount,
-        totalPlayers
+        totalPlayers,
+        isSinglePlayer: updatedSession.isSinglePlayer
       });
 
       // Broadcast update to all players
@@ -267,21 +284,43 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
         totalPlayers
       });
 
+      // START IMAGE GENERATION IMMEDIATELY for this player (don't wait for all selections)
+      logger.info('Starting image generation for player', {
+        code,
+        gameId: updatedSession.gameId,
+        playerId,
+        round: updatedSession.currentRound
+      });
+
+      generateImageForPlayer(
+        code,
+        updatedSession,
+        playerId,
+        updatedSession.playerSelections[playerId],
+        updatedSession.sentenceTemplate,
+        sessionManager,
+        io,
+        logger
+      ).catch(error => {
+        logger.error('Image generation failed for player', {
+          code,
+          playerId,
+          error: error.message
+        });
+        // Broadcast error for this player
+        io.to(`game-${code}`).emit('image-generation-error', {
+          playerId,
+          error: error.message
+        });
+      });
+
       // Check if all non-judge players have submitted
       if (submittedCount === totalPlayers) {
-        // All selections received, advance to next phase
-        updatedSession.currentPhase = 'round_voting';
-        updatedSession.lastActivityAt = Date.now();
-        // Use the sessionManager's internal store to persist the updated session
-        sessionManager.store.set(code, updatedSession);
-
-        logger.info('All selections received, advancing to voting phase', {
+        logger.info('All selections received', {
           code,
-          submittedCount
-        });
-
-        io.to(`game-${code}`).emit('selections-complete', {
-          message: 'All players have submitted selections'
+          submittedCount,
+          totalPlayers,
+          message: 'Images are being generated in parallel'
         });
       }
 
@@ -355,3 +394,227 @@ module.exports = function(app, { gameManager, sessionManager, auth, io, logger }
     });
   });
 };
+
+/**
+ * Helper function to generate image for a single player
+ * @param {string} code - Game code
+ * @param {Object} session - Game session object
+ * @param {string} playerId - Player ID
+ * @param {Object} selection - Player's card selections
+ * @param {string} sentenceTemplate - Sentence template
+ * @param {Object} sessionManager - SessionManager instance
+ * @param {Object} io - Socket.io instance
+ * @param {Object} logger - Logger instance
+ */
+async function generateImageForPlayer(code, session, playerId, selection, sentenceTemplate, sessionManager, io, logger) {
+  try {
+    const startTime = Date.now();
+    
+    logger.info('Starting image generation for player (individual)', {
+      code,
+      gameId: session.gameId,
+      playerId,
+      round: session.currentRound || 1
+    });
+
+    // Initialize image generator
+    const imageGenerator = new ImageGeneratorService({
+      apiKey: process.env.OPENAI_API_KEY,
+      serviceType: process.env.IMAGE_GENERATION_SERVICE || 'dalle3',
+      timeout: parseInt(process.env.IMAGE_GENERATION_TIMEOUT || '60000', 10),
+      maxConcurrent: parseInt(process.env.IMAGE_GENERATION_MAX_CONCURRENT || '2', 10)
+    });
+
+    try {
+      // Get selected cards from selection object
+      // selection.selectedCards should contain the actual card objects sent from client
+      const selectedCards = selection.selectedCards;
+      
+      if (!selectedCards || !Array.isArray(selectedCards) || selectedCards.length === 0) {
+        throw new Error(`No selected cards provided for player ${playerId}`);
+      }
+      
+      logger.debug('Using selected cards for prompt', {
+        code,
+        playerId,
+        selectedCards,
+        cardCount: selectedCards.length
+      });
+
+      // Format the prompt
+      const { prompt, completedSentence, artStyle } = PromptFormatter.formatImagePrompt(
+        sentenceTemplate,
+        selectedCards,
+        selection.artStyle
+      );
+
+      logger.debug('Generating image for player', {
+        code,
+        playerId,
+        artStyle,
+        sentenceTemplate: sentenceTemplate.substring(0, 50) + '...'
+      });
+
+      // Generate image
+      const result = await imageGenerator.generateImage(
+        prompt,
+        code,
+        session.currentRound || 1,
+        playerId,
+        artStyle,
+        completedSentence
+      );
+
+      const elapsedMs = Date.now() - startTime;
+
+      const imageData = {
+        imageUrl: result.imageUrl,
+        imagePath: result.imagePath,
+        completedSentence: result.completedSentence,
+        artStyle: result.artStyle,
+        generatedAt: result.generatedAt,
+        isPlaceholder: result.isPlaceholder || false
+      };
+
+      // Store generated image in session
+      if (!session.generatedImages) {
+        session.generatedImages = {};
+      }
+      session.generatedImages[playerId] = imageData;
+      session.lastActivityAt = Date.now();
+      sessionManager.store.set(code, session);
+
+      logger.info('Image generated for player (individual)', {
+        code,
+        playerId,
+        isPlaceholder: result.isPlaceholder,
+        imagePath: result.imagePath,
+        elapsedMs
+      });
+
+      // Broadcast the generated image to all players
+      io.to(`game-${code}`).emit('image-ready', {
+        gameId: session.gameId,
+        code: session.code,
+        playerId,
+        imageUrl: imageData.imageUrl,
+        imagePath: imageData.imagePath,
+        completedSentence: imageData.completedSentence,
+        artStyle: imageData.artStyle,
+        generatedAt: imageData.generatedAt,
+        isPlaceholder: imageData.isPlaceholder,
+        elapsedMs
+      });
+
+      // Check if all images have been generated
+      const totalPlayersExpected = session.isSinglePlayer
+        ? session.players.length
+        : session.players.filter(p => p.playerId !== session.judgeId).length;
+      const generatedCount = Object.keys(session.generatedImages || {}).length;
+
+      logger.debug('Image generation progress', {
+        code,
+        generatedCount,
+        totalExpected: totalPlayersExpected,
+        complete: generatedCount === totalPlayersExpected
+      });
+
+      // If all images are ready, broadcast completion and auto-award in single-player
+      if (generatedCount === totalPlayersExpected) {
+        logger.info('All images generated', {
+          code,
+          totalGenerated: generatedCount,
+          isSinglePlayer: session.isSinglePlayer
+        });
+
+        // In single-player mode, auto-award winner
+        if (session.isSinglePlayer) {
+          const singlePlayerId = Object.keys(session.playerSelections)[0];
+          session.judgeSelection = {
+            firstPlace: singlePlayerId,
+            secondPlace: null
+          };
+
+          logger.info('Single-player mode: auto-assigned winner', {
+            code,
+            winnerId: singlePlayerId
+          });
+
+          // Broadcast results
+          io.to(`game-${code}`).emit('results_ready', {
+            gameId: session.gameId,
+            code: session.code,
+            round: session.currentRound,
+            isSinglePlayer: true,
+            results: {
+              round: session.currentRound,
+              firstPlace: singlePlayerId,
+              secondPlace: null,
+              timestamp: Date.now(),
+              isSinglePlayer: true
+            },
+            images: session.generatedImages,
+            players: session.players.map(p => ({
+              id: p.playerId,
+              name: p.name,
+              avatar: p.avatar,
+              score: p.score || 0
+            })),
+            timestamp: Date.now()
+          });
+        }
+      }
+
+    } catch (error) {
+      logger.error('Failed to generate image for player', {
+        code,
+        playerId,
+        error: error.message
+      });
+
+      // Use placeholder on error
+      const imageData = {
+        imageUrl: '/images/placeholder-image-error.png',
+        imagePath: '/images/placeholder-image-error.png',
+        completedSentence: 'Error generating image',
+        artStyle: 'Error',
+        generatedAt: new Date().toISOString(),
+        isPlaceholder: true,
+        error: error.message
+      };
+
+      // Store placeholder in session
+      if (!session.generatedImages) {
+        session.generatedImages = {};
+      }
+      session.generatedImages[playerId] = imageData;
+      sessionManager.store.set(code, session);
+
+      // Broadcast the error/placeholder
+      io.to(`game-${code}`).emit('image-ready', {
+        gameId: session.gameId,
+        code: session.code,
+        playerId,
+        imageUrl: imageData.imageUrl,
+        imagePath: imageData.imagePath,
+        completedSentence: imageData.completedSentence,
+        artStyle: imageData.artStyle,
+        generatedAt: imageData.generatedAt,
+        isPlaceholder: true,
+        error: error.message
+      });
+
+      throw error;
+    }
+
+  } catch (error) {
+    logger.error('Image generation failed with exception for player', {
+      code,
+      playerId,
+      error: error.message,
+      stack: error.stack
+    });
+
+    throw error;
+  }
+}

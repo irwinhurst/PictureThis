@@ -32,7 +32,7 @@ const VALID_TRANSITIONS = {
   [PHASES.SELECTION]: [PHASES.SELECTION_COMPLETE],
   [PHASES.SELECTION_COMPLETE]: [PHASES.IMAGE_GEN],
   [PHASES.IMAGE_GEN]: [PHASES.IMAGE_GEN_COMPLETE],
-  [PHASES.IMAGE_GEN_COMPLETE]: [PHASES.JUDGING],
+  [PHASES.IMAGE_GEN_COMPLETE]: [PHASES.JUDGING, PHASES.RESULTS], // Allow skip to RESULTS for single-player
   [PHASES.JUDGING]: [PHASES.JUDGING_COMPLETE],
   [PHASES.JUDGING_COMPLETE]: [PHASES.RESULTS],
   [PHASES.RESULTS]: [PHASES.ROUND_SETUP, PHASES.GAME_END],
@@ -46,10 +46,10 @@ const PHASE_TIMEOUTS = {
   [PHASES.SELECTION]: 45000, // 45 seconds for players to select cards
   [PHASES.SELECTION_COMPLETE]: 1000, // 1 second transition
   [PHASES.IMAGE_GEN]: 5000, // 5 seconds display + 60s API timeout (handled separately)
-  [PHASES.IMAGE_GEN_COMPLETE]: 1000, // 1 second transition
+  [PHASES.IMAGE_GEN_COMPLETE]: 500, // 500ms transition (quick move to next phase)
   [PHASES.JUDGING]: 0, // No timeout - judge makes decision, but could add fallback
   [PHASES.JUDGING_COMPLETE]: 1000, // 1 second transition
-  [PHASES.RESULTS]: 5000, // 5 seconds to display results
+  [PHASES.RESULTS]: 8000, // 8 seconds to display results before auto-advancing
   [PHASES.GAME_END]: 0 // No timeout - game over
 };
 

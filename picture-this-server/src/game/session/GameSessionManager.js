@@ -78,14 +78,14 @@ class GameSessionManager {
    * Create a new game session
    * @param {string} hostId - UUID of the host player
    * @param {number} maxRounds - Maximum number of rounds (1-20)
-   * @param {number} maxPlayers - Maximum players (2-20)
+   * @param {number} maxPlayers - Maximum players (1-20, use 1 for single-player mode)
    * @returns {Object} - Created GameSession object
    */
   createSession(hostId, maxRounds = 5, maxPlayers = 8) {
     // Validate parameters
     if (!hostId) throw new Error('hostId is required');
     if (maxRounds < 1 || maxRounds > 20) throw new Error('maxRounds must be between 1 and 20');
-    if (maxPlayers < 2 || maxPlayers > 20) throw new Error('maxPlayers must be between 2 and 20');
+    if (maxPlayers < 1 || maxPlayers > 20) throw new Error('maxPlayers must be between 1 and 20');
 
     const code = this.store.generateUniqueCode();
     const gameId = this.store.generateGameId();
@@ -315,7 +315,7 @@ class GameSessionManager {
       throw new Error('Session not found');
     }
 
-    if (!session.players || session.players.length < 2) {
+    if (!session.players || session.players.length < 1) {
       throw new Error('Not enough players to start game');
     }
 
@@ -323,9 +323,16 @@ class GameSessionManager {
       throw new Error('Game has already started');
     }
 
-    // Select random judge
-    const judgeIndex = Math.floor(Math.random() * session.players.length);
-    const judge = session.players[judgeIndex];
+    // Check if single-player mode
+    const isSinglePlayer = session.players.length === 1;
+
+    // Select random judge (skip if single player)
+    let judgeIndex = null;
+    let judge = null;
+    if (!isSinglePlayer) {
+      judgeIndex = Math.floor(Math.random() * session.players.length);
+      judge = session.players[judgeIndex];
+    }
 
     // Select random sentence template
     let sentenceTemplate = null;
@@ -339,11 +346,12 @@ class GameSessionManager {
     session.status = 'in_progress';
     session.currentPhase = 'round_1_selection';
     session.currentRound = 1;
-    session.judgeId = judge.playerId;
+    session.judgeId = judge ? judge.playerId : null;
     session.judgeIndex = judgeIndex;
     session.sentenceTemplate = sentenceTemplate;
     session.lastActivityAt = Date.now();
     session.gameStartedAt = Date.now();
+    session.isSinglePlayer = isSinglePlayer;
 
     this.store.set(code, session);
     this.emit('onGameStarted', session.gameId, code, judge, sentenceTemplate);

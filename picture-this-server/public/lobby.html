@@ -347,7 +347,7 @@
 
       <div style="display: flex; gap: 10px;">
         <button class="start-btn" id="startBtn" onclick="startGame()" disabled>
-          Start Game (need 2+ players)
+          Start Game (waiting for player)
         </button>
         <button style="background: #999;" onclick="cancelGame()">Cancel Game</button>
       </div>
@@ -438,12 +438,12 @@
 
       // Update start button
       const startBtn = document.getElementById('startBtn');
-      if (playerCount >= 2) {
+      if (playerCount >= 1) {
         startBtn.disabled = false;
-        startBtn.textContent = `Start Game (${playerCount} players)`;
+        startBtn.textContent = `Start Game (${playerCount} player${playerCount !== 1 ? 's' : ''})`;
       } else {
         startBtn.disabled = true;
-        startBtn.textContent = `Start Game (need ${2 - playerCount} more)`;
+        startBtn.textContent = `Start Game (waiting for player)`;
       }
     }
 
@@ -466,8 +466,8 @@
         return;
       }
 
-      if (!sessionData || sessionData.players.length < 2) {
-        showError('Need at least 2 players to start');
+      if (!sessionData || sessionData.players.length < 1) {
+        showError('Need at least 1 player to start (single-player mode supported)');
         return;
       }
 

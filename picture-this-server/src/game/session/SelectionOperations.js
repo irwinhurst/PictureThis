@@ -13,12 +13,12 @@ const PlayerOperations = require('./PlayerOperations');
  * Record a player's card selections for the current round
  * @param {Object} session - GameSession object
  * @param {string} playerId - UUID of the player
- * @param {Object} selections - Map of { blankIndex: cardIndex }
+ * @param {Object} selectionData - Selection data (selections, selectedCards, artStyle)
  * @param {function} emit - Event emitter function
  * @returns {Object} - Updated session
  * @throws {Error} - If validation fails
  */
-function recordSelection(session, playerId, selections, emit) {
+function recordSelection(session, playerId, selectionData, emit) {
   if (!session) {
     throw new Error('Session not found');
   }
@@ -34,7 +34,8 @@ function recordSelection(session, playerId, selections, emit) {
     throw new Error('Judge cannot submit card selections');
   }
 
-  // Validate selections format
+  // Validate selections format (support both old and new format)
+  const selections = selectionData.selections || selectionData;
   if (!selections || typeof selections !== 'object') {
     throw new Error('Invalid selections format');
   }
@@ -44,9 +45,11 @@ function recordSelection(session, playerId, selections, emit) {
     session.playerSelections = {};
   }
 
-  // Store selections
+  // Store selections (and selectedCards/artStyle if provided for image generation)
   session.playerSelections[playerId] = {
     selections: selections,
+    selectedCards: selectionData.selectedCards,  // Card objects for image generation
+    artStyle: selectionData.artStyle,  // Art style if provided
     submittedAt: Date.now()
   };
 

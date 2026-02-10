@@ -295,6 +295,7 @@ class GameManager {
         gameId: data.gameId,
         code: data.code,
         totalPlayers: data.totalPlayers,
+        round: data.round,
         timestamp: Date.now()
       });
       this.logger.info('Broadcasting image generation started', { room, gameId: data.gameId });
@@ -306,12 +307,35 @@ class GameManager {
         code: data.code,
         images: data.images,
         round: data.round,
+        isSinglePlayer: data.isSinglePlayer,
+        judgeSelection: data.judgeSelection,
         timestamp: Date.now()
       });
       this.logger.info('Broadcasting images ready', { 
         room, 
         gameId: data.gameId, 
-        imageCount: Object.keys(data.images || {}).length 
+        imageCount: Object.keys(data.images || {}).length,
+        isSinglePlayer: data.isSinglePlayer
+      });
+    } else if (eventType === 'results_ready') {
+      // Broadcast results to game room
+      const room = data.code ? `game-${data.code}` : data.gameId;
+      this.io.to(room).emit('results_ready', {
+        gameId: data.gameId,
+        code: data.code,
+        round: data.round,
+        isSinglePlayer: data.isSinglePlayer,
+        results: data.results,
+        images: data.images,
+        players: data.players,
+        timestamp: Date.now()
+      });
+      this.logger.info('Broadcasting results ready', { 
+        room, 
+        gameId: data.gameId, 
+        round: data.round,
+        isSinglePlayer: data.isSinglePlayer,
+        winner: data.results?.firstPlace
       });
     }
   }

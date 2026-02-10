@@ -823,10 +823,16 @@
       document.getElementById('submitBtn').disabled = true;
 
       const selections = {};
+      const selectedCards = [];
       
       // Convert to format: { blankIndex: cardIndex }
+      // Also collect the actual card objects for server-side image generation
       Object.entries(gameState.selections).forEach(([blankIdx, cardIdx]) => {
         selections[parseInt(blankIdx)] = cardIdx;
+        // Get the actual card object from the hand
+        if (gameState.hand[cardIdx]) {
+          selectedCards.push(gameState.hand[cardIdx]);
+        }
       });
 
       fetch(`/api/game/${gameState.code}/submit-selection`, {
@@ -836,7 +842,8 @@
         },
         body: JSON.stringify({
           playerId: gameState.playerId,
-          selections: selections
+          selections: selections,
+          selectedCards: selectedCards  // Include actual card data for image generation
         })
       })
         .then(res => {

@@ -206,45 +206,132 @@
     }
 
     .images-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 75%; /* 4:3 aspect ratio */
+      background: #f0f0f0;
+      border-radius: 12px;
+      overflow: hidden;
     }
 
     .image-card {
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
     }
 
-    .image-card:hover {
-      transform: translateY(-4px);
+    .image-card.active {
+      display: flex;
+      opacity: 1;
     }
 
     .image-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      background: #f0f0f0;
+      max-width: 100%;
+      max-height: calc(100% - 80px);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      background: #fff;
+    }
+
+    .carousel-controls {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      transform: translateY(-50%);
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .carousel-btn {
+      pointer-events: all;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s;
+      margin: 0 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .carousel-btn:hover {
+      background: white;
+      transform: scale(1.1);
+    }
+
+    .carousel-indicators {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .indicator.active {
+      background: white;
+      width: 24px;
+      border-radius: 5px;
     }
 
     .image-info {
-      padding: 12px;
-      background: #f9f9f9;
-      font-size: 13px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 15px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+      color: white;
+      text-align: center;
+      font-size: 14px;
     }
 
     .image-sentence {
       font-weight: 600;
-      color: #333;
       margin-bottom: 4px;
-      line-height: 1.3;
+      line-height: 1.4;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     .image-style {
-      color: #666;
       font-size: 12px;
+      opacity: 0.9;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .images-loading {
@@ -395,7 +482,15 @@
           <div class="spinner"></div>
           <p>Generating images...</p>
         </div>
-        <div class="images-grid" id="imagesGrid"></div>
+        <div class="images-grid" id="imagesGrid">
+          <div class="carousel-container">
+            <div class="carousel-controls">
+              <button class="carousel-btn" id="prevBtn" onclick="prevImage()">&lt;</button>
+              <button class="carousel-btn" id="nextBtn" onclick="nextImage()">&gt;</button>
+            </div>
+            <div class="carousel-indicators" id="carouselIndicators"></div>
+          </div>
+        </div>
       </div>
 
       <div class="card-hand-section">
@@ -482,7 +577,7 @@
         updateTimerDisplay();
       });
 
-      // Listen for image generation started
+      // Listen for image generation started (batch)
       socket.on('image_generation_started', (data) => {
         console.log('Image generation started:', data);
         showImages(true); // Show images section
@@ -490,10 +585,25 @@
         if (imagesLoading) imagesLoading.style.display = 'block';
       });
 
-      // Listen for images ready
+      // Listen for individual image ready (streaming as they arrive)
+      socket.on('image-ready', (data) => {
+        console.log('Image ready:', data);
+        addImageToDisplay(data);
+      });
+
+      // Listen for all images ready (batch, for backward compatibility)
       socket.on('images_ready', (data) => {
         console.log('Images ready:', data);
+        showImages(true);
+        const imagesLoading = document.getElementById('imagesLoading');
+        if (imagesLoading) imagesLoading.style.display = 'none';
         updateImagesDisplay(data.images);
+      });
+
+      // Listen for results (winner announcement)
+      socket.on('results_ready', (data) => {
+        console.log('Results ready:', data);
+        showResults(data);
       });
 
       // Listen for errors
@@ -519,11 +629,65 @@
       }
     }
 
+    function addImageToDisplay(imageData) {
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (!carouselContainer) return;
+
+      // Show images section if hidden
+      showImages(true);
+
+      const imagesLoading = document.getElementById('imagesLoading');
+      if (imagesLoading) imagesLoading.style.display = 'none';
+
+      // Check if this is the first image
+      const existingCards = carouselContainer.querySelectorAll('.image-card');
+      const isFirstImage = existingCards.length === 0;
+
+      // Find existing card for this player, or create new one
+      let existingCard = carouselContainer.querySelector(`[data-player-id="${imageData.playerId}"]`);
+      
+      if (existingCard) {
+        // Update existing card
+        existingCard.innerHTML = `
+          <img src="${imageData.imagePath || imageData.imageUrl || '/generated-images/placeholder.png'}" alt="Generated Image">
+          <div class="image-info">
+            <div class="image-sentence">${imageData.completedSentence || 'Generated image'}</div>
+            <div class="image-style">Style: ${imageData.artStyle || 'N/A'}</div>
+          </div>
+        `;
+      } else {
+        // Create new card
+        const newCard = document.createElement('div');
+        newCard.className = 'image-card';
+        newCard.setAttribute('data-player-id', imageData.playerId);
+        newCard.innerHTML = `
+          <img src="${imageData.imagePath || imageData.imageUrl || '/generated-images/placeholder.png'}" alt="Generated Image">
+          <div class="image-info">
+            <div class="image-sentence">${imageData.completedSentence || 'Generated image'}</div>
+            <div class="image-style">Style: ${imageData.artStyle || 'N/A'}</div>
+          </div>
+        `;
+        carouselContainer.appendChild(newCard);
+      }
+
+      // Reset carousel index if this is the first image
+      if (isFirstImage) {
+        currentImageIndex = 0;
+      }
+
+      // Update carousel
+      updateCarousel();
+
+      // Log progress
+      const totalCards = carouselContainer.querySelectorAll('.image-card').length;
+      console.log(`Image ${totalCards} ready: ${imageData.playerId}`);
+    }
+
     function updateImagesDisplay(images) {
-      const imagesGrid = document.getElementById('imagesGrid');
+      const carouselContainer = document.querySelector('.carousel-container');
       const imagesLoading = document.getElementById('imagesLoading');
       
-      if (!imagesGrid) return;
+      if (!carouselContainer) return;
 
       if (imagesLoading) imagesLoading.style.display = 'none';
 
@@ -540,16 +704,298 @@
             isPlaceholder: imgData.isPlaceholder || false
           }));
 
+      // Clear existing images except controls and indicators
+      const existingCards = carouselContainer.querySelectorAll('.image-card');
+      existingCards.forEach(card => card.remove());
+
+      // Reset carousel index
+      currentImageIndex = 0;
+      stopCarouselAutoplay();
+
       // Render image cards
-      imagesGrid.innerHTML = imagesArray.map((img, index) => `
-        <div class="image-card">
+      imagesArray.forEach((img, index) => {
+        const card = document.createElement('div');
+        card.className = 'image-card';
+        card.setAttribute('data-player-id', img.playerId);
+        card.innerHTML = `
           <img src="${img.imageUrl || '/generated-images/placeholder.png'}" alt="Player ${img.playerNumber || index + 1}">
           <div class="image-info">
             <div class="image-sentence">${img.completedSentence || 'Generated image'}</div>
             <div class="image-style">Style: ${img.artStyle || 'N/A'}</div>
           </div>
+        `;
+        carouselContainer.appendChild(card);
+      });
+
+      // Initialize carousel
+      updateCarousel();
+    }
+
+    // Carousel state
+    let currentImageIndex = 0;
+    let carouselInterval = null;
+
+    function updateCarousel() {
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (!carouselContainer) return;
+
+      const cards = carouselContainer.querySelectorAll('.image-card');
+      const indicators = document.getElementById('carouselIndicators');
+      const controls = carouselContainer.querySelector('.carousel-controls');
+      
+      // Show/hide controls based on number of images
+      const hasMultipleImages = cards.length > 1;
+      if (controls) {
+        controls.style.display = hasMultipleImages ? 'flex' : 'none';
+      }
+      
+      // Update indicators
+      if (indicators) {
+        if (hasMultipleImages) {
+          indicators.innerHTML = Array.from(cards).map((_, index) => 
+            `<div class="indicator ${index === currentImageIndex ? 'active' : ''}" onclick="goToImage(${index})"></div>`
+          ).join('');
+        } else {
+          indicators.innerHTML = '';
+        }
+      }
+
+      // Show current card
+      cards.forEach((card, index) => {
+        card.classList.toggle('active', index === currentImageIndex);
+      });
+
+      // Start autoplay if multiple images
+      if (hasMultipleImages) {
+        startCarouselAutoplay();
+      } else {
+        stopCarouselAutoplay();
+      }
+    }
+
+    function nextImage() {
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (!carouselContainer) return;
+      
+      const cards = carouselContainer.querySelectorAll('.image-card');
+      if (cards.length === 0) return;
+      
+      currentImageIndex = (currentImageIndex + 1) % cards.length;
+      updateCarousel();
+    }
+
+    function prevImage() {
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (!carouselContainer) return;
+      
+      const cards = carouselContainer.querySelectorAll('.image-card');
+      if (cards.length === 0) return;
+      
+      currentImageIndex = (currentImageIndex - 1 + cards.length) % cards.length;
+      updateCarousel();
+    }
+
+    function goToImage(index) {
+      currentImageIndex = index;
+      updateCarousel();
+    }
+
+    function startCarouselAutoplay() {
+      // Clear existing interval
+      if (carouselInterval) {
+        clearInterval(carouselInterval);
+      }
+      
+      // Start new autoplay (change image every 4 seconds)
+      carouselInterval = setInterval(() => {
+        nextImage();
+      }, 4000);
+    }
+
+    function stopCarouselAutoplay() {
+      if (carouselInterval) {
+        clearInterval(carouselInterval);
+        carouselInterval = null;
+      }
+    }
+
+    // Pause autoplay on hover
+    document.addEventListener('DOMContentLoaded', () => {
+      const carouselContainer = document.querySelector('.carousel-container');
+      if (carouselContainer) {
+        carouselContainer.addEventListener('mouseenter', stopCarouselAutoplay);
+        carouselContainer.addEventListener('mouseleave', () => {
+          const cards = carouselContainer.querySelectorAll('.image-card');
+          if (cards.length > 1) startCarouselAutoplay();
+        });
+      }
+    });
+
+    function showResults(data) {
+      const { results, images, players, isSinglePlayer } = data;
+      
+      // Stop carousel autoplay
+      stopCarouselAutoplay();
+      
+      if (!results) {
+        console.warn('No results data provided');
+        return;
+      }
+
+      // Get the winner
+      const firstPlaceId = results.firstPlace;
+      const firstPlacePlayer = players.find(p => p.id === firstPlaceId);
+      
+      // Display winner announcement
+      const gameScreen = document.getElementById('gameScreen');
+      if (!gameScreen) return;
+
+      // Create results overlay
+      const resultsOverlay = document.createElement('div');
+      resultsOverlay.className = 'results-overlay';
+      resultsOverlay.id = 'resultsOverlay';
+      resultsOverlay.innerHTML = `
+        <div class="results-content">
+          <h2>Round ${data.round} Complete!</h2>
+          ${isSinglePlayer ? `
+            <div class="winner-announcement">
+              <div class="winner-text">🎉 Winner: ${firstPlacePlayer ? firstPlacePlayer.name : 'Player'} 🎉</div>
+              <p>Your image has been selected as the best!</p>
+              <div class="winner-score">Points: +3</div>
+            </div>
+          ` : `
+            <div class="winner-announcement">
+              <div class="winner-text">🏆 Winner: ${firstPlacePlayer ? firstPlacePlayer.name : 'Player'} 🏆</div>
+              <p>Your image was selected as the best!</p>
+              <div class="winner-score">Points: +3</div>
+            </div>
+          `}
+          <div class="current-standings">
+            <h3>Standings</h3>
+            <ul>
+              ${players.sort((a, b) => b.score - a.score).map((p, idx) => `
+                <li>${idx + 1}. ${p.name} - ${p.score} points</li>
+              `).join('')}
+            </ul>
+          </div>
+          <p class="next-round-text">Get ready for the next round...</p>
         </div>
-      `).join('');
+      `;
+
+      // Add styles for results overlay
+      if (!document.getElementById('resultsStyles')) {
+        const style = document.createElement('style');
+        style.id = 'resultsStyles';
+        style.innerHTML = `
+          .results-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-in;
+          }
+
+          @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+          }
+
+          .results-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          }
+
+          .results-content h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 20px;
+          }
+
+          .winner-announcement {
+            margin: 20px 0;
+          }
+
+          .winner-text {
+            font-size: 28px;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 10px;
+          }
+
+          .winner-announcement p {
+            color: #666;
+            margin-bottom: 15px;
+          }
+
+          .winner-score {
+            font-size: 20px;
+            color: #4caf50;
+            font-weight: 600;
+            background: #f0f9f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+          }
+
+          .current-standings {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+          }
+
+          .current-standings h3 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+          }
+
+          .current-standings ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+
+          .current-standings li {
+            padding: 8px 0;
+            color: #666;
+            border-bottom: 1px solid #eee;
+          }
+
+          .current-standings li:last-child {
+            border-bottom: none;
+          }
+
+          .next-round-text {
+            color: #999;
+            margin-top: 20px;
+            font-size: 14px;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      gameScreen.appendChild(resultsOverlay);
+
+      // Auto-remove results overlay and prepare for next round after 8 seconds
+      setTimeout(() => {
+        const overlay = document.getElementById('resultsOverlay');
+        if (overlay) {
+          overlay.remove();
+        }
+        // At this point, the server will auto-advance to next round
+      }, 8000);
     }
 
     function updateTimerDisplay() {

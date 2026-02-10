@@ -69,7 +69,9 @@ class PromptFormatter {
       let completedSentence = sentenceTemplate;
       for (let i = 0; i < blankCount; i++) {
         const card = selectedCards[i];
-        completedSentence = completedSentence.replace('_______', card);
+        // Extract text from card object if it's an object, otherwise use as-is
+        const cardText = typeof card === 'string' ? card : (card.text || String(card));
+        completedSentence = completedSentence.replace('_______', cardText);
       }
 
       // Sanitize special characters
@@ -84,7 +86,9 @@ class PromptFormatter {
         blanks: blankCount,
         artStyle,
         sentenceLength: completedSentence.length,
-        promptLength: fullPrompt.length
+        promptLength: fullPrompt.length,
+        completedSentence,
+        fullPrompt
       });
 
       return {

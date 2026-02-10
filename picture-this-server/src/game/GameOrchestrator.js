@@ -85,7 +85,16 @@ class GameOrchestrator {
   async advancePhase(state, targetPhase = null, reason = '') {
     try {
       // Determine next phase
-      const nextPhase = targetPhase || getNextPhase(state.currentPhase, state.currentRound, state.maxRounds);
+      let nextPhase = targetPhase;
+      if (!nextPhase) {
+        nextPhase = getNextPhase(state.currentPhase, state.currentRound, state.maxRounds);
+        
+        // In single-player mode, skip judging phase
+        if (state.isSinglePlayer && nextPhase === PHASES.JUDGING) {
+          nextPhase = PHASES.RESULTS;
+          this.logger.info('Single-player mode: skipping JUDGING, going to RESULTS', { gameId: state.gameId });
+        }
+      }
       
       if (!nextPhase) {
         this.logger.warn('No next phase available', { 
@@ -215,8 +224,11 @@ class GameOrchestrator {
     // Increment round
     const newRound = state.currentRound + 1;
     
-    // Select next judge
-    const nextJudgeId = selectNextJudge(state);
+    // Check if single-player mode
+    const isSinglePlayer = state.players.length === 1;
+    
+    // Select next judge (skip if single player)
+    const nextJudgeId = isSinglePlayer ? null : selectNextJudge(state);
     
     // Update all players' judge status
     let newState = updateState(state, {
@@ -225,18 +237,21 @@ class GameOrchestrator {
       playerSelections: {},
       judgeSelection: null,
       audienceVotes: {},
-      status: 'in_progress'
+      status: 'in_progress',
+      isSinglePlayer: isSinglePlayer
     });
     
-    // Mark the judge
-    newState = {
-      ...newState,
-      players: newState.players.map(p => ({
-        ...p,
-        isJudge: p.id === nextJudgeId,
-        judgeCount: p.id === nextJudgeId ? p.judgeCount + 1 : p.judgeCount
-      }))
-    };
+    // Mark the judge (skip if single player)
+    if (!isSinglePlayer) {
+      newState = {
+        ...newState,
+        players: newState.players.map(p => ({
+          ...p,
+          isJudge: p.id === nextJudgeId,
+          judgeCount: p.id === nextJudgeId ? p.judgeCount + 1 : p.judgeCount
+        }))
+      };
+    }
     
     // Select random sentence template
     const template = this.sentenceTemplates[
@@ -266,7 +281,8 @@ class GameOrchestrator {
     this.logger.info('Round setup complete', {
       round: newRound,
       judgeId: nextJudgeId,
-      template: template.template
+      template: template.template,
+      isSinglePlayer: isSinglePlayer
     });
     
     return newState;
@@ -310,15 +326,24 @@ class GameOrchestrator {
    * @private
    */
   async _startImageGen(state) {
+    const startTime = Date.now();
+    const selectionCount = Object.keys(state.playerSelections).length;
+    
     this.logger.info('Image generation started', {
       gameId: state.gameId,
-      selectionsCount: Object.keys(state.playerSelections).length
+      code: state.code,
+      round: state.currentRound,
+      selectionsCount: selectionCount,
+      sentenceTemplate: state.sentenceTemplate,
+      isSinglePlayer: state.isSinglePlayer,
+      startTime
     });
     
     // If image generator not available, skip to next phase
     if (!this.imageGenerator) {
       this.logger.warn('Image generator not available, skipping image generation', {
-        gameId: state.gameId
+        gameId: state.gameId,
+        code: state.code
       });
       return updateState(state, {
         generatedImages: {}
@@ -331,16 +356,37 @@ class GameOrchestrator {
         this.broadcastCallback('image_generation_started', {
           gameId: state.gameId,
           code: state.code,
-          totalPlayers: Object.keys(state.playerSelections).length
+          totalPlayers: selectionCount,
+          round: state.currentRound
         });
       }
+      
+      this.logger.debug('Calling imageGenerator.generateImagesForRound', {
+        gameId: state.gameId,
+        code: state.code,
+        playerCount: selectionCount
+      });
       
       // Generate images for all players
       const generatedImages = await this.imageGenerator.generateImagesForRound(state);
       
+      const elapsedMs = Date.now() - startTime;
+      const placeholderCount = generatedImages.filter(i => i.isPlaceholder).length;
+      const successCount = generatedImages.length - placeholderCount;
+      
       // Convert array to object keyed by playerId
       const imagesMap = {};
-      generatedImages.forEach(img => {
+      generatedImages.forEach((img, index) => {
+        this.logger.debug('Processing generated image result', {
+          gameId: state.gameId,
+          playerId: img.playerId,
+          index: index + 1,
+          total: generatedImages.length,
+          isPlaceholder: img.isPlaceholder,
+          imagePath: img.imagePath,
+          error: img.error
+        });
+        
         imagesMap[img.playerId] = {
           imageUrl: img.imageUrl,
           imagePath: img.imagePath,
@@ -353,9 +399,29 @@ class GameOrchestrator {
       
       this.logger.info('Image generation complete', {
         gameId: state.gameId,
+        code: state.code,
+        round: state.currentRound,
         totalGenerated: generatedImages.length,
-        placeholders: generatedImages.filter(i => i.isPlaceholder).length
+        successCount,
+        placeholders: placeholderCount,
+        elapsedMs,
+        averageTimePerImage: Math.round(elapsedMs / generatedImages.length) + 'ms'
       });
+      
+      // Warn if there were any placeholders
+      if (placeholderCount > 0) {
+        this.logger.warn('Some images generated as placeholders', {
+          gameId: state.gameId,
+          code: state.code,
+          placeholderCount,
+          successCount,
+          details: generatedImages.map(img => ({
+            playerId: img.playerId,
+            isPlaceholder: img.isPlaceholder,
+            error: img.error
+          }))
+        });
+      }
       
       // Update state with generated images
       return updateState(state, {
@@ -363,10 +429,15 @@ class GameOrchestrator {
       });
       
     } catch (error) {
-      this.logger.error('Image generation failed', {
+      const elapsedMs = Date.now() - startTime;
+      
+      this.logger.error('Image generation failed with exception', {
         gameId: state.gameId,
+        code: state.code,
+        round: state.currentRound,
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
+        elapsedMs
       });
       
       // Return state with empty images on error
@@ -386,20 +457,41 @@ class GameOrchestrator {
   _completeImageGen(state) {
     this.logger.info('Image generation complete', {
       gameId: state.gameId,
-      imagesGenerated: Object.keys(state.generatedImages || {}).length
+      imagesGenerated: Object.keys(state.generatedImages || {}).length,
+      isSinglePlayer: state.isSinglePlayer
     });
+    
+    // In single-player mode, auto-select the player as winner
+    let newState = state;
+    if (state.isSinglePlayer && state.players.length === 1) {
+      const singlePlayerId = state.players[0].id;
+      
+      this.logger.info('Single-player mode: auto-assigning first place', {
+        gameId: state.gameId,
+        winnerId: singlePlayerId
+      });
+      
+      newState = updateState(state, {
+        judgeSelection: {
+          firstPlace: singlePlayerId,
+          secondPlace: null
+        }
+      });
+    }
     
     // Broadcast generated images to all clients (judge and display)
     if (this.broadcastCallback) {
       this.broadcastCallback('images_ready', {
-        gameId: state.gameId,
-        code: state.code,
-        images: state.generatedImages,
-        round: state.currentRound
+        gameId: newState.gameId,
+        code: newState.code,
+        images: newState.generatedImages,
+        round: newState.currentRound,
+        isSinglePlayer: newState.isSinglePlayer,
+        judgeSelection: newState.judgeSelection
       });
     }
     
-    return state;
+    return newState;
   }
 
   /**
@@ -470,15 +562,36 @@ class GameOrchestrator {
           round: state.currentRound,
           firstPlace,
           secondPlace,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          isSinglePlayer: state.isSinglePlayer
         }
       });
     }
     
     this.logger.info('Results displayed', {
       gameId: state.gameId,
-      round: state.currentRound
+      round: state.currentRound,
+      isSinglePlayer: state.isSinglePlayer,
+      winners: state.judgeSelection
     });
+    
+    // Broadcast results to all clients
+    if (this.broadcastCallback) {
+      this.broadcastCallback('results_ready', {
+        gameId: newState.gameId,
+        code: newState.code,
+        round: newState.currentRound,
+        isSinglePlayer: newState.isSinglePlayer,
+        results: newState.lastRoundResults,
+        images: newState.generatedImages,
+        players: newState.players.map(p => ({
+          id: p.id,
+          name: p.name,
+          avatar: p.avatar,
+          score: p.score
+        }))
+      });
+    }
     
     return newState;
   }
@@ -518,13 +631,14 @@ class GameOrchestrator {
       throw new Error('Game can only be started from LOBBY phase');
     }
     
-    if (state.players.length < 2) {
-      throw new Error('Need at least 2 players to start game');
+    if (state.players.length < 1) {
+      throw new Error('Need at least 1 player to start game');
     }
     
     this.logger.info('Starting game', {
       gameId: state.gameId,
-      playerCount: state.players.length
+      playerCount: state.players.length,
+      isSinglePlayer: state.players.length === 1
     });
     
     return this.advancePhase(state, PHASES.ROUND_SETUP, 'game_started');
