@@ -1,1204 +1,204 @@
 {
   "cards": [
-    {
-      "id": 1,
-      "text": "The _______ was wearing sunglasses at a beach party",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 2,
-      "text": "A _______ learned to dance at midnight",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 3,
-      "text": "My _______ discovered she could fly",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 4,
-      "text": "The _______ had a mind of its own",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 5,
-      "text": "A _______ opened a coffee shop",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 6,
-      "text": "The _______ rode a unicorn",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 7,
-      "text": "My _______ declared war on sleep",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 8,
-      "text": "A _______ signed up for ballet lessons",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 9,
-      "text": "The _______ decided to visit Earth for a week",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 10,
-      "text": "A _______ became the world's first astronaut",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 11,
-      "text": "The _______ threw a surprise party",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 12,
-      "text": "A _______ climbed a mountain in the desert",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 13,
-      "text": "My _______ started giving me life advice",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 14,
-      "text": "A _______ fell in love with a _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 15,
-      "text": "The _______ wore pajamas to bed",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 16,
-      "text": "A _______ opened a small bakery",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 17,
-      "text": "The _______ came alive at midnight",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 18,
-      "text": "A _______ won a race against a _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 19,
-      "text": "My _______ disappeared into another dimension",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 20,
-      "text": "A _______ was afraid of heights",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 21,
-      "text": "The _______ opened a restaurant in the sky",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 22,
-      "text": "A _______ played instruments made of cheese",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 23,
-      "text": "The _______ became a famous rapper",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 24,
-      "text": "A _______ grew flowers that glowed at night",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 25,
-      "text": "My _______ turned into origami",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 26,
-      "text": "A _______ cooked only desserts for every meal",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 27,
-      "text": "The _______ fell in love with the _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 28,
-      "text": "A _______ had crippling self-doubt",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 29,
-      "text": "The _______ led to a secret nightclub",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 30,
-      "text": "A _______ solved crimes using only puns",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 31,
-      "text": "My _______ contained a parallel universe",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 32,
-      "text": "A _______ opened a bed and breakfast",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 33,
-      "text": "The _______ danced between colors",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 34,
-      "text": "A _______ created bread that told jokes",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 35,
-      "text": "My _______ started living its own life",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 36,
-      "text": "A _______ catalogued the clouds",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 37,
-      "text": "The _______ took passengers to the past",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 38,
-      "text": "A _______ was afraid of laughter",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 39,
-      "text": "My _______ developed their own sense of style",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 40,
-      "text": "A _______ caught a _______'s diary",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 41,
-      "text": "The _______ gossiped about passersby",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 42,
-      "text": "A _______ specialized in cooking emotions",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 43,
-      "text": "My _______ refused to copy my movements",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 44,
-      "text": "A _______ jousted with _______ in space",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 45,
-      "text": "The _______ had a love-hate relationship",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 46,
-      "text": "A _______ bred flowers that sang lullabies",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 47,
-      "text": "My _______ wrote stories without permission",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 48,
-      "text": "A _______ served only liquid memories",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 49,
-      "text": "The _______ showed alternate versions of yourself",
-      "blanks": 1,
-      "category": "Simple"
-    },
-    {
-      "id": 50,
-      "text": "A _______ performed jokes only _______ understood",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 51,
-      "text": "My _______ collection became sentient",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 52,
-      "text": "A _______ navigated using _______ he invented",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 53,
-      "text": "The _______ unlocked hidden emotions",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 54,
-      "text": "A _______ sewed clothes from moonbeams",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 55,
-      "text": "My _______ erased more than mistakes",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 56,
-      "text": "A _______ carved monuments to forgotten things",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 57,
-      "text": "The _______ rearranged itself alphabetically by mood",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 58,
-      "text": "A _______ bottled the essence of Fridays",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 59,
-      "text": "My _______ had performance anxiety",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 60,
-      "text": "A _______ trained _______ to do taxes",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 61,
-      "text": "The _______ composted lost dreams",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 62,
-      "text": "A _______ created bottles for emotions",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 63,
-      "text": "My _______ skipped certain months for privacy",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 64,
-      "text": "A _______ grew laughter in his fields",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 65,
-      "text": "The _______ played symphonies instead of ringing",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 66,
-      "text": "A _______ crafted rings from solidified starlight",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 67,
-      "text": "My _______ complained about its heavy burden",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 68,
-      "text": "A _______ composed symphonies for _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 69,
-      "text": "The _______ offered things you needed most",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 70,
-      "text": "A _______ cultivated gardens floating in the _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 71,
-      "text": "My _______ refused to write lies",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 72,
-      "text": "A _______ scented _______ with memories",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 73,
-      "text": "The _______ served as a local newspaper",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 74,
-      "text": "A _______ brewed coffee that revealed secrets",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 75,
-      "text": "My _______ stored all the mistakes I fixed",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 76,
-      "text": "A _______ built clocks that ran backwards",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 77,
-      "text": "The _______ delivered messages from the future",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 78,
-      "text": "A _______ arranged flowers that bloomed in reverse",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 79,
-      "text": "My _______ locked its pages from my reading",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 80,
-      "text": "A _______ baked _______ that contained entire universes",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 81,
-      "text": "The _______ reflected what you could become",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 82,
-      "text": "A _______ stitched together broken _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 83,
-      "text": "My _______ showed me what I wanted to see",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 84,
-      "text": "A _______ grew plants that hummed lullabies",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 85,
-      "text": "The _______ pointed toward what you needed most",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 86,
-      "text": "A _______ created sculptures that told people's secrets",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 87,
-      "text": "My _______ danced when I slept",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 88,
-      "text": "A _______ cooked with ingredients from other _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 89,
-      "text": "The _______ opened to places I'd never been",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 90,
-      "text": "A _______ created art that moved through time",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 91,
-      "text": "My _______ contained memories of futures I'd never have",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 92,
-      "text": "A _______ played instruments made of crystallized _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 93,
-      "text": "The _______ descended deeper into my thoughts",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 94,
-      "text": "A _______ crafted vessels for captured laughter",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 95,
-      "text": "My _______ started drawing themselves",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 96,
-      "text": "A _______ bottled the scent of childhood _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 97,
-      "text": "The _______ grew fruits that told the future",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 98,
-      "text": "A _______ carved statues that blinked when no one was looking",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 99,
-      "text": "My _______ changed to match my mood",
-      "blanks": 1,
-      "category": "Intermediate"
-    },
-    {
-      "id": 100,
-      "text": "A _______ created _______ that burned backwards",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 101,
-      "text": "The _______ flowed uphill on Thursdays",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 102,
-      "text": "A _______ forged weapons that fought _______ instead",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 103,
-      "text": "My _______ started following someone else",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 104,
-      "text": "A _______ organized books by emotional impact",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 105,
-      "text": "The _______ contained an entirely different hallway",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 106,
-      "text": "A _______ crafted jewelry from crystallized music",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 107,
-      "text": "My _______ grew pages I never wrote",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 108,
-      "text": "A _______ harvested clouds instead of crops",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 109,
-      "text": "The _______ rang with calls from my future self",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 110,
-      "text": "A _______ created tapestries that showed alternate _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 111,
-      "text": "My _______ collected the mistakes it removed",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 112,
-      "text": "A _______ caught _______ that granted wishes",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 113,
-      "text": "The _______ rearranged themselves when closed",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 114,
-      "text": "A _______ baked bread that tasted like answers",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 115,
-      "text": "My _______ sketched from my _______ without my knowledge",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 116,
-      "text": "A _______ grew plants that changed colors with emotions",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 117,
-      "text": "The _______ between rooms contained entire cities",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 118,
-      "text": "A _______ composed songs _______ hummed along to",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 119,
-      "text": "My _______ stored moments instead of objects",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 120,
-      "text": "A _______ used colors that didn't exist yet",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 121,
-      "text": "The _______ breathed in rhythm with readers",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 122,
-      "text": "A _______ arranged flowers from forgotten _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 123,
-      "text": "My _______ showed me what I'd forgotten",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 124,
-      "text": "A _______ cooked with spices from other _______ in time",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 125,
-      "text": "The _______ controlled emotions instead of cars",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 126,
-      "text": "A _______ built clocks from pulses of _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 127,
-      "text": "My _______ contained memories of things I never did",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 128,
-      "text": "A _______ grew gardens in other people's _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 129,
-      "text": "The _______ delivered letters to my past _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 130,
-      "text": "A _______ sewed clothes that fit different _______ of me",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 131,
-      "text": "My _______ wrote letters I never wanted to send",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 132,
-      "text": "A _______ created cakes that contained miniature _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 133,
-      "text": "The _______ showed what I could have been",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 134,
-      "text": "A _______ carved monuments to moments that almost _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 135,
-      "text": "My _______ recorded conversations I never had",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 136,
-      "text": "A _______ played instruments made of moonlight",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 137,
-      "text": "The _______ led upward into open sky",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 138,
-      "text": "A _______ crafted jewelry from solidified dreams",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 139,
-      "text": "My _______ taught me how to move differently",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 140,
-      "text": "A _______ cultivated flowers that bloomed from _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 141,
-      "text": "The _______ showed me my childhood home",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 142,
-      "text": "A _______ created toys that played themselves",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 143,
-      "text": "My _______ removed memories instead of marks",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 144,
-      "text": "A _______ prepared meals from recipes in old _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 145,
-      "text": "The _______ pointed toward my lost self",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 146,
-      "text": "A _______ bottled the scent of never",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 147,
-      "text": "My _______ revealed what others were thinking",
-      "blanks": 1,
-      "category": "Challenging"
-    },
-    {
-      "id": 148,
-      "text": "A _______ grew trees that bore fruit of _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 149,
-      "text": "The _______ announced visitors from other _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 150,
-      "text": "A _______ created portraits that aged instead of _______",
-      "blanks": 2,
-      "category": "Double"
-    },
-    {
-      "id": 151,
-      "text": "The _______ spoke in riddles to those who listened",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 152,
-      "text": "A _______ forged chains to hold onto _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 153,
-      "text": "My _______ grew its own wings",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 154,
-      "text": "A _______ catalogued emotions by color and texture",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 155,
-      "text": "The _______ between floorboards hid entire _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 156,
-      "text": "A _______ baked bread that contained memories of _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 157,
-      "text": "My _______ drew things I'd never seen before",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 158,
-      "text": "A _______ grew mirrors that showed truth instead of _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 159,
-      "text": "The _______ call came from my doppelganger",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 160,
-      "text": "A _______ created tapestries that predicted _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 161,
-      "text": "My _______ wrote itself stories every night",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 162,
-      "text": "A _______ caught starlight in glass _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 163,
-      "text": "The _______ rearranged itself when I wasn't looking",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 164,
-      "text": "A _______ cultivated flowers made of crystallized _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 165,
-      "text": "My _______ showed me people as they saw _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 166,
-      "text": "A _______ cooked emotions into edible _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 167,
-      "text": "The _______ contained doors to places that didn't exist",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 168,
-      "text": "A _______ composed songs in colors and _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 169,
-      "text": "My _______ stored infinite potential and zero _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 170,
-      "text": "A _______ created art that changed with _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 171,
-      "text": "The _______ whispered recommendations to _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 172,
-      "text": "A _______ crafted rings that linked soul _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 173,
-      "text": "My _______ wrote itself while I _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 174,
-      "text": "A _______ grew singing gardens visible only at _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 175,
-      "text": "The _______ was a portal to summer _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 176,
-      "text": "A _______ stitched stars into the hems of _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 177,
-      "text": "My _______ wrote poetry about random _______ nearby",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 178,
-      "text": "A _______ baked cakes that granted wishes when _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 179,
-      "text": "The _______ showed me my true self",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 180,
-      "text": "A _______ carved statues that came alive at _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 181,
-      "text": "My _______ contained maps to places in the _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 182,
-      "text": "A _______ played instruments made of captured _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 183,
-      "text": "The _______ led to rooms that only existed in _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 184,
-      "text": "A _______ bottled _______ the scent of forever",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 185,
-      "text": "My _______ became my greatest _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 186,
-      "text": "A _______ prepared meals from the ingredients of _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 187,
-      "text": "The _______ pointed toward home no matter where I was",
-      "blanks": 1,
-      "category": "Expert"
-    },
-    {
-      "id": 188,
-      "text": "A _______ created figurines with hidden _______ inside",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 189,
-      "text": "My _______ erased what I wanted to _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 190,
-      "text": "A _______ grew flowers that bloomed in your _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 191,
-      "text": "The _______ opened to a sky full of falling _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 192,
-      "text": "A _______ created murals that shifted with _______'s mood",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 193,
-      "text": "My _______ showed me the _______ in everything",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 194,
-      "text": "A _______ arranged gardens that told life _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 195,
-      "text": "The _______ led into my own _______",
-      "blanks": 2,
-      "category": "Expert"
-    },
-    {
-      "id": 196,
-      "text": "A _______, _______, and _______ baked with ingredients that were pure joy",
-      "blanks": 3,
-      "category": "Expert"
-    },
-    {
-      "id": 197,
-      "text": "My _______, _______, and _______ sketched without lifting from the page",
-      "blanks": 3,
-      "category": "Expert"
-    },
-    {
-      "id": 198,
-      "text": "A _______ played _______ made of captured _______ that healed what hurt",
-      "blanks": 3,
-      "category": "Expert"
-    },
-    {
-      "id": 199,
-      "text": "The _______, _______, and _______ beneath my feet led me home",
-      "blanks": 3,
-      "category": "Expert"
-    },
-    {
-      "id": 200,
-      "text": "A _______ from the _______ finally woke up in the _______ world",
-      "blanks": 3,
-      "category": "Expert"
-    }
+    {"id": 1, "text": "_______ was wearing sunglasses at a beach party", "blanks": 1, "category": "Simple"},
+    {"id": 2, "text": "Last night, _______ learned to dance", "blanks": 1, "category": "Simple"},
+    {"id": 3, "text": "My grandmother discovered that _______ could fly", "blanks": 1, "category": "Simple"},
+    {"id": 4, "text": "When nobody was looking, _______ had a mind of its own", "blanks": 1, "category": "Simple"},
+    {"id": 5, "text": "_______ opened a coffee shop downtown", "blanks": 1, "category": "Simple"},
+    {"id": 6, "text": "Yesterday I saw _______ riding a unicorn", "blanks": 1, "category": "Simple"},
+    {"id": 7, "text": "My neighbor's _______ declared war on sleep", "blanks": 1, "category": "Simple"},
+    {"id": 8, "text": "_______ signed up for ballet lessons", "blanks": 1, "category": "Simple"},
+    {"id": 9, "text": "Last Tuesday, _______ decided to visit Earth for a week", "blanks": 1, "category": "Simple"},
+    {"id": 10, "text": "_______ became the world's first underwater astronaut", "blanks": 1, "category": "Simple"},
+    {"id": 11, "text": "Without warning, _______ threw a surprise party", "blanks": 1, "category": "Simple"},
+    {"id": 12, "text": "_______ climbed a mountain in the desert", "blanks": 1, "category": "Simple"},
+    {"id": 13, "text": "My toaster started giving me advice about _______", "blanks": 1, "category": "Simple"},
+    {"id": 14, "text": "_______ fell in love with _______", "blanks": 2, "category": "Double"},
+    {"id": 15, "text": "In my dreams, _______ wore pajamas to bed", "blanks": 1, "category": "Simple"},
+    {"id": 16, "text": "_______ opened a small bakery on Main Street", "blanks": 1, "category": "Simple"},
+    {"id": 17, "text": "At midnight, _______ came alive", "blanks": 1, "category": "Simple"},
+    {"id": 18, "text": "_______ won a race against _______", "blanks": 2, "category": "Double"},
+    {"id": 19, "text": "Last Thursday, my _______ disappeared into another dimension", "blanks": 1, "category": "Simple"},
+    {"id": 20, "text": "Surprisingly, _______ was afraid of heights", "blanks": 1, "category": "Simple"},
+    {"id": 21, "text": "_______ opened a restaurant in the sky", "blanks": 1, "category": "Simple"},
+    {"id": 22, "text": "My uncle discovered that _______ played instruments made of cheese", "blanks": 1, "category": "Simple"},
+    {"id": 23, "text": "_______ became a famous rapper", "blanks": 1, "category": "Simple"},
+    {"id": 24, "text": "In the garden, _______ grew flowers that glowed at night", "blanks": 1, "category": "Simple"},
+    {"id": 25, "text": "My collection of _______ turned into origami", "blanks": 1, "category": "Simple"},
+    {"id": 26, "text": "_______ cooked only desserts for every meal", "blanks": 1, "category": "Simple"},
+    {"id": 27, "text": "_______ fell in love with _______", "blanks": 2, "category": "Double"},
+    {"id": 28, "text": "Deep down, _______ had crippling self-doubt", "blanks": 1, "category": "Simple"},
+    {"id": 29, "text": "_______ led to a secret nightclub", "blanks": 1, "category": "Simple"},
+    {"id": 30, "text": "The detective known as _______ solved crimes using only puns", "blanks": 1, "category": "Simple"},
+    {"id": 31, "text": "My closet contained _______ and a parallel universe", "blanks": 1, "category": "Simple"},
+    {"id": 32, "text": "_______ opened a bed and breakfast", "blanks": 1, "category": "Simple"},
+    {"id": 33, "text": "Between the raindrops, _______ danced", "blanks": 1, "category": "Simple"},
+    {"id": 34, "text": "_______ created bread that told jokes", "blanks": 1, "category": "Simple"},
+    {"id": 35, "text": "My pet _______ started living its own life", "blanks": 1, "category": "Simple"},
+    {"id": 36, "text": "_______ catalogued the clouds for science", "blanks": 1, "category": "Simple"},
+    {"id": 37, "text": "The mysterious _______ took passengers to the past", "blanks": 1, "category": "Simple"},
+    {"id": 38, "text": "_______ was afraid of laughter", "blanks": 1, "category": "Simple"},
+    {"id": 39, "text": "Over time, my _______ developed their own sense of style", "blanks": 1, "category": "Simple"},
+    {"id": 40, "text": "_______ caught _______'s diary", "blanks": 2, "category": "Double"},
+    {"id": 41, "text": "The old _______ gossiped about passersby", "blanks": 1, "category": "Simple"},
+    {"id": 42, "text": "_______ specialized in cooking emotions", "blanks": 1, "category": "Simple"},
+    {"id": 43, "text": "My reflection refused to copy _______", "blanks": 1, "category": "Simple"},
+    {"id": 44, "text": "_______ jousted with _______ in space", "blanks": 2, "category": "Double"},
+    {"id": 45, "text": "It turns out _______ had a love-hate relationship with gravity", "blanks": 1, "category": "Simple"},
+    {"id": 46, "text": "_______ bred flowers that sang lullabies", "blanks": 1, "category": "Simple"},
+    {"id": 47, "text": "My diary wrote stories about _______ without permission", "blanks": 1, "category": "Simple"},
+    {"id": 48, "text": "_______ served only liquid memories", "blanks": 1, "category": "Simple"},
+    {"id": 49, "text": "_______ showed alternate versions of yourself", "blanks": 1, "category": "Simple"},
+    {"id": 50, "text": "_______ performed jokes only _______ understood", "blanks": 2, "category": "Double"},
+    {"id": 51, "text": "My _______ collection became sentient last Tuesday", "blanks": 1, "category": "Intermediate"},
+    {"id": 52, "text": "_______ navigated using _______ he invented", "blanks": 2, "category": "Double"},
+    {"id": 53, "text": "The ancient _______ unlocked hidden emotions", "blanks": 1, "category": "Intermediate"},
+    {"id": 54, "text": "_______ sewed clothes from moonbeams", "blanks": 1, "category": "Intermediate"},
+    {"id": 55, "text": "My _______ erased more than just mistakes", "blanks": 1, "category": "Intermediate"},
+    {"id": 56, "text": "_______ carved monuments to forgotten things", "blanks": 1, "category": "Intermediate"},
+    {"id": 57, "text": "_______ rearranged itself alphabetically by mood", "blanks": 1, "category": "Intermediate"},
+    {"id": 58, "text": "My cousin's hobby was bottling _______ from Fridays", "blanks": 1, "category": "Intermediate"},
+    {"id": 59, "text": "_______ had performance anxiety during full moons", "blanks": 1, "category": "Intermediate"},
+    {"id": 60, "text": "_______ trained _______ to do taxes", "blanks": 2, "category": "Double"},
+    {"id": 61, "text": "The community garden composted _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 62, "text": "_______ created bottles for capturing emotions", "blanks": 1, "category": "Intermediate"},
+    {"id": 63, "text": "My calendar skipped _______ for privacy reasons", "blanks": 1, "category": "Intermediate"},
+    {"id": 64, "text": "_______ grew laughter in his fields", "blanks": 1, "category": "Intermediate"},
+    {"id": 65, "text": "Instead of ringing, _______ played symphonies", "blanks": 1, "category": "Intermediate"},
+    {"id": 66, "text": "_______ crafted rings from solidified starlight", "blanks": 1, "category": "Intermediate"},
+    {"id": 67, "text": "My backpack complained about _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 68, "text": "_______ composed symphonies for _______", "blanks": 2, "category": "Double"},
+    {"id": 69, "text": "_______ offered things you needed most", "blanks": 1, "category": "Intermediate"},
+    {"id": 70, "text": "_______ cultivated gardens floating in _______", "blanks": 2, "category": "Double"},
+    {"id": 71, "text": "My pen refused to write _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 72, "text": "_______ scented _______ with memories", "blanks": 2, "category": "Double"},
+    {"id": 73, "text": "_______ served as the local newspaper", "blanks": 1, "category": "Intermediate"},
+    {"id": 74, "text": "_______ brewed coffee that revealed secrets", "blanks": 1, "category": "Intermediate"},
+    {"id": 75, "text": "My eraser stored _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 76, "text": "_______ built clocks that ran backwards", "blanks": 1, "category": "Intermediate"},
+    {"id": 77, "text": "_______ delivered messages from the future", "blanks": 1, "category": "Intermediate"},
+    {"id": 78, "text": "_______ arranged flowers that bloomed in reverse", "blanks": 1, "category": "Intermediate"},
+    {"id": 79, "text": "My notebook locked its pages from _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 80, "text": "_______ baked _______ that contained entire universes", "blanks": 2, "category": "Double"},
+    {"id": 81, "text": "_______ reflected what you could become", "blanks": 1, "category": "Intermediate"},
+    {"id": 82, "text": "_______ stitched together broken _______", "blanks": 2, "category": "Double"},
+    {"id": 83, "text": "My glasses showed me _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 84, "text": "_______ grew plants that hummed lullabies", "blanks": 1, "category": "Intermediate"},
+    {"id": 85, "text": "_______ pointed toward what you needed most", "blanks": 1, "category": "Intermediate"},
+    {"id": 86, "text": "_______ created sculptures that told people's secrets", "blanks": 1, "category": "Intermediate"},
+    {"id": 87, "text": "My shadow danced when _______ slept", "blanks": 1, "category": "Intermediate"},
+    {"id": 88, "text": "_______ cooked with ingredients from other _______", "blanks": 2, "category": "Double"},
+    {"id": 89, "text": "_______ opened to places I'd never been", "blanks": 1, "category": "Intermediate"},
+    {"id": 90, "text": "_______ created art that moved through time", "blanks": 1, "category": "Intermediate"},
+    {"id": 91, "text": "My memories contained _______ I'd never have", "blanks": 1, "category": "Intermediate"},
+    {"id": 92, "text": "_______ played instruments made of crystallized _______", "blanks": 2, "category": "Double"},
+    {"id": 93, "text": "_______ descended deeper into my thoughts", "blanks": 1, "category": "Intermediate"},
+    {"id": 94, "text": "_______ crafted vessels for captured laughter", "blanks": 1, "category": "Intermediate"},
+    {"id": 95, "text": "My drawings started _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 96, "text": "_______ bottled the scent of childhood _______", "blanks": 2, "category": "Double"},
+    {"id": 97, "text": "_______ grew fruits that told the future", "blanks": 1, "category": "Intermediate"},
+    {"id": 98, "text": "_______ carved statues that blinked when no one was looking", "blanks": 1, "category": "Intermediate"},
+    {"id": 99, "text": "My mood ring changed to match _______", "blanks": 1, "category": "Intermediate"},
+    {"id": 100, "text": "_______ created _______ that burned backwards", "blanks": 2, "category": "Double"},
+    {"id": 101, "text": "On Thursdays, _______ flowed uphill", "blanks": 1, "category": "Challenging"},
+    {"id": 102, "text": "_______ forged weapons that fought _______ instead", "blanks": 2, "category": "Double"},
+    {"id": 103, "text": "My shadow started following _______", "blanks": 1, "category": "Challenging"},
+    {"id": 104, "text": "_______ organized books by emotional impact", "blanks": 1, "category": "Challenging"},
+    {"id": 105, "text": "Behind _______, there was an entirely different hallway", "blanks": 1, "category": "Challenging"},
+    {"id": 106, "text": "_______ crafted jewelry from crystallized music", "blanks": 1, "category": "Challenging"},
+    {"id": 107, "text": "My diary grew pages about _______", "blanks": 1, "category": "Challenging"},
+    {"id": 108, "text": "_______ harvested clouds instead of crops", "blanks": 1, "category": "Challenging"},
+    {"id": 109, "text": "_______ rang with calls from my future self", "blanks": 1, "category": "Challenging"},
+    {"id": 110, "text": "_______ created tapestries that showed alternate _______", "blanks": 2, "category": "Double"},
+    {"id": 111, "text": "My eraser collected _______", "blanks": 1, "category": "Challenging"},
+    {"id": 112, "text": "_______ caught _______ that granted wishes", "blanks": 2, "category": "Double"},
+    {"id": 113, "text": "_______ rearranged themselves when closed", "blanks": 1, "category": "Challenging"},
+    {"id": 114, "text": "_______ baked bread that tasted like answers", "blanks": 1, "category": "Challenging"},
+    {"id": 115, "text": "My pencil sketched from _______ without my knowledge", "blanks": 1, "category": "Challenging"},
+    {"id": 116, "text": "_______ grew plants that changed colors with emotions", "blanks": 1, "category": "Challenging"},
+    {"id": 117, "text": "Between rooms, _______ contained entire cities", "blanks": 1, "category": "Challenging"},
+    {"id": 118, "text": "_______ composed songs _______ hummed along to", "blanks": 2, "category": "Double"},
+    {"id": 119, "text": "My pockets stored moments instead of _______", "blanks": 1, "category": "Challenging"},
+    {"id": 120, "text": "_______ used colors that didn't exist yet", "blanks": 1, "category": "Challenging"},
+    {"id": 121, "text": "_______ breathed in rhythm with readers", "blanks": 1, "category": "Challenging"},
+    {"id": 122, "text": "_______ arranged flowers from forgotten _______", "blanks": 2, "category": "Double"},
+    {"id": 123, "text": "My mirror showed me _______", "blanks": 1, "category": "Challenging"},
+    {"id": 124, "text": "_______ cooked with spices from other _______", "blanks": 2, "category": "Double"},
+    {"id": 125, "text": "_______ controlled emotions instead of traffic", "blanks": 1, "category": "Challenging"},
+    {"id": 126, "text": "_______ built clocks from pulses of _______", "blanks":2, "category": "Double"},
+    {"id": 127, "text": "My camera contained memories of things _______", "blanks": 1, "category": "Challenging"},
+    {"id": 128, "text": "_______ grew gardens in other people's _______", "blanks": 2, "category": "Double"},
+    {"id": 129, "text": "_______ delivered letters to my past _______", "blanks": 2, "category": "Double"},
+    {"id": 130, "text": "_______ sewed clothes that fit different _______ of me", "blanks": 2, "category": "Double"},
+    {"id": 131, "text": "My typewriter wrote letters about _______", "blanks": 1, "category": "Challenging"},
+    {"id": 132, "text": "_______ created cakes that contained miniature _______", "blanks": 2, "category": "Double"},
+    {"id": 133, "text": "_______ showed what I could have been", "blanks": 1, "category": "Challenging"},
+    {"id": 134, "text": "_______ carved monuments to moments that almost _______", "blanks": 2, "category": "Double"},
+    {"id": 135, "text": "My recorder captured conversations with _______", "blanks": 1, "category": "Challenging"},
+    {"id": 136, "text": "_______ played instruments made of moonlight", "blanks": 1, "category": "Challenging"},
+    {"id": 137, "text": "_______ led upward into open sky", "blanks": 1, "category": "Challenging"},
+    {"id": 138, "text": "_______ crafted jewelry from solidified dreams", "blanks": 1, "category": "Challenging"},
+    {"id": 139, "text": "My shoes taught me how to move like _______", "blanks": 1, "category": "Challenging"},
+    {"id": 140, "text": "_______ cultivated flowers that bloomed from _______", "blanks": 2, "category": "Double"},
+    {"id": 141, "text": "_______ showed me my childhood home", "blanks": 1, "category": "Challenging"},
+    {"id": 142, "text": "_______ created toys that played themselves", "blanks": 1, "category": "Challenging"},
+    {"id": 143, "text": "My eraser removed _______ instead of marks", "blanks": 1, "category": "Challenging"},
+    {"id": 144, "text": "_______ prepared meals from recipes in old _______", "blanks": 2, "category": "Double"},
+    {"id": 145, "text": "_______ pointed toward my lost self", "blanks": 1, "category": "Challenging"},
+    {"id": 146, "text": "_______ bottled the scent of never", "blanks": 1, "category": "Challenging"},
+    {"id": 147, "text": "My glasses revealed what _______ were thinking", "blanks": 1, "category": "Challenging"},
+    {"id": 148, "text": "_______ grew trees that bore fruit of _______", "blanks": 2, "category": "Double"},
+    {"id": 149, "text": "_______ announced visitors from other _______", "blanks": 2, "category": "Double"},
+    {"id": 150, "text": "_______ created portraits that aged instead of _______", "blanks": 2, "category": "Double"},
+    {"id": 151, "text": "In the silence, _______ spoke in riddles", "blanks": 1, "category": "Expert"},
+    {"id": 152, "text": "_______ forged chains to hold onto _______", "blanks": 2, "category": "Expert"},
+    {"id": 153, "text": "My collection of _______ grew its own wings", "blanks": 1, "category": "Expert"},
+    {"id": 154, "text": "_______ catalogued emotions by color and texture", "blanks": 1, "category": "Expert"},
+    {"id": 155, "text": "Between floorboards, _______ hid entire _______", "blanks": 2, "category": "Expert"},
+    {"id": 156, "text": "_______ baked bread that contained memories of _______", "blanks": 2, "category": "Expert"},
+    {"id": 157, "text": "My pencil drew things like _______", "blanks": 1, "category": "Expert"},
+    {"id": 158, "text": "_______ grew mirrors that showed truth instead of _______", "blanks": 2, "category": "Expert"},
+    {"id": 159, "text": "The phone call came from _______", "blanks": 1, "category": "Expert"},
+    {"id": 160, "text": "_______ created tapestries that predicted _______", "blanks": 2, "category": "Expert"},
+    {"id": 161, "text": "My journal wrote itself stories about _______", "blanks": 1, "category": "Expert"},
+    {"id": 162, "text": "_______ caught starlight in glass _______", "blanks": 2, "category": "Expert"},
+    {"id": 163, "text": "_______ rearranged itself when I wasn't looking", "blanks": 1, "category": "Expert"},
+    {"id": 164, "text": "_______ cultivated flowers made of crystallized _______", "blanks": 2, "category": "Expert"},
+    {"id": 165, "text": "My mirror showed people as _______ saw them", "blanks": 1, "category": "Expert"},
+    {"id": 166, "text": "_______ cooked emotions into edible _______", "blanks": 2, "category": "Expert"},
+    {"id": 167, "text": "_______ contained doors to places that didn't exist", "blanks": 1, "category": "Expert"},
+    {"id": 168, "text": "_______ composed songs in colors and _______", "blanks": 2, "category": "Expert"},
+    {"id": 169, "text": "My box stored infinite potential and zero _______", "blanks": 1, "category": "Expert"},
+    {"id": 170, "text": "_______ created art that changed with _______", "blanks": 2, "category": "Expert"},
+    {"id": 171, "text": "_______ whispered recommendations to _______", "blanks": 2, "category": "Expert"},
+    {"id": 172, "text": "_______ crafted rings that linked soul _______", "blanks": 2, "category": "Expert"},
+    {"id": 173, "text": "My notebook wrote itself while _______", "blanks": 1, "category": "Expert"},
+    {"id": 174, "text": "_______ grew singing gardens visible only at _______", "blanks": 2, "category": "Expert"},
+    {"id": 175, "text": "_______ was a portal to summer _______", "blanks": 2, "category": "Expert"},
+    {"id": 176, "text": "_______ stitched stars into the hems of _______", "blanks": 2, "category": "Expert"},
+    {"id": 177, "text": "My typewriter wrote poetry about random _______ nearby", "blanks": 1, "category": "Expert"},
+    {"id": 178, "text": "_______ baked cakes that granted wishes when _______", "blanks": 2, "category": "Expert"},
+    {"id": 179, "text": "_______ showed me my true self", "blanks": 1, "category": "Expert"},
+    {"id": 180, "text": "_______ carved statues that came alive at _______", "blanks": 2, "category": "Expert"},
+    {"id": 181, "text": "My atlas contained maps to places in _______", "blanks": 1, "category": "Expert"},
+    {"id": 182, "text": "_______ played instruments made of captured _______", "blanks": 2, "category": "Expert"},
+    {"id": 183, "text": "_______ led to rooms that only existed in _______", "blanks": 2, "category": "Expert"},
+    {"id": 184, "text": "_______ bottled the scent of _______", "blanks": 2, "category": "Expert"},
+    {"id": 185, "text": "My greatest fear became _______", "blanks": 1, "category": "Expert"},
+    {"id": 186, "text": "_______ prepared meals from the ingredients of _______", "blanks": 2, "category": "Expert"},
+    {"id": 187, "text": "_______ pointed toward home no matter where I was", "blanks": 1, "category": "Expert"},
+    {"id": 188, "text": "_______ created figurines with hidden _______ inside", "blanks": 2, "category": "Expert"},
+    {"id": 189, "text": "My eraser deleted what _______ wanted to forget", "blanks": 1, "category": "Expert"},
+    {"id": 190, "text": "_______ grew flowers that bloomed in your _______", "blanks": 2, "category": "Expert"},
+    {"id": 191, "text": "_______ opened to a sky full of falling _______", "blanks": 2, "category": "Expert"},
+    {"id": 192, "text": "_______ created murals that shifted with _______'s mood", "blanks": 2, "category": "Expert"},
+    {"id": 193, "text": "My telescope showed the _______ in everything", "blanks": 1, "category": "Expert"},
+    {"id": 194, "text": "_______ arranged gardens that told life _______", "blanks": 2, "category": "Expert"},
+    {"id": 195, "text": "_______ led into my own _______", "blanks": 2, "category": "Expert"},
+    {"id": 196, "text": "_______, _______, and _______ baked with ingredients that were pure joy", "blanks": 3, "category": "Expert"},
+    {"id": 197, "text": "My pencils all named _______, _______, and _______ sketched without lifting from the page", "blanks": 3, "category": "Expert"},
+    {"id": 198, "text": "_______ played music made of _______ that healed _______", "blanks": 3, "category": "Expert"},
+    {"id": 199, "text": "The path made of _______, _______, and _______ led me home", "blanks": 3, "category": "Expert"},
+    {"id": 200, "text": "_______ from the _______ finally woke up in the _______ world", "blanks": 3, "category": "Expert"}
   ]
 }
