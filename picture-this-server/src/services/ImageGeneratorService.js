@@ -240,15 +240,14 @@ class ImageGeneratorService {
     const apiUrl = 'https://api.openai.com/v1/images/generations';
     
     const requestBody = {
-      model: 'dall-e-3',
+      model: 'dall-e-2',  // Using DALL-E 2 for cost savings ($0.020 vs $0.040 per image)
       prompt: prompt,
       n: 1,
       size: '1024x1024',
-      quality: 'standard',
       response_format: 'url' // Get URL instead of base64 for efficiency
     };
 
-    logger.debug('Calling DALL-E 3 API', {
+    logger.debug('Calling DALL-E 2 API', {
       gameCode,
       playerId,
       promptLength: prompt.length,
@@ -265,7 +264,7 @@ class ImageGeneratorService {
       });
 
       if (!response.data || !response.data.data || !response.data.data[0]) {
-        throw new Error('Invalid response from DALL-E 3 API');
+        throw new Error('Invalid response from DALL-E 2 API');
       }
 
       const imageUrl = response.data.data[0].url;
@@ -280,7 +279,7 @@ class ImageGeneratorService {
 
     } catch (error) {
       if (error.response) {
-        logger.error('DALL-E 3 API error', {
+        logger.error('DALL-E 2 API error', {
           gameCode,
           playerId,
           status: error.response.status,
@@ -288,13 +287,13 @@ class ImageGeneratorService {
           data: error.response.data
         });
       } else if (error.code === 'ECONNABORTED') {
-        logger.error('DALL-E 3 API timeout', {
+        logger.error('DALL-E 2 API timeout', {
           gameCode,
           playerId,
           timeout: this.timeout
         });
       } else {
-        logger.error('DALL-E 3 request failed', {
+        logger.error('DALL-E 2 request failed', {
           gameCode,
           playerId,
           error: error.message
